@@ -9,7 +9,7 @@ import { Badge, Card, Modal, PageHeader, Table, Tabs, Toggle, cx, StatusDot } fr
 /* ------------------------------ Chat ------------------------------ */
 
 export const models = [
-  { id: 'berrylm', name: 'BerryLM', vendor: 'AI Studio', ctx: '256K' },
+  { id: 'berrylm', name: 'BerryLM', vendor: 'AI Studio', ctx: '256K', tag: 'Лучший' },
   { id: 'claude-opus-5-5', name: 'Claude Opus 5.5', vendor: 'Anthropic', ctx: '1M', tag: 'Лучший' },
   { id: 'claude-sonnet-5-5', name: 'Claude Sonnet 5.5', vendor: 'Anthropic', ctx: '1M' },
   { id: 'gpt', name: 'GPT-5', vendor: 'OpenAI', ctx: '400K' },
