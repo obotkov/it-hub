@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Gauge, Plus, Copy, Check, FileBarChart, Users, Clock, MousePointerClick, Filter, Split, FileJson, Smartphone, Download, Play, TrendingUp, Monitor, Globe, Apple } from 'lucide-react'
+import { Gauge, Plus, Copy, Check, FileBarChart, Users, Clock, MousePointerClick, Filter, FileJson, Smartphone, Download, Play, TrendingUp, Monitor, Globe, Apple } from 'lucide-react'
 import { Badge, Card, Code, Modal, PageHeader, Stat, Table, Tabs, cx } from '../../components/ui'
 import { BarChart, Donut, LineChart, days, fmt, series } from '../../components/charts'
 
@@ -327,64 +327,6 @@ export function Funnels() {
           </form>
         </Card>
       </div>
-    </>
-  )
-}
-
-/* ---------------- AB ---------------- */
-
-export function AbPlatform() {
-  const [exps] = useState([
-    { name: 'Новая кнопка «Купить»', status: 'running', days: 9, users: '84K', metric: 'CR в оплату', lift: '+4.8%', p: 0.012 },
-    { name: 'Бесплатная доставка от 2000 ₽', status: 'running', days: 4, users: '31K', metric: 'Средний чек', lift: '+1.2%', p: 0.21 },
-    { name: 'Онбординг в 3 шага', status: 'done', days: 21, users: '146K', metric: 'Retention D7', lift: '+7.1%', p: 0.001 },
-    { name: 'Тёмная тема по умолчанию', status: 'done', days: 14, users: '98K', metric: 'Время в приложении', lift: '-0.4%', p: 0.64 },
-  ])
-  const [modal, setModal] = useState(false)
-  return (
-    <>
-      <PageHeader title="AB Platform" subtitle="Запускайте эксперименты, добавляйте метрики и получайте статистически значимые выводы." icon={Split} actions={<button onClick={() => setModal(true)} className="btn-primary"><Plus className="h-4 w-4" /> Эксперимент</button>} />
-      <div className="mb-6 grid gap-4 lg:grid-cols-3">
-        <Card title="Новая кнопка «Купить» · результаты" className="lg:col-span-2" action={<Badge tone="green">Значимо · p = 0.012</Badge>}>
-          <LineChart labels={days(9)} series={[{ name: 'Контроль (A)', data: [3.1, 3.2, 3.0, 3.15, 3.2, 3.1, 3.18, 3.12, 3.16], color: '#64748b' }, { name: 'Тест (B)', data: [3.2, 3.3, 3.28, 3.35, 3.31, 3.38, 3.3, 3.34, 3.32], color: '#fb923c' }]} />
-        </Card>
-        <Card title="Метрики эксперимента">
-          <div className="space-y-3">
-            {[['CR в оплату', '+4.8%', 'green'], ['Выручка на пользователя', '+3.1%', 'green'], ['Отказы', '-0.9%', 'green'], ['Время загрузки', '+0.0%', 'slate']].map(([m, v, t]) => (
-              <div key={m} className="flex items-center justify-between rounded-xl border border-white/5 bg-ink-850 px-3 py-2.5 text-sm">
-                <span className="text-slate-300">{m}</span>
-                <Badge tone={t as 'green' | 'slate'}>{v}</Badge>
-              </div>
-            ))}
-            <button className="btn-ghost w-full"><Plus className="h-4 w-4" /> Добавить метрику</button>
-          </div>
-        </Card>
-      </div>
-      <Card title="Эксперименты">
-        <Table
-          head={['Название', 'Статус', 'Дней', 'Пользователи', 'Основная метрика', 'Эффект', 'p-value']}
-          rows={exps.map((e) => [
-            <span className="text-white">{e.name}</span>,
-            e.status === 'running' ? <Badge tone="green"><Play className="h-3 w-3" /> Идёт</Badge> : <Badge>Завершён</Badge>,
-            e.days,
-            e.users,
-            e.metric,
-            <span className={e.lift.startsWith('-') ? 'text-rose-400' : 'text-emerald-400'}>{e.lift}</span>,
-            <span className={e.p < 0.05 ? 'text-emerald-400' : 'text-slate-500'}>{e.p}</span>,
-          ])}
-        />
-      </Card>
-      <Modal open={modal} onClose={() => setModal(false)} title="Новый эксперимент">
-        <div className="space-y-4">
-          <div><label className="label">Название</label><input className="input" placeholder="Гипотеза: …" /></div>
-          <div className="grid grid-cols-2 gap-3">
-            <div><label className="label">Счётчик</label><select className="input"><option>Основной сайт</option></select></div>
-            <div><label className="label">Трафик</label><select className="input"><option>50 / 50</option><option>90 / 10</option><option>33 / 33 / 33</option></select></div>
-          </div>
-          <div><label className="label">Основная метрика</label><select className="input"><option>CR в оплату</option><option>Средний чек</option><option>Retention D7</option></select></div>
-          <div className="flex justify-end gap-2"><button onClick={() => setModal(false)} className="btn-ghost">Отмена</button><button onClick={() => setModal(false)} className="btn-primary">Создать</button></div>
-        </div>
-      </Modal>
     </>
   )
 }
