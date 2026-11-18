@@ -292,7 +292,7 @@ echo json_decode(curl_exec($ch))->choices[0]->message->content;`,
 }
 
 function Playground() {
-  const [model, setModel] = useState('claude-sonnet-5-5')
+  const [model, setModel] = useState('berrylm')
   const [prompt, setPrompt] = useState('Напиши слоган для IT-хаба в 5 словах')
   const [busy, setBusy] = useState(false)
   const [res, setRes] = useState<string | null>(null)
