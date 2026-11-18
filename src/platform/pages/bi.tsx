@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { DatabaseZap, Plus, Upload, Code2, Play, LayoutDashboard, BellRing, Database, FileSpreadsheet, Save, BarChart3, LineChart as LineIcon, Table2, PieChart, Mail, MessageSquare, Send } from 'lucide-react'
+import { DatabaseZap, Plus, Upload, LayoutDashboard, BellRing, Database, FileSpreadsheet, BarChart3, LineChart as LineIcon, Table2, PieChart, Mail, MessageSquare, Send } from 'lucide-react'
 import { Badge, Card, Modal, PageHeader, Stat, StatusDot, Table, Tabs, Toggle, cx } from '../../components/ui'
 import { BarChart, Donut, LineChart, days, series } from '../../components/charts'
 
@@ -67,54 +67,6 @@ export function BiSources() {
           </button>
         </div>
       </Modal>
-    </>
-  )
-}
-
-export function BiQueries() {
-  const [sql, setSql] = useState(`SELECT toStartOfDay(event_time) AS day,\n       count() AS orders,\n       sum(amount) AS revenue\nFROM events\nWHERE event_name = 'purchase'\n  AND event_time >= now() - INTERVAL 14 DAY\nGROUP BY day\nORDER BY day`)
-  const [ran, setRan] = useState(false)
-  const [viz, setViz] = useState<'table' | 'line' | 'bar'>('line')
-  const data = series(14, 300, 200, 11)
-  const labels = days(14)
-  return (
-    <>
-      <PageHeader title="Запросы" subtitle="SQL-редактор с автодополнением, визуализацией результата и сохранением в дашборды." icon={Code2} actions={<button className="btn-ghost"><Save className="h-4 w-4" /> Сохранить</button>} />
-      <div className="grid gap-4 xl:grid-cols-[220px_1fr]">
-        <Card title="Схема" className="p-4">
-          <select className="input mb-3 text-xs"><option>events-ch</option><option>prod-postgres</option></select>
-          <div className="space-y-1 font-mono text-xs">
-            {['events', 'orders', 'users', 'sessions', 'products'].map((t) => (
-              <div key={t} className="flex items-center gap-2 rounded px-2 py-1 text-slate-300 hover:bg-white/5"><Table2 className="h-3.5 w-3.5 text-cyan-300" /> {t}</div>
-            ))}
-          </div>
-        </Card>
-        <div className="space-y-4">
-          <Card>
-            <textarea className="input h-44 resize-none font-mono text-xs leading-relaxed" value={sql} onChange={(e) => setSql(e.target.value)} />
-            <div className="mt-3 flex items-center gap-3">
-              <button onClick={() => setRan(true)} className="btn-primary"><Play className="h-4 w-4" /> Выполнить</button>
-              <span className="text-xs text-slate-500">⌘ + Enter</span>
-            </div>
-          </Card>
-          {ran && (
-            <Card
-              title="Результат · 14 строк · 0.08 с"
-              action={
-                <div className="flex gap-1">
-                  {([['table', Table2], ['line', LineIcon], ['bar', BarChart3]] as const).map(([v, I]) => (
-                    <button key={v} onClick={() => setViz(v)} className={cx('rounded-lg p-1.5', viz === v ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-white')}><I className="h-4 w-4" /></button>
-                  ))}
-                </div>
-              }
-            >
-              {viz === 'table' && <Table head={['day', 'orders', 'revenue']} rows={data.map((d, i) => [labels[i], d, (d * 2340).toLocaleString('ru-RU')])} />}
-              {viz === 'line' && <LineChart labels={labels} series={[{ name: 'orders', data, color: '#22d3ee' }]} />}
-              {viz === 'bar' && <BarChart color="#22d3ee" data={data.map((v, i) => ({ label: labels[i], value: v }))} />}
-            </Card>
-          )}
-        </div>
-      </div>
     </>
   )
 }
