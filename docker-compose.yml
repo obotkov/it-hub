@@ -1,0 +1,18 @@
+services:
+  web:
+    build: .
+    image: it-hub-web:latest
+    container_name: it-hub-web
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:

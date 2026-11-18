@@ -1,0 +1,26 @@
+{
+	email {$ACME_EMAIL:admin@ai-studio.space}
+}
+
+{$SITE_ADDRESS:ai-studio.space} {
+	encode zstd gzip
+	root * /srv
+
+	route {
+		# Password gate: without the right cookie every path serves the gate page.
+		@locked not header Cookie *hub_access={$HUB_ACCESS_TOKEN}*
+		header @locked Cache-Control "no-store"
+		rewrite @locked /__gate.html
+
+		# SPA fallback
+		try_files {path} /index.html
+		file_server
+	}
+
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		X-Robots-Tag "noindex, nofollow"
+		-Server
+	}
+}

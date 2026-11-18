@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>AI Studio — доступ</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%238b5cf6'/%3E%3C/svg%3E" />
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #06070b; color: #e2e8f0;
+    font-family: Inter, system-ui, -apple-system, sans-serif; padding: 16px; overflow: hidden; }
+  .glow { position: fixed; width: 700px; height: 500px; border-radius: 50%; background: rgba(124, 58, 237, .22); filter: blur(120px); top: -150px; left: 50%; transform: translateX(-50%); pointer-events: none; }
+  .grid { position: fixed; inset: 0; pointer-events: none; opacity: .5;
+    background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size: 48px 48px; -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%); mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%); }
+  form { position: relative; width: 100%; max-width: 360px; padding: 32px; border-radius: 24px; background: rgba(11, 13, 20, .85);
+    border: 1px solid rgba(255,255,255,.08); backdrop-filter: blur(12px); box-shadow: 0 30px 80px rgba(0,0,0,.5); }
+  .logo { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; background: linear-gradient(135deg, #8b5cf6, #22d3ee); margin-bottom: 20px; }
+  h1 { margin: 0 0 6px; font-size: 22px; color: #fff; letter-spacing: -.01em; }
+  p { margin: 0 0 24px; font-size: 14px; color: #94a3b8; }
+  input { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,.1); background: #10131c; color: #fff; font-size: 15px; outline: none; }
+  input:focus { border-color: rgba(139, 92, 246, .6); box-shadow: 0 0 0 3px rgba(139, 92, 246, .2); }
+  button { margin-top: 12px; width: 100%; padding: 12px; border: 0; border-radius: 12px; color: #fff; font-weight: 600; font-size: 15px; cursor: pointer;
+    background: linear-gradient(90deg, #7c3aed, #6366f1); }
+  button:hover { filter: brightness(1.1); }
+  .err { min-height: 20px; margin-top: 12px; font-size: 13px; color: #fb7185; text-align: center; }
+</style>
+</head>
+<body>
+<div class="glow"></div><div class="grid"></div>
+<form id="f" autocomplete="off">
+  <div class="logo"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 19 12 5l6 14M8.4 14h7.2"/></svg></div>
+  <h1>Закрытый доступ</h1>
+  <p>Сайт в разработке. Введите пароль, чтобы продолжить.</p>
+  <input id="p" type="password" placeholder="Пароль" autofocus />
+  <button type="submit">Войти</button>
+  <div class="err" id="e"></div>
+</form>
+<script>
+  // The server compares the cookie against sha256("it-hub:" + password); the password itself is never stored here.
+  var e = document.getElementById('e');
+  if (document.cookie.indexOf('hub_access=') !== -1) {
+    e.textContent = 'Неверный пароль';
+    document.cookie = 'hub_access=; Max-Age=0; Path=/';
+  }
+  document.getElementById('f').addEventListener('submit', async function (ev) {
+    ev.preventDefault();
+    var pass = document.getElementById('p').value;
+    if (!pass) return;
+    var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('it-hub:' + pass));
+    var hex = Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+    var secure = location.protocol === 'https:' ? '; Secure' : '';
+    document.cookie = 'hub_access=' + hex + '; Max-Age=2592000; Path=/; SameSite=Lax' + secure;
+    location.reload();
+  });
+</script>
+</body>
+</html>
