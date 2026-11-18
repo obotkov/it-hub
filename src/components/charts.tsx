@@ -67,7 +67,7 @@ export function LineChart({ series, labels, height = 220 }: { series: Series[]; 
 export function BarChart({ data, color = '#8b5cf6', height = 200 }: { data: { label: string; value: number }[]; color?: string; height?: number }) {
   const max = Math.max(...data.map((d) => d.value)) || 1
   return (
-    <div className="flex items-end gap-2" style={{ height }}>
+    <div className="flex items-stretch gap-2" style={{ height }}>
       {data.map((d) => (
         <div key={d.label} className="group flex flex-1 flex-col items-center gap-2">
           <div className="relative flex w-full flex-1 items-end">

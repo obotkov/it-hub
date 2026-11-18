@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { DatabaseZap, Plus, Upload, LayoutDashboard, BellRing, Database, FileSpreadsheet, BarChart3, LineChart as LineIcon, Table2, PieChart, Mail, MessageSquare, Send } from 'lucide-react'
-import { Badge, Card, Modal, PageHeader, Stat, StatusDot, Table, Tabs, Toggle, cx } from '../../components/ui'
-import { BarChart, Donut, LineChart, days, series } from '../../components/charts'
+import { DatabaseZap, Plus, Upload, BellRing, Database, FileSpreadsheet, Mail, MessageSquare, Send } from 'lucide-react'
+import { Badge, Card, Modal, PageHeader, StatusDot, Table, Toggle, cx } from '../../components/ui'
 
 const sourceTypes = [
   { n: 'PostgreSQL', c: '#60a5fa' }, { n: 'ClickHouse', c: '#facc15' }, { n: 'MySQL', c: '#38bdf8' }, { n: 'BigQuery', c: '#4ade80' },
@@ -67,58 +66,6 @@ export function BiSources() {
           </button>
         </div>
       </Modal>
-    </>
-  )
-}
-
-export function BiDashboards() {
-  const [dash, setDash] = useState('sales')
-  return (
-    <>
-      <PageHeader
-        title="Дашборды"
-        subtitle="Собирайте дашборды из сохранённых запросов, делитесь ссылкой и встраивайте на сайт."
-        icon={LayoutDashboard}
-        actions={
-          <>
-            <Tabs value={dash} onChange={setDash} tabs={[{ id: 'sales', label: 'Продажи' }, { id: 'product', label: 'Продукт' }]} />
-            <button className="btn-primary"><Plus className="h-4 w-4" /> Виджет</button>
-          </>
-        }
-      />
-      <div className="mb-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {dash === 'sales' ? (
-          <>
-            <Stat label="Выручка" value="18.4M ₽" delta="+11%" />
-            <Stat label="Заказы" value="7 812" delta="+6%" />
-            <Stat label="Средний чек" value="2 356 ₽" delta="+4%" />
-            <Stat label="Возвраты" value="2.1%" delta="-0.3%" />
-          </>
-        ) : (
-          <>
-            <Stat label="DAU" value="64K" delta="+3%" />
-            <Stat label="MAU" value="512K" delta="+9%" />
-            <Stat label="Stickiness" value="12.5%" delta="-0.4%" />
-            <Stat label="NPS" value="47" delta="+2" />
-          </>
-        )}
-      </div>
-      <div className="grid gap-4 lg:grid-cols-3">
-        <Card title={dash === 'sales' ? 'Выручка по дням' : 'Активные пользователи'} className="lg:col-span-2">
-          <LineChart labels={days(30)} series={[{ name: 'Текущий период', data: series(30, 500, 300, dash === 'sales' ? 13 : 21), color: '#22d3ee' }, { name: 'Прошлый период', data: series(30, 420, 260, 17), color: '#475569' }]} />
-        </Card>
-        <Card title={dash === 'sales' ? 'Категории' : 'Платформы'}>
-          <Donut data={dash === 'sales' ? [{ label: 'Электроника', value: 38, color: '#22d3ee' }, { label: 'Одежда', value: 27, color: '#a78bfa' }, { label: 'Дом', value: 21, color: '#34d399' }, { label: 'Прочее', value: 14, color: '#64748b' }] : [{ label: 'Web', value: 44, color: '#22d3ee' }, { label: 'iOS', value: 28, color: '#94a3b8' }, { label: 'Android', value: 28, color: '#34d399' }]} />
-        </Card>
-        <Card title="По регионам" className="lg:col-span-3">
-          <BarChart color="#22d3ee" data={['Москва', 'СПб', 'Новосиб.', 'Екб', 'Казань', 'Краснодар', 'Самара', 'Н.Новгород'].map((l, i) => ({ label: l, value: [920, 510, 180, 160, 140, 130, 110, 100][i] }))} />
-        </Card>
-      </div>
-      <div className="mt-4 flex flex-wrap gap-2">
-        {[PieChart, BarChart3, LineIcon, Table2].map((I, i) => (
-          <button key={i} className="flex items-center gap-2 rounded-xl border border-dashed border-white/10 px-4 py-3 text-sm text-slate-400 hover:border-white/25 hover:text-white"><I className="h-4 w-4" /> Добавить</button>
-        ))}
-      </div>
     </>
   )
 }
