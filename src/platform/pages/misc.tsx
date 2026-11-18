@@ -54,7 +54,7 @@ export function Overview() {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {sections.filter((s) => !s.soon).map((s) => (
           <Link key={s.id} to={`/app/${s.items[0].path}`} className="card group p-5 transition hover:border-white/15">
-            <div className={`mb-4 grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br ${s.gradient}`}>
+            <div className={`on-accent mb-4 grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br ${s.gradient}`}>
               <s.icon className="h-5 w-5 text-white" />
             </div>
             <div className="font-medium text-white">{s.title}</div>

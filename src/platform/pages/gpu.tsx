@@ -98,7 +98,7 @@ export function GpuDeploy() {
                 <button key={x.id} onClick={() => setTpl(x.id)} className={cx('relative rounded-2xl border p-4 text-left transition', tpl === x.id ? 'border-emerald-400/60 bg-emerald-500/[0.07]' : 'border-white/[0.06] bg-ink-850 hover:border-white/15')}>
                   <div className="flex items-start justify-between">
                     <span className="text-2xl">{x.img}</span>
-                    {tpl === x.id ? <span className="grid h-5 w-5 place-items-center rounded-full bg-emerald-500"><Check className="h-3 w-3 text-white" /></span> : x.tag && <Badge tone="green">{x.tag}</Badge>}
+                    {tpl === x.id ? <span className="on-accent grid h-5 w-5 place-items-center rounded-full bg-emerald-500"><Check className="h-3 w-3 text-white" /></span> : x.tag && <Badge tone="green">{x.tag}</Badge>}
                   </div>
                   <div className="mt-3 text-sm font-medium text-white">{x.name}</div>
                   <div className="mt-0.5 text-xs text-slate-500">{x.desc}</div>
@@ -160,7 +160,7 @@ export function GpuDeploy() {
               <Line icon={<MemoryStick className="h-4 w-4" />} k="RAM" v={`${ram} GB`} />
               <Line icon={<HardDrive className="h-4 w-4" />} k="Диск" v={`${disk} GB NVMe`} />
               <Line icon={<Terminal className="h-4 w-4" />} k="ОС" v={os} />
-              <button onClick={deploy} className="btn mt-2 w-full bg-gradient-to-r from-emerald-500 to-teal-500 py-3 text-white shadow-lg shadow-emerald-900/30 hover:from-emerald-400 hover:to-teal-400">
+              <button onClick={deploy} className="btn on-accent mt-2 w-full bg-gradient-to-r from-emerald-500 to-teal-500 py-3 text-white shadow-lg shadow-emerald-900/30 hover:from-emerald-400 hover:to-teal-400">
                 <Rocket className="h-4 w-4" /> Запустить под
               </button>
               <p className="text-center text-xs text-slate-500">Оплата поминутно с баланса кабинета</p>

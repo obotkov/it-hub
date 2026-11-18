@@ -144,7 +144,7 @@ export function Reports() {
         <div className="grid gap-4 lg:grid-cols-3">
           <Card title="Устройства"><Donut data={[{ label: 'Смартфоны', value: 62, color: '#fb923c' }, { label: 'Десктоп', value: 31, color: '#a78bfa' }, { label: 'Планшеты', value: 7, color: '#22d3ee' }]} /></Card>
           <Card title="Браузеры"><Donut data={[{ label: 'Chrome', value: 48, color: '#34d399' }, { label: 'Safari', value: 27, color: '#60a5fa' }, { label: 'Яндекс', value: 16, color: '#f43f5e' }, { label: 'Другие', value: 9, color: '#64748b' }]} /></Card>
-          <Card title="ОС"><Donut data={[{ label: 'Android', value: 41, color: '#34d399' }, { label: 'iOS', value: 23, color: '#e2e8f0' }, { label: 'Windows', value: 26, color: '#60a5fa' }, { label: 'macOS', value: 10, color: '#a78bfa' }]} /></Card>
+          <Card title="ОС"><Donut data={[{ label: 'Android', value: 41, color: '#34d399' }, { label: 'iOS', value: 23, color: '#94a3b8' }, { label: 'Windows', value: 26, color: '#60a5fa' }, { label: 'macOS', value: 10, color: '#a78bfa' }]} /></Card>
           <Card title="Разрешения экрана" className="lg:col-span-3">
             <BarChart color="#fb923c" data={[{ label: '390×844', value: 182 }, { label: '1920×1080', value: 151 }, { label: '412×915', value: 120 }, { label: '1536×864', value: 74 }, { label: '1440×900', value: 61 }, { label: '360×800', value: 55 }, { label: '2560×1440', value: 33 }]} />
           </Card>
@@ -212,7 +212,7 @@ export function Heatmap() {
       />
       <div className="grid gap-4 xl:grid-cols-[1fr_280px]">
         <div className="card overflow-hidden p-3">
-          <div className="relative mx-auto aspect-[4/5] max-w-3xl overflow-hidden rounded-xl bg-slate-100 sm:aspect-[16/12]">
+          <div className="theme-fixed relative mx-auto aspect-[4/5] max-w-3xl overflow-hidden rounded-xl bg-slate-100 sm:aspect-[16/12]">
             {/* fake page */}
             <div className="absolute inset-0 p-[4%] text-slate-400">
               <div className="flex items-center justify-between"><div className="h-4 w-24 rounded bg-slate-300" /><div className="flex gap-3"><div className="h-3 w-12 rounded bg-slate-300" /><div className="h-3 w-12 rounded bg-slate-300" /><div className="h-6 w-20 rounded-md bg-slate-400" /></div></div>
@@ -451,7 +451,7 @@ export function AppTracker() {
       </div>
       <div className="grid gap-4 lg:grid-cols-3">
         <Card title="Установки по дням" className="lg:col-span-2">
-          <LineChart labels={days(30)} series={[{ name: 'iOS', data: series(30, 500, 300, 8), color: '#e2e8f0' }, { name: 'Android', data: series(30, 800, 400, 9), color: '#34d399' }]} />
+          <LineChart labels={days(30)} series={[{ name: 'iOS', data: series(30, 500, 300, 8), color: '#94a3b8' }, { name: 'Android', data: series(30, 800, 400, 9), color: '#34d399' }]} />
         </Card>
         <Card title="Приложения">
           <div className="space-y-3">

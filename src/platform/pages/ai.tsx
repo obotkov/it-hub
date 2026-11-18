@@ -148,7 +148,7 @@ export function Chat() {
         <div className="flex-1 overflow-y-auto px-4 py-6">
           {msgs.length === 0 ? (
             <div className="mx-auto flex h-full max-w-2xl flex-col items-center justify-center text-center">
-              <div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-lg shadow-violet-900/40">
+              <div className="on-accent grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-lg shadow-violet-900/40">
                 <Bot className="h-7 w-7 text-white" />
               </div>
               <h2 className="mt-5 text-2xl font-semibold text-white">Чем помочь?</h2>
@@ -166,11 +166,11 @@ export function Chat() {
               {msgs.map((m, i) => (
                 <div key={i} className={cx('flex gap-3', m.role === 'user' && 'justify-end')}>
                   {m.role === 'assistant' && (
-                    <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500">
+                    <div className="on-accent grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500">
                       <Bot className="h-4 w-4 text-white" />
                     </div>
                   )}
-                  <div className={cx('max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-3 text-sm leading-relaxed', m.role === 'user' ? 'rounded-br-sm bg-violet-600 text-white' : 'rounded-bl-sm bg-white/[0.04] text-slate-200')}>
+                  <div className={cx('max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-3 text-sm leading-relaxed', m.role === 'user' ? 'on-accent rounded-br-sm bg-violet-600 text-white' : 'rounded-bl-sm bg-white/[0.04] text-slate-200')}>
                     {m.files && m.files.length > 0 && (
                       <div className="mb-2 flex flex-wrap gap-1.5">
                         {m.files.map((f) => (
@@ -217,7 +217,7 @@ export function Chat() {
               <button type="button" onClick={() => fileRef.current?.click()} className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs text-slate-400 hover:bg-white/5 hover:text-white">
                 <Paperclip className="h-4 w-4" /> Файл
               </button>
-              <button disabled={!text.trim() || busy} className="grid h-9 w-9 place-items-center rounded-xl bg-violet-600 text-white transition hover:bg-violet-500 disabled:opacity-40">
+              <button disabled={!text.trim() || busy} className="on-accent grid h-9 w-9 place-items-center rounded-xl bg-violet-600 text-white transition hover:bg-violet-500 disabled:opacity-40">
                 <Send className="h-4 w-4" />
               </button>
             </div>
@@ -508,7 +508,7 @@ export function AgentWorld() {
                 const mx = (x1 + x2) / 2
                 const live = running >= 0 && nodes.findIndex((n) => n.id === b) < running
                 return (
-                  <path key={i} d={`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`} fill="none" stroke={live ? '#a78bfa' : 'rgba(255,255,255,0.15)'} strokeWidth={live ? 2.5 : 1.5} strokeDasharray={live ? '6 4' : undefined}>
+                  <path key={i} d={`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`} fill="none" stroke={live ? '#a78bfa' : 'currentColor'} className="text-white/15" strokeWidth={live ? 2.5 : 1.5} strokeDasharray={live ? '6 4' : undefined}>
                     {live && <animate attributeName="stroke-dashoffset" from="20" to="0" dur="0.6s" repeatCount="indefinite" />}
                   </path>
                 )
@@ -589,7 +589,7 @@ export function MediaAgents() {
       <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {tools.map((x) => (
           <div key={x.t} className="card group p-5 transition hover:border-white/15">
-            <div className={`grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br ${x.c}`}><x.icon className="h-5 w-5 text-white" /></div>
+            <div className={`on-accent grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br ${x.c}`}><x.icon className="h-5 w-5 text-white" /></div>
             <div className="mt-4 font-medium text-white">{x.t}</div>
             <p className="mt-1 text-sm text-slate-400">{x.d}</p>
             <button className="btn-ghost mt-4 w-full"><Upload className="h-4 w-4" /> Загрузить файл</button>

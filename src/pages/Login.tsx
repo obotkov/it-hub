@@ -2,6 +2,7 @@ import { FormEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, Github, KeyRound } from 'lucide-react'
 import Logo from '../components/Logo'
+import ThemeToggle from '../components/ThemeToggle'
 import { useAccount } from '../account'
 import { sections } from '../nav'
 
@@ -22,9 +23,12 @@ export default function Login() {
       <div className="relative flex flex-col justify-between p-6 sm:p-10">
         <div className="flex items-center justify-between">
           <Link to="/"><Logo /></Link>
-          <Link to="/" className="flex items-center gap-1 text-sm text-slate-400 hover:text-white">
-            <ArrowLeft className="h-4 w-4" /> На главную
-          </Link>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Link to="/" className="flex items-center gap-1 text-sm text-slate-400 hover:text-white">
+              <ArrowLeft className="h-4 w-4" /> На главную
+            </Link>
+          </div>
         </div>
         <form onSubmit={submit} className="mx-auto w-full max-w-sm animate-fadeup py-12">
           <h1 className="text-3xl font-bold tracking-tight text-white">Вход на платформу</h1>
@@ -64,7 +68,7 @@ export default function Login() {
           <div className="mt-10 grid max-w-lg grid-cols-2 gap-3">
             {sections.filter((s) => !s.soon).map((s, i) => (
               <div key={s.id} className="card flex animate-float items-center gap-3 p-3" style={{ animationDelay: `${i * 0.4}s` }}>
-                <div className={`grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br ${s.gradient}`}>
+                <div className={`on-accent grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br ${s.gradient}`}>
                   <s.icon className="h-4 w-4 text-white" />
                 </div>
                 <span className="text-sm text-slate-200">{s.title}</span>

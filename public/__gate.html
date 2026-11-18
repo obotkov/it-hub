@@ -25,6 +25,15 @@
   button { margin-top: 12px; width: 100%; padding: 12px; border: 0; border-radius: 12px; color: #fff; font-weight: 600; font-size: 15px; cursor: pointer;
     background: linear-gradient(90deg, #7c3aed, #6366f1); }
   button:hover { filter: brightness(1.1); }
+  @media (prefers-color-scheme: light) {
+    :root { color-scheme: light; }
+    body { background: #f5f6fa; color: #0f172a; }
+    .glow { background: rgba(124, 58, 237, .14); }
+    .grid { background-image: linear-gradient(rgba(15,23,42,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,.05) 1px, transparent 1px); }
+    form { background: rgba(255,255,255,.9); border-color: rgba(15,23,42,.08); box-shadow: 0 30px 80px rgba(15,23,42,.12); }
+    h1 { color: #0f172a; } p { color: #475569; }
+    input { background: #f1f3f8; color: #0f172a; border-color: rgba(15,23,42,.12); }
+  }
   .err { min-height: 20px; margin-top: 12px; font-size: 13px; color: #fb7185; text-align: center; }
 </style>
 </head>

@@ -156,7 +156,7 @@ export function BiDashboards() {
           <LineChart labels={days(30)} series={[{ name: 'Текущий период', data: series(30, 500, 300, dash === 'sales' ? 13 : 21), color: '#22d3ee' }, { name: 'Прошлый период', data: series(30, 420, 260, 17), color: '#475569' }]} />
         </Card>
         <Card title={dash === 'sales' ? 'Категории' : 'Платформы'}>
-          <Donut data={dash === 'sales' ? [{ label: 'Электроника', value: 38, color: '#22d3ee' }, { label: 'Одежда', value: 27, color: '#a78bfa' }, { label: 'Дом', value: 21, color: '#34d399' }, { label: 'Прочее', value: 14, color: '#64748b' }] : [{ label: 'Web', value: 44, color: '#22d3ee' }, { label: 'iOS', value: 28, color: '#e2e8f0' }, { label: 'Android', value: 28, color: '#34d399' }]} />
+          <Donut data={dash === 'sales' ? [{ label: 'Электроника', value: 38, color: '#22d3ee' }, { label: 'Одежда', value: 27, color: '#a78bfa' }, { label: 'Дом', value: 21, color: '#34d399' }, { label: 'Прочее', value: 14, color: '#64748b' }] : [{ label: 'Web', value: 44, color: '#22d3ee' }, { label: 'iOS', value: 28, color: '#94a3b8' }, { label: 'Android', value: 28, color: '#34d399' }]} />
         </Card>
         <Card title="По регионам" className="lg:col-span-3">
           <BarChart color="#22d3ee" data={['Москва', 'СПб', 'Новосиб.', 'Екб', 'Казань', 'Краснодар', 'Самара', 'Н.Новгород'].map((l, i) => ({ label: l, value: [920, 510, 180, 160, 140, 130, 110, 100][i] }))} />

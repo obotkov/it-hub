@@ -26,7 +26,7 @@ export function LineChart({ series, labels, height = 220 }: { series: Series[]; 
         </defs>
         {ticks.map((t, i) => (
           <g key={i}>
-            <line x1={pad.l} x2={w - pad.r} y1={y(t)} y2={y(t)} stroke="rgba(255,255,255,0.05)" />
+            <line x1={pad.l} x2={w - pad.r} y1={y(t)} y2={y(t)} stroke="currentColor" className="text-white/5" />
             <text x={pad.l - 6} y={y(t) + 3} textAnchor="end" fontSize="10" fill="#64748b">
               {fmt(t)}
             </text>
@@ -94,7 +94,7 @@ export function Donut({ data, size = 150 }: { data: { label: string; value: numb
   return (
     <div className="flex items-center gap-6">
       <svg viewBox="0 0 100 100" style={{ width: size, height: size }} className="-rotate-90">
-        <circle cx="50" cy="50" r={r} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="12" />
+        <circle cx="50" cy="50" r={r} fill="none" stroke="currentColor" className="text-white/5" strokeWidth="12" />
         {data.map((d) => {
           const len = (d.value / total) * c
           const el = <circle key={d.label} cx="50" cy="50" r={r} fill="none" stroke={d.color} strokeWidth="12" strokeDasharray={`${len} ${c - len}`} strokeDashoffset={-acc} />

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Building2, ChevronDown, ChevronsUpDown, Home, LogOut, Menu, Plus, Search, Settings, User, Wallet, X, Bell, Check } from 'lucide-react'
 import Logo from '../components/Logo'
+import ThemeToggle from '../components/ThemeToggle'
 import { sections, findItem } from '../nav'
 import { useAccount } from '../account'
 import { cx } from '../components/ui'
@@ -40,7 +41,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                 onClick={() => setOpen((o) => ({ ...o, [s.id]: !o[s.id] }))}
                 className={cx('group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm transition', isActive ? 'text-white' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200')}
               >
-                <span className={cx('grid h-6 w-6 place-items-center rounded-lg bg-gradient-to-br', s.gradient, !isActive && 'opacity-70 group-hover:opacity-100')}>
+                <span className={cx('on-accent grid h-6 w-6 place-items-center rounded-lg bg-gradient-to-br', s.gradient, !isActive && 'opacity-70 group-hover:opacity-100')}>
                   <s.icon className="h-3.5 w-3.5 text-white" />
                 </span>
                 <span className="flex-1 truncate text-left font-medium">{s.title}</span>
@@ -183,12 +184,13 @@ export default function Layout() {
               <Wallet className="h-4 w-4 text-emerald-400" />
               <span className="tabular-nums text-white">{current.balance.toLocaleString('ru-RU')} ₽</span>
             </Link>
+            <ThemeToggle />
             <button className="relative rounded-xl p-2 text-slate-400 hover:bg-white/10 hover:text-white">
               <Bell className="h-5 w-5" />
               <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-violet-500" />
             </button>
             <div className="group relative">
-              <button className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-violet-500 to-cyan-400 text-sm font-semibold uppercase text-white">
+              <button className="on-accent grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-violet-500 to-cyan-400 text-sm font-semibold uppercase text-white">
                 {user?.name[0]}
               </button>
               <div className="invisible absolute right-0 top-full z-40 pt-2 opacity-0 transition group-hover:visible group-hover:opacity-100">

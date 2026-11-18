@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, Check, Zap, ShieldCheck, Building2, User, Globe2, Layers, Terminal, ChevronRight } from 'lucide-react'
 import Logo from '../components/Logo'
+import ThemeToggle from '../components/ThemeToggle'
 import { sections } from '../nav'
 import { LineChart, series } from '../components/charts'
 
@@ -31,9 +32,10 @@ export default function Landing() {
             <a href="#pricing" className="hover:text-white">Тарифы</a>
           </nav>
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Link to="/login" className="btn hidden text-slate-300 hover:text-white sm:inline-flex">Войти</Link>
-            <Link to="/login" className="btn-primary">
-              Открыть платформу <ArrowRight className="h-4 w-4" />
+            <Link to="/login" className="btn-primary whitespace-nowrap">
+              <span className="hidden sm:inline">Открыть платформу</span><span className="sm:hidden">Войти</span> <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
@@ -46,7 +48,7 @@ export default function Landing() {
         <div className="pointer-events-none absolute right-0 top-40 h-[400px] w-[400px] rounded-full bg-cyan-500/10 blur-[100px]" />
         <div className="relative mx-auto max-w-7xl px-4 text-center sm:px-6">
           <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-slate-300">
-            <span className="rounded-full bg-violet-500 px-2 py-0.5 text-[10px] font-semibold text-white">NEW</span>
+            <span className="on-accent rounded-full bg-violet-500 px-2 py-0.5 text-[10px] font-semibold text-white">NEW</span>
             Agent World — собирайте AI-агентов в визуальные workflow
             <ChevronRight className="h-3 w-3" />
           </div>
@@ -84,7 +86,7 @@ export default function Landing() {
                 <div className="grid flex-1 gap-3 p-4 md:grid-cols-3">
                   <div className="space-y-3 rounded-xl border border-white/5 bg-ink-850 p-4 md:col-span-2">
                     <div className="text-xs text-slate-500">Чат · Claude Opus 5.5</div>
-                    <div className="ml-auto w-fit max-w-[80%] rounded-2xl rounded-br-sm bg-violet-600/80 px-3 py-2 text-xs text-white">Сравни конверсию воронки за неделю и предложи гипотезы для A/B</div>
+                    <div className="ml-auto w-fit max-w-[80%] rounded-2xl rounded-br-sm on-accent bg-violet-600/80 px-3 py-2 text-xs text-white">Сравни конверсию воронки за неделю и предложи гипотезы для A/B</div>
                     <div className="w-fit max-w-[85%] rounded-2xl rounded-bl-sm bg-white/5 px-3 py-2 text-xs text-slate-300">
                       Конверсия «корзина → оплата» снизилась на 4.2%. Основная просадка — мобильный Safari. Предлагаю 3 гипотезы…
                     </div>
@@ -139,7 +141,7 @@ export default function Landing() {
               className={`group relative overflow-hidden rounded-3xl border border-white/[0.06] bg-ink-900 p-6 transition hover:border-white/15 hover:bg-ink-850 ${idx === 0 ? 'lg:col-span-2 lg:row-span-2' : ''}`}
             >
               <div className={`pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-gradient-to-br ${s.gradient} opacity-10 blur-3xl transition group-hover:opacity-25`} />
-              <div className={`mb-5 grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br ${s.gradient} shadow-lg`}>
+              <div className={`on-accent mb-5 grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br ${s.gradient} shadow-lg`}>
                 <s.icon className="h-5 w-5 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-white">{s.title}</h3>
@@ -241,7 +243,7 @@ export default function Landing() {
           <div className="mt-14 grid gap-6 lg:grid-cols-3">
             {pricing.map((p) => (
               <div key={p.name} className={`card relative p-7 ${p.hot ? 'border-violet-500/40 bg-gradient-to-b from-violet-500/10 to-ink-900' : ''}`}>
-                {p.hot && <span className="absolute right-6 top-6 rounded-full bg-violet-500 px-2.5 py-0.5 text-xs font-medium text-white">Популярный</span>}
+                {p.hot && <span className="on-accent absolute right-6 top-6 rounded-full bg-violet-500 px-2.5 py-0.5 text-xs font-medium text-white">Популярный</span>}
                 <div className="text-sm font-medium text-slate-400">{p.name}</div>
                 <div className="mt-3 text-3xl font-bold text-white">{p.price}</div>
                 <div className="text-sm text-slate-500">{p.note}</div>
