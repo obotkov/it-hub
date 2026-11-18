@@ -2,9 +2,9 @@ import { FormEvent, PointerEvent as RPE, useEffect, useMemo, useRef, useState } 
 import {
   MessageSquare, Plus, Paperclip, Send, Bot, FileText, X, ChevronDown, Plug, Search, Check, Puzzle, Library, Upload,
   Workflow, Play, Clapperboard, Mic, Video, AudioLines, Languages, Subtitles, Image as ImageIcon, Laptop, Apple, Download,
-  Monitor, Terminal, GitBranch, Zap, Globe, Mail, Database, Code2, Webhook, Clock, Filter, Sparkles, Star, Save,
+  Monitor, Terminal, GitBranch, Zap, Globe, Mail, Database, Code2, Webhook, Clock, Filter, Sparkles, Star, Save, ArrowLeft, ChevronRight, Trash2,
 } from 'lucide-react'
-import { Badge, Card, Modal, PageHeader, Table, Tabs, Toggle, cx, StatusDot } from '../../components/ui'
+import { Badge, Card, Empty, Modal, PageHeader, Stat, Table, Tabs, Toggle, cx, StatusDot } from '../../components/ui'
 
 /* ------------------------------ Chat ------------------------------ */
 
@@ -433,19 +433,185 @@ const nodeTypes: Record<string, { icon: typeof Bot; color: string; label: string
   output: { icon: Send, color: '#60a5fa', label: 'Отправка' },
 }
 
+type Flow = {
+  id: string
+  name: string
+  desc: string
+  status: 'running' | 'stopped' | 'error'
+  trigger: string
+  runs: number
+  success: number
+  last: string
+  nodes: NodeT[]
+  edges: [string, string][]
+}
+
+const demoFlows: Flow[] = [
+  {
+    id: 'f1', name: 'Поддержка по email', desc: 'Классифицирует письма и отвечает по базе знаний', status: 'running', trigger: 'Новое письмо', runs: 1284, success: 97.8, last: '2 мин назад',
+    nodes: [
+      { id: 'n1', x: 40, y: 150, type: 'trigger', title: 'Новое письмо' },
+      { id: 'n2', x: 300, y: 60, type: 'rag', title: 'Поиск в FAQ' },
+      { id: 'n3', x: 300, y: 250, type: 'agent', title: 'Классификатор' },
+      { id: 'n4', x: 560, y: 150, type: 'agent', title: 'Агент-ответчик' },
+      { id: 'n5', x: 820, y: 80, type: 'output', title: 'Ответ клиенту' },
+      { id: 'n6', x: 820, y: 240, type: 'tool', title: 'Задача в Jira' },
+    ],
+    edges: [['n1', 'n2'], ['n1', 'n3'], ['n2', 'n4'], ['n3', 'n4'], ['n4', 'n5'], ['n4', 'n6']],
+  },
+  {
+    id: 'f2', name: 'Отчёт по продажам', desc: 'Каждое утро собирает выручку из БД и шлёт сводку в Telegram', status: 'running', trigger: 'Каждый день 09:00', runs: 48, success: 100, last: 'сегодня 09:00',
+    nodes: [
+      { id: 'n1', x: 40, y: 150, type: 'schedule', title: 'Ежедневно 09:00' },
+      { id: 'n2', x: 300, y: 150, type: 'tool', title: 'PostgreSQL: выручка' },
+      { id: 'n3', x: 560, y: 150, type: 'agent', title: 'Аналитик' },
+      { id: 'n4', x: 820, y: 150, type: 'output', title: 'Telegram' },
+    ],
+    edges: [['n1', 'n2'], ['n2', 'n3'], ['n3', 'n4']],
+  },
+  {
+    id: 'f3', name: 'Квалификация лидов', desc: 'Оценивает заявки с сайта и передаёт горячие в CRM', status: 'error', trigger: 'Webhook с сайта', runs: 312, success: 91.3, last: '14 мин назад',
+    nodes: [
+      { id: 'n1', x: 40, y: 150, type: 'trigger', title: 'Заявка с сайта' },
+      { id: 'n2', x: 300, y: 150, type: 'agent', title: 'Скоринг лида' },
+      { id: 'n3', x: 560, y: 150, type: 'condition', title: 'Score > 70' },
+      { id: 'n4', x: 820, y: 80, type: 'tool', title: 'Сделка в CRM' },
+      { id: 'n5', x: 820, y: 240, type: 'output', title: 'Письмо-прогрев' },
+    ],
+    edges: [['n1', 'n2'], ['n2', 'n3'], ['n3', 'n4'], ['n3', 'n5']],
+  },
+  {
+    id: 'f4', name: 'Ревью pull request', desc: 'Проверяет новые PR на баги и оставляет комментарии', status: 'stopped', trigger: 'GitHub: новый PR', runs: 96, success: 98.9, last: '3 дня назад',
+    nodes: [
+      { id: 'n1', x: 40, y: 150, type: 'trigger', title: 'Новый PR' },
+      { id: 'n2', x: 300, y: 150, type: 'tool', title: 'GitHub: diff' },
+      { id: 'n3', x: 560, y: 150, type: 'agent', title: 'Код-ревьюер' },
+      { id: 'n4', x: 820, y: 150, type: 'tool', title: 'Комментарий в PR' },
+    ],
+    edges: [['n1', 'n2'], ['n2', 'n3'], ['n3', 'n4']],
+  },
+]
+
+const loadFlows = (): Flow[] => {
+  try {
+    return JSON.parse(localStorage.getItem('hub.flows') || 'null') ?? demoFlows
+  } catch {
+    return demoFlows
+  }
+}
+
+const flowStatus = {
+  running: { dot: 'running' as const, label: 'Работает' },
+  stopped: { dot: 'stopped' as const, label: 'Остановлен' },
+  error: { dot: 'error' as const, label: 'Ошибка' },
+}
+
 export function AgentWorld() {
-  const [nodes, setNodes] = useState<NodeT[]>([
-    { id: 'n1', x: 40, y: 150, type: 'trigger', title: 'Новое письмо' },
-    { id: 'n2', x: 300, y: 60, type: 'rag', title: 'Поиск в FAQ' },
-    { id: 'n3', x: 300, y: 250, type: 'agent', title: 'Классификатор' },
-    { id: 'n4', x: 560, y: 150, type: 'agent', title: 'Агент-ответчик' },
-    { id: 'n5', x: 820, y: 80, type: 'output', title: 'Ответ клиенту' },
-    { id: 'n6', x: 820, y: 240, type: 'tool', title: 'Задача в Jira' },
-  ])
-  const [edges, setEdges] = useState<[string, string][]>([
-    ['n1', 'n2'], ['n1', 'n3'], ['n2', 'n4'], ['n3', 'n4'], ['n4', 'n5'], ['n4', 'n6'],
-  ])
-  const [sel, setSel] = useState<string | null>('n4')
+  const [flows, setFlows] = useState<Flow[]>(loadFlows)
+  const [editing, setEditing] = useState<Flow | null>(null)
+  const [q, setQ] = useState('')
+  const [filter, setFilter] = useState<'all' | Flow['status']>('all')
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('hub.flows', JSON.stringify(flows))
+    } catch {
+      /* ignore */
+    }
+  }, [flows])
+
+  if (editing)
+    return (
+      <AgentEditor
+        flow={editing}
+        onBack={() => setEditing(null)}
+        onSave={(f) => {
+          setFlows((xs) => (xs.some((x) => x.id === f.id) ? xs.map((x) => (x.id === f.id ? f : x)) : [f, ...xs]))
+          setEditing(null)
+        }}
+      />
+    )
+
+  const create = () =>
+    setEditing({
+      id: 'f' + Date.now(), name: 'Новый агент', desc: 'Workflow без описания', status: 'stopped', trigger: 'Вручную', runs: 0, success: 0, last: '—',
+      nodes: [{ id: 'n1', x: 40, y: 200, type: 'trigger', title: 'Триггер' }], edges: [],
+    })
+
+  const list = flows.filter((f) => (filter === 'all' || f.status === filter) && f.name.toLowerCase().includes(q.toLowerCase()))
+  const active = flows.filter((f) => f.status === 'running').length
+  const runs = flows.reduce((a, f) => a + f.runs, 0)
+
+  return (
+    <>
+      <PageHeader
+        title="Agent World"
+        subtitle="Ваши AI-агенты и workflow. Запускайте по триггеру, расписанию или через API — и следите за их работой."
+        icon={Workflow}
+        actions={<button onClick={create} className="btn-primary"><Plus className="h-4 w-4" /> Добавить агента</button>}
+      />
+      <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <Stat label="Агентов работает" value={`${active} из ${flows.length}`} />
+        <Stat label="Запусков всего" value={runs.toLocaleString('ru-RU')} delta="+14%" />
+        <Stat label="Успешных" value="97.1%" delta="+0.6%" />
+        <Stat label="Среднее время" value="4.2 с" delta="-0.3 с" />
+      </div>
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="relative max-w-xs flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+          <input className="input pl-9" placeholder="Поиск агентов" value={q} onChange={(e) => setQ(e.target.value)} />
+        </div>
+        <Tabs value={filter} onChange={setFilter} tabs={[{ id: 'all', label: 'Все' }, { id: 'running', label: 'Работают' }, { id: 'stopped', label: 'Остановлены' }, { id: 'error', label: 'С ошибкой' }]} />
+      </div>
+      {list.length === 0 ? (
+        <Empty icon={Workflow} title="Агентов нет" text="Создайте первый workflow в визуальном редакторе." action={<button onClick={create} className="btn-primary"><Plus className="h-4 w-4" /> Добавить агента</button>} />
+      ) : (
+        <div className="space-y-3">
+          {list.map((f) => (
+            <div key={f.id} onClick={() => setEditing(f)} className="card flex cursor-pointer flex-col gap-4 p-5 transition hover:border-white/15 lg:flex-row lg:items-center">
+              <div className="flex min-w-0 flex-1 items-center gap-4">
+                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-violet-500/10"><Workflow className="h-5 w-5 text-violet-300" /></div>
+                <div className="min-w-0">
+                  <div className="truncate font-medium text-white">{f.name}</div>
+                  <div className="mt-0.5 truncate text-sm text-slate-500">{f.desc}</div>
+                  <div className="mt-2 flex items-center gap-1">
+                    {f.nodes.slice(0, 7).map((n, i) => {
+                      const t = nodeTypes[n.type]
+                      return (
+                        <span key={n.id} className="flex items-center gap-1">
+                          {i > 0 && <ChevronRight className="h-3 w-3 text-slate-600" />}
+                          <span title={n.title} className="grid h-6 w-6 place-items-center rounded-md" style={{ background: t.color + '22' }}><t.icon className="h-3.5 w-3.5" style={{ color: t.color }} /></span>
+                        </span>
+                      )
+                    })}
+                    <span className="ml-2 truncate text-xs text-slate-500">· {f.trigger}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="grid shrink-0 grid-cols-3 gap-4 text-sm lg:w-72">
+                <div><div className="text-xs text-slate-500">Запуски</div><div className="tabular-nums text-white">{f.runs.toLocaleString('ru-RU')}</div></div>
+                <div><div className="text-xs text-slate-500">Успешно</div><div className={cx('tabular-nums', f.success >= 95 ? 'text-emerald-400' : f.runs ? 'text-amber-400' : 'text-slate-500')}>{f.runs ? `${f.success}%` : '—'}</div></div>
+                <div><div className="text-xs text-slate-500">Последний</div><div className="truncate text-slate-300">{f.last}</div></div>
+              </div>
+              <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
+                <span className="w-24"><StatusDot status={flowStatus[f.status].dot} /></span>
+                <Toggle on={f.status === 'running'} onChange={(v) => setFlows((xs) => xs.map((x) => (x.id === f.id ? { ...x, status: v ? 'running' : 'stopped' } : x)))} />
+                <button onClick={() => setEditing(f)} className="btn-ghost px-3 py-1.5 text-xs">Открыть</button>
+                <button onClick={() => setFlows((xs) => xs.filter((x) => x.id !== f.id))} title="Удалить" className="rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-rose-400"><Trash2 className="h-4 w-4" /></button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  )
+}
+
+function AgentEditor({ flow, onBack, onSave }: { flow: Flow; onBack: () => void; onSave: (f: Flow) => void }) {
+  const [name, setName] = useState(flow.name)
+  const [nodes, setNodes] = useState<NodeT[]>(flow.nodes)
+  const [edges, setEdges] = useState<[string, string][]>(flow.edges)
+  const [sel, setSel] = useState<string | null>(flow.nodes.find((n) => n.type === 'agent')?.id ?? flow.nodes[0]?.id ?? null)
   const [running, setRunning] = useState(-1)
   const drag = useRef<{ id: string; dx: number; dy: number } | null>(null)
   const W = 200, H = 64
@@ -462,17 +628,20 @@ export function AgentWorld() {
   }
   const add = (type: string) => {
     const id = 'n' + Date.now()
-    setNodes((ns) => [...ns, { id, x: 120 + Math.random() * 400, y: 340 + Math.random() * 40, type, title: nodeTypes[type].label }])
-    if (sel) setEdges((es) => [...es, [sel, id]])
+    const base = nodes.find((n) => n.id === sel) ?? nodes[nodes.length - 1]
+    const kids = base ? edges.filter(([a]) => a === base.id).length : 0
+    const x = base ? Math.min(base.x + 260, 880) : 40
+    const y = base ? Math.min(base.y + kids * 110, 440) : 200
+    setNodes((ns) => [...ns, { id, x, y, type, title: nodeTypes[type].label }])
+    if (base) setEdges((es) => [...es, [base.id, id]])
     setSel(id)
   }
   const run = () => {
-    const order = ['n1', 'n2', 'n3', 'n4', 'n5', 'n6']
     let i = 0
     setRunning(0)
     const t = setInterval(() => {
       i++
-      if (i > order.length) {
+      if (i > nodes.length) {
         clearInterval(t)
         setRunning(-1)
       } else setRunning(i)
@@ -483,12 +652,16 @@ export function AgentWorld() {
 
   return (
     <>
-      <PageHeader
-        title="Agent World"
-        subtitle="Собирайте workflow из агентов, инструментов и условий. Запускайте по триггеру, расписанию или через API."
-        icon={Workflow}
-        actions={<><button className="btn-ghost"><Save className="h-4 w-4" /> Сохранить</button><button onClick={run} className="btn-primary"><Play className="h-4 w-4" /> Запустить</button></>}
-      />
+      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex min-w-0 items-center gap-3">
+          <button onClick={onBack} className="btn-ghost px-3"><ArrowLeft className="h-4 w-4" /> Все агенты</button>
+          <input value={name} onChange={(e) => setName(e.target.value)} className="min-w-0 flex-1 rounded-lg border border-transparent bg-transparent px-2 py-1 text-2xl font-semibold tracking-tight text-white outline-none hover:border-white/10 focus:border-violet-500/50" />
+        </div>
+        <div className="flex gap-2">
+          <button onClick={() => onSave({ ...flow, name: name || 'Без названия', nodes, edges, trigger: nodes.find((n) => n.type === 'trigger' || n.type === 'schedule')?.title ?? flow.trigger })} className="btn-ghost"><Save className="h-4 w-4" /> Сохранить</button>
+          <button onClick={run} className="btn-primary"><Play className="h-4 w-4" /> Запустить</button>
+        </div>
+      </div>
       <div className="grid gap-4 xl:grid-cols-[200px_1fr_280px]">
         <Card title="Блоки" className="p-4">
           <div className="grid grid-cols-2 gap-2 xl:grid-cols-1">
