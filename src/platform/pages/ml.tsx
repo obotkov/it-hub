@@ -12,7 +12,7 @@ export function MlProjects() {
   ]
   return (
     <>
-      <PageHeader title="ML Platform" subtitle="Полный цикл машинного обучения без выхода из интерфейса: данные → эксперименты → обучение → деплой." icon={FlaskConical} actions={<button className="btn-primary"><Plus className="h-4 w-4" /> Новый проект</button>} />
+      <PageHeader title="ML Platform" subtitle="Полный цикл машинного обучения без выхода из интерфейса: данные → обучение → эксперименты → деплой." icon={FlaskConical} actions={<button className="btn-primary"><Plus className="h-4 w-4" /> Новый проект</button>} />
       <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Stat label="Проекты" value="4" icon={FlaskConical} />
         <Stat label="Эксперименты" value="114" delta="+9" icon={Cpu} />
