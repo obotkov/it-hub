@@ -163,7 +163,7 @@ export default function Layout() {
         </div>
       )}
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-16 shrink-0 items-center gap-3 border-b border-white/[0.05] bg-ink-950/80 px-4 backdrop-blur sm:px-6">
+        <header className="relative z-30 flex h-16 shrink-0 items-center gap-3 border-b border-white/[0.05] bg-ink-950 px-4 sm:px-6">
           <button onClick={() => setMobile(true)} className="rounded-lg p-2 text-slate-400 hover:bg-white/10 lg:hidden"><Menu className="h-5 w-5" /></button>
           <CabinetSwitcher />
           {found && (
