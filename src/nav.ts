@@ -1,5 +1,5 @@
 import {
-  Sparkles, MessageSquare, Plug, Puzzle, Library, Workflow, Clapperboard, Laptop,
+  Sparkles, MessageSquare, Wrench, Plug, Puzzle, Library, Workflow, Clapperboard, Laptop,
   BrainCircuit, FlaskConical, Cpu, Server, Rocket,
   BarChart3, Gauge, FileBarChart, MousePointerClick, Filter, Split, FileJson, Smartphone,
   LayoutDashboard, DatabaseZap, Code2, BellRing,
@@ -33,6 +33,7 @@ export const sections: Section[] = [
     tagline: 'LLM-чаты, агенты, MCP и RAG в одном месте',
     items: [
       { path: 'ai/chat', title: 'Чат с LLM', icon: MessageSquare, desc: 'Десятки моделей, файлы и документы в диалоге' },
+      { path: 'ai/pro-chat', title: 'Pro чат', icon: Wrench, desc: 'Чат с MCP, RAG, навыками и инструментами' },
       { path: 'ai/mcp', title: 'MCP Hub', icon: Plug, desc: 'Каталог MCP-серверов для подключения инструментов' },
       { path: 'ai/skills', title: 'Skill Hub', icon: Puzzle, desc: 'Готовые навыки для агентов и ассистентов' },
       { path: 'ai/rag', title: 'RAG Hub', icon: Library, desc: 'Базы знаний из ваших документов' },

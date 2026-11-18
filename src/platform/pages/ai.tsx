@@ -8,7 +8,7 @@ import { Badge, Card, Modal, PageHeader, Table, Tabs, Toggle, cx, StatusDot } fr
 
 /* ------------------------------ Chat ------------------------------ */
 
-const models = [
+export const models = [
   { id: 'claude-opus-5-5', name: 'Claude Opus 5.5', vendor: 'Anthropic', ctx: '1M', tag: 'Лучший' },
   { id: 'claude-sonnet-5-5', name: 'Claude Sonnet 5.5', vendor: 'Anthropic', ctx: '1M' },
   { id: 'gpt', name: 'GPT-5', vendor: 'OpenAI', ctx: '400K' },
@@ -36,7 +36,9 @@ export function Chat() {
   const fileRef = useRef<HTMLInputElement>(null)
   const endRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => endRef.current?.scrollIntoView({ behavior: 'smooth' }), [msgs])
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [msgs])
 
   const send = (e?: FormEvent) => {
     e?.preventDefault()

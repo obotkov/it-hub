@@ -5,6 +5,7 @@ import Layout from './platform/Layout'
 import { useAccount } from './account'
 import { Overview, Soon, Cabinets, Billing } from './platform/pages/misc'
 import { Chat, McpHub, SkillHub, RagHub, AgentWorld, MediaAgents, CodeAgent } from './platform/pages/ai'
+import { ProChat } from './platform/pages/prochat'
 import { MlProjects, MlTraining, MlRegistry } from './platform/pages/ml'
 import { GpuDeploy, GpuPods } from './platform/pages/gpu'
 import { Counters, Reports, Heatmap, Funnels, AbPlatform, RawData, AppTracker } from './platform/pages/analytics'
@@ -36,6 +37,7 @@ export default function App() {
 
         <Route path="ai" element={<Navigate to="chat" replace />} />
         <Route path="ai/chat" element={<Chat />} />
+        <Route path="ai/pro-chat" element={<ProChat />} />
         <Route path="ai/mcp" element={<McpHub />} />
         <Route path="ai/skills" element={<SkillHub />} />
         <Route path="ai/rag" element={<RagHub />} />

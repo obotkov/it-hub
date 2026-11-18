@@ -44,9 +44,15 @@ export function AccountProvider({ children }: { children: ReactNode }) {
   const [cabinets, setCabinets] = useState<Cabinet[]>(() => load('hub.cabinets', defaults))
   const [currentId, setCurrentId] = useState<string>(() => load('hub.current', 'c1'))
 
-  useEffect(() => save('hub.user', user), [user])
-  useEffect(() => save('hub.cabinets', cabinets), [cabinets])
-  useEffect(() => save('hub.current', currentId), [currentId])
+  useEffect(() => {
+    save('hub.user', user)
+  }, [user])
+  useEffect(() => {
+    save('hub.cabinets', cabinets)
+  }, [cabinets])
+  useEffect(() => {
+    save('hub.current', currentId)
+  }, [currentId])
 
   const current = cabinets.find((c) => c.id === currentId) ?? cabinets[0]
 
