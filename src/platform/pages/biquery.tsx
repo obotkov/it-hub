@@ -46,18 +46,19 @@ function isoMsk(t: number) {
   return `${d.getUTCFullYear()}-${pad2(d.getUTCMonth() + 1)}-${pad2(d.getUTCDate())}T${pad2(d.getUTCHours())}:${pad2(d.getUTCMinutes())}:00+03:00`
 }
 
-function makeRows(interval: number): Row[] {
+function makeRows(interval: number, seed = 11): Row[] {
   const n = Math.max(1, Math.floor((21 * 60) / interval))
   const start = Date.UTC(2026, 10, 18, 0, 0) // 03:00 MSK
-  let s = 11
+  let s = seed
   const r = () => ((s = (s * 9301 + 49297) % 233280) / 233280)
+  const k = 0.7 + ((seed * 37) % 60) / 100
   return Array.from({ length: n }, (_, i) => {
     const h = 3 + (i * interval) / 60
     let p = 0.0105 + (h > 9.5 ? ((h - 9.5) / 13.5) * 0.011 : 0)
     if (h >= 5.5 && h < 9.3) p += 0.008 + 0.004 * Math.sin((h - 5.5) * 2.2)
     if (h >= 22.7) p += 0.006
     p += (r() - 0.5) * 0.0022
-    const rids = Math.round((38000 + r() * 6000 + Math.sin(h / 3) * 2500) * (interval / 15))
+    const rids = Math.round((38000 + r() * 6000 + Math.sin(h / 3 + seed) * 2500) * (interval / 15) * k)
     const lost = Math.round(rids * p)
     return { time_dt: isoMsk(start + i * interval * 60e3), rids, rids_not_in_events: lost, percent: +(lost / rids).toFixed(3) }
   })
@@ -65,14 +66,14 @@ function makeRows(interval: number): Row[] {
 
 type Result = { rows: Row[]; ms: number; at: Date }
 
-function runQuery(sql: string, params: Param[], limit: boolean): Result | { error: string } {
+function runQuery(sql: string, params: Param[], limit: boolean, seed = 11): Result | { error: string } {
   const missing = Array.from(sql.matchAll(/\{\{\s*([^}]+?)\s*\}\}/g)).map((m) => m[1]).filter((name) => !params.some((p) => p.name === name))
   if (missing.length) return { error: `Не задан параметр: ${missing.join(', ')}. Добавьте его в «Фильтры».` }
   if (!/^\s*select\b/i.test(sql)) return { error: 'Разрешены только запросы SELECT.' }
   const intervalParam = params.find((p) => p.name === 'Интервал, мин')
   const interval = intervalParam ? Number(intervalParam.value) : 15
   if (!Number.isFinite(interval) || interval < 1 || interval > 720) return { error: 'Параметр «Интервал, мин» должен быть числом от 1 до 720.' }
-  let rows = makeRows(interval)
+  let rows = makeRows(interval, seed)
   if (limit) rows = rows.slice(0, 1000)
   return { rows, ms: 4000 + Math.round(Math.random() * 2500), at: new Date() }
 }
@@ -212,14 +213,14 @@ function TimeChart({ rows, metric, type, height = 520 }: { rows: Row[]; metric: 
   const span = maxV - minV || 1
   const lo = Math.max(0, minV - span * 0.05)
   const hi = maxV + span * 0.08
-  const pad = { l: 64, r: 16, t: 16, b: 56 }
+  const pad = { l: 76, r: 16, t: 16, b: 56 }
   const iw = Math.max(10, w - pad.l - pad.r)
   const ih = height - pad.t - pad.b
   const n = rows.length
   const x = (i: number) => pad.l + (n === 1 ? iw / 2 : (i * iw) / (n - 1))
   const y = (v: number) => pad.t + ih * (1 - (v - lo) / (hi - lo))
   const ticks = Array.from({ length: 6 }, (_, i) => lo + ((hi - lo) * i) / 5)
-  const yfmt = (v: number) => (isPct ? `${(v * 100).toFixed(1).replace('.', ',')} %` : v >= 1000 ? `${(v / 1000).toFixed(0)} тыс.` : v.toFixed(0))
+  const yfmt = (v: number) => (isPct ? `${(v * 100).toFixed(1).replace('.', ',')} %` : v >= 1000 ? `${(v / 1000).toFixed(v >= 10000 ? 0 : 1).replace('.', ',')} тыс.` : v.toFixed(0))
   const labelEvery = Math.max(1, Math.ceil(n / Math.max(2, Math.floor(iw / 84))))
   const d = vals.map((v, i) => `${i ? 'L' : 'M'}${x(i)},${y(v)}`).join(' ')
   const color = '#5b8db8'
@@ -377,22 +378,19 @@ function FiltersPanel({ params, setParams }: { params: Param[]; setParams: (p: P
 
 /* ============================== page ============================== */
 
-export function BiQueries() {
-  const [title, setTitle] = useState('Потерянные события, мониторинг 15 мин')
+function QueryEditor({ q, onBack, onSave }: { q: Query; onBack: (q: Query) => void; onSave: (q: Query) => void }) {
+  const [title, setTitle] = useState(q.title)
   const [editTitle, setEditTitle] = useState(false)
-  const [desc, setDesc] = useState('')
+  const [desc, setDesc] = useState(q.desc)
   const [editDesc, setEditDesc] = useState(false)
-  const [star, setStar] = useState(false)
-  const [source, setSource] = useState('Datalake')
-  const [sql, setSql] = useState(DEFAULT_SQL)
-  const [params, setParams] = useState<Param[]>([{ id: 'p1', name: 'Интервал, мин', type: 'Число', value: '15' }])
-  const [result, setResult] = useState<Result>(() => ({ rows: makeRows(15), ms: 5318, at: new Date() }))
+  const [star, setStar] = useState(q.star)
+  const [source, setSource] = useState(q.source)
+  const [sql, setSql] = useState(q.sql)
+  const [params, setParams] = useState<Param[]>(q.params)
+  const [result, setResult] = useState<Result>(() => ({ rows: makeRows(intervalOf(q.params), q.seed), ms: 5318, at: new Date() }))
   const [auto, setAuto] = useState(false)
-  const [tabs, setTabs] = useState<ChartTab[]>([
-    { id: 't1', title: 'Диаграмма', type: 'area', metric: 'percent' },
-    { id: 't2', title: 'Диаграмма', type: 'bar', metric: 'rids_not_in_events' },
-  ])
-  const [tab, setTab] = useState('t1')
+  const [tabs, setTabs] = useState<ChartTab[]>(q.tabs)
+  const [tab, setTab] = useState(q.tabs[0]?.id ?? '')
   const [tabMenu, setTabMenu] = useState<string | null>(null)
   const [view, setView] = useState<'chart' | 'sql'>('chart')
   const [fieldQ, setFieldQ] = useState('')
@@ -402,7 +400,7 @@ export function BiQueries() {
   const [more, setMore] = useState(false)
 
   const rerun = () => {
-    const r = runQuery(sql, params, true)
+    const r = runQuery(sql, params, true, q.seed)
     if ('rows' in r) setResult(r)
   }
   useEffect(() => {
@@ -410,6 +408,9 @@ export function BiQueries() {
     const t = setInterval(rerun, 60000)
     return () => clearInterval(t)
   }, [auto, sql, params]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const changed = () => JSON.stringify([title, desc, star, source, sql, params, tabs]) !== JSON.stringify([q.title, q.desc, q.star, q.source, q.sql, q.params, q.tabs])
+  const snapshot = (): Query => (changed() ? { ...q, title: title || 'Без названия', desc, star, source, sql, params, tabs, updated: new Date().toISOString() } : q)
 
   const flash = (m: string) => {
     setSaved(m)
@@ -420,6 +421,7 @@ export function BiQueries() {
     return (
       <SqlView
         initialSql={sql}
+        seed={q.seed}
         source={source}
         setSource={setSource}
         params={params}
@@ -440,7 +442,7 @@ export function BiQueries() {
     <div className="-m-4 flex min-h-[calc(100vh-4rem)] flex-col gap-3 bg-ink-950 p-3 sm:-m-6 lg:-m-8">
       {/* header */}
       <div className="card flex items-center gap-3 px-4 py-3">
-        <button className="rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"><ArrowLeft className="h-5 w-5" /></button>
+        <button onClick={() => onBack(snapshot())} title="К списку запросов" className="rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"><ArrowLeft className="h-5 w-5" /></button>
         {editTitle ? (
           <input autoFocus value={title} onChange={(e) => setTitle(e.target.value)} onBlur={() => setEditTitle(false)} onKeyDown={(e) => e.key === 'Enter' && setEditTitle(false)} className="input max-w-md py-1 text-lg font-semibold" />
         ) : (
@@ -452,9 +454,9 @@ export function BiQueries() {
         {editDesc ? (
           <input autoFocus value={desc} placeholder="Описание" onChange={(e) => setDesc(e.target.value)} onBlur={() => setEditDesc(false)} onKeyDown={(e) => e.key === 'Enter' && setEditDesc(false)} className="input w-64 py-1 text-sm" />
         ) : (
-          <Chip onClick={() => setEditDesc(true)} className={cx('shrink-0 whitespace-nowrap', desc ? '' : 'bg-amber-500/10 text-amber-500')}><BookOpen className="h-3.5 w-3.5" /> {desc || 'Нет описания'}</Chip>
+          <Chip onClick={() => setEditDesc(true)} className={cx('shrink-0 whitespace-nowrap', desc ? '' : 'bg-amber-500/10 text-amber-500')}><BookOpen className="h-3.5 w-3.5" /> {desc ? (desc.length > 24 ? desc.slice(0, 24) + '…' : desc) : 'Нет описания'}</Chip>
         )}
-        <Chip className="hidden shrink-0 whitespace-nowrap xl:inline-flex"><Eye className="h-3.5 w-3.5" /> 6 за всё время</Chip>
+        <Chip className="hidden shrink-0 whitespace-nowrap xl:inline-flex"><Eye className="h-3.5 w-3.5" /> {q.views} за всё время</Chip>
         <div className="ml-auto flex shrink-0 items-center gap-2">
           {saved && <span className="text-xs text-emerald-400">{saved}</span>}
           <button onClick={() => setAccess(true)} className="btn-ghost"><Lock className="h-4 w-4" /> Доступы</button>
@@ -471,7 +473,7 @@ export function BiQueries() {
               </>
             )}
           </div>
-          <button onClick={() => flash('Сохранено')} className="btn-primary"><Save className="h-4 w-4" /> Сохранить</button>
+          <button onClick={() => { onSave(snapshot()); flash('Сохранено') }} className="btn-primary"><Save className="h-4 w-4" /> Сохранить</button>
         </div>
       </div>
 
@@ -600,8 +602,9 @@ const schema = [
   { name: 'mart', tables: [{ name: 'revenue_daily', cols: ['day', 'revenue', 'orders'] }] },
 ]
 
-function SqlView({ initialSql, source, setSource, params, setParams, onCancel, onApply }: {
+function SqlView({ initialSql, seed, source, setSource, params, setParams, onCancel, onApply }: {
   initialSql: string
+  seed: number
   source: string
   setSource: (s: string) => void
   params: Param[]
@@ -627,7 +630,7 @@ function SqlView({ initialSql, source, setSource, params, setParams, onCancel, o
     setBusy(true)
     setErr(null)
     setTimeout(() => {
-      const r = runQuery(sql, params, limit)
+      const r = runQuery(sql, params, limit, seed)
       if ('error' in r) {
         setErr(r.error)
         setRes(null)
@@ -886,5 +889,253 @@ function Preview({ rows }: { rows: Row[] }) {
         <button disabled={cur === pages} onClick={() => setPage(cur + 1)} className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 hover:bg-white/5 disabled:opacity-30"><ChevronRight className="h-4 w-4" /></button>
       </div>
     </div>
+  )
+}
+
+/* ============================== queries list ============================== */
+
+type Query = {
+  id: string
+  title: string
+  desc: string
+  source: string
+  sql: string
+  params: Param[]
+  tabs: ChartTab[]
+  author: string
+  updated: string
+  views: number
+  star: boolean
+  seed: number
+}
+
+function intervalOf(params: Param[]) {
+  const v = Number(params.find((p) => p.name === 'Интервал, мин')?.value)
+  return Number.isFinite(v) && v >= 1 && v <= 720 ? v : 15
+}
+
+const ago = (h: number) => new Date(Date.now() - h * 3600e3).toISOString()
+
+const simpleSql = (metric: string, table: string) => `SELECT
+    toStartOfInterval(event_time, interval {{Интервал, мин}} minute) as time_dt,
+    uniqExact(user_id) as rids,
+    countIf(${metric}) as rids_not_in_events,
+    rids_not_in_events / rids as percent
+FROM ${table}
+WHERE event_date >= today() - 1
+GROUP BY time_dt
+ORDER BY time_dt`
+
+const interval = (v: string): Param[] => [{ id: 'p1', name: 'Интервал, мин', type: 'Число', value: v }]
+
+const DEMO_QUERIES: Query[] = [
+  {
+    id: 'q1', title: 'Потерянные события, мониторинг 15 мин', desc: '', source: 'Datalake', sql: DEFAULT_SQL, params: interval('15'),
+    tabs: [{ id: 't1', title: 'Диаграмма', type: 'area', metric: 'percent' }, { id: 't2', title: 'Диаграмма', type: 'bar', metric: 'rids_not_in_events' }],
+    author: 'Вы', updated: ago(2), views: 6, star: true, seed: 11,
+  },
+  {
+    id: 'q2', title: 'Ошибки оплаты по часам', desc: 'Доля неуспешных платежей от всех попыток', source: 'events-ch', sql: simpleSql("event_name = 'payment_failed'", 'events.payments'), params: interval('60'),
+    tabs: [{ id: 't1', title: 'Доля ошибок', type: 'line', metric: 'percent' }],
+    author: 'Анна Смирнова', updated: ago(20), views: 41, star: false, seed: 23,
+  },
+  {
+    id: 'q3', title: 'Брошенные корзины', desc: 'Корзины без заказа в течение 30 минут', source: 'Datalake', sql: simpleSql("event_name = 'cart_abandoned'", 'events.ecom_events'), params: interval('30'),
+    tabs: [{ id: 't1', title: 'Корзины', type: 'bar', metric: 'rids_not_in_events' }, { id: 't2', title: 'Доля', type: 'area', metric: 'percent' }],
+    author: 'Илья Петров', updated: ago(30), views: 128, star: true, seed: 37,
+  },
+  {
+    id: 'q4', title: 'Отказы на мобильном вебе', desc: 'Сессии с одним просмотром', source: 'wildmetrics', sql: simpleSql('pageviews = 1', 'wm.sessions'), params: interval('15'),
+    tabs: [{ id: 't1', title: 'Отказы', type: 'area', metric: 'percent' }],
+    author: 'Вы', updated: ago(52), views: 17, star: false, seed: 5,
+  },
+  {
+    id: 'q5', title: 'Таймауты API поиска', desc: 'Запросы дольше 2 секунд', source: 'prod-postgres', sql: simpleSql('duration_ms > 2000', 'logs.search_requests'), params: interval('15'),
+    tabs: [{ id: 't1', title: 'Таймауты', type: 'line', metric: 'rids_not_in_events' }],
+    author: 'Мария Кузнецова', updated: ago(120), views: 9, star: false, seed: 61,
+  },
+]
+
+const loadQueries = (): Query[] => {
+  try {
+    return JSON.parse(localStorage.getItem('hub.queries') || 'null') ?? DEMO_QUERIES
+  } catch {
+    return DEMO_QUERIES
+  }
+}
+
+const fmtUpdated = (iso: string) => {
+  const h = (Date.now() - new Date(iso).getTime()) / 3600e3
+  if (h < 1 / 60) return 'только что'
+  if (h < 1) return `${Math.round(h * 60)} мин назад`
+  if (h < 24) return `${Math.round(h)} ч назад`
+  const d = new Date(iso)
+  return `${pad2(d.getDate())}.${pad2(d.getMonth() + 1)}.${d.getFullYear()}`
+}
+
+const chartIcon = { area: AreaChart, line: LineIcon, bar: BarChart3 }
+
+function Spark({ q }: { q: Query }) {
+  const metric = q.tabs[0]?.metric ?? 'percent'
+  const vals = makeRows(intervalOf(q.params), q.seed).map((r) => r[metric] as number)
+  const step = Math.max(1, Math.floor(vals.length / 40))
+  const v = vals.filter((_, i) => i % step === 0)
+  const min = Math.min(...v)
+  const max = Math.max(...v)
+  const d = v.map((x, i) => `${i ? 'L' : 'M'}${(i / (v.length - 1)) * 100},${28 - ((x - min) / (max - min || 1)) * 24}`).join(' ')
+  return (
+    <svg viewBox="0 0 100 30" preserveAspectRatio="none" className="h-8 w-28">
+      <path d={`${d} L100,30 L0,30 Z`} fill="#5b8db8" opacity={0.18} />
+      <path d={d} fill="none" stroke="#5b8db8" strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
+    </svg>
+  )
+}
+
+export function BiQueries() {
+  const [queries, setQueries] = useState<Query[]>(loadQueries)
+  const [open, setOpen] = useState<Query | null>(null)
+  const [tab, setTab] = useState<'all' | 'mine' | 'star'>('all')
+  const [q, setQ] = useState('')
+  const [src, setSrc] = useState('')
+  const [menu, setMenu] = useState<string | null>(null)
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('hub.queries', JSON.stringify(queries))
+    } catch {
+      /* ignore */
+    }
+  }, [queries])
+
+  const upsert = (x: Query) => setQueries((xs) => (xs.some((y) => y.id === x.id) ? xs.map((y) => (y.id === x.id ? x : y)) : [x, ...xs]))
+
+  if (open)
+    return (
+      <QueryEditor
+        key={open.id}
+        q={open}
+        onSave={upsert}
+        onBack={(x) => {
+          upsert(x)
+          setOpen(null)
+        }}
+      />
+    )
+
+  const create = () =>
+    setOpen({
+      id: 'q' + Date.now(), title: 'Новый запрос', desc: '', source: 'Datalake', sql: simpleSql('1', 'events.ecom_events'), params: interval('15'),
+      tabs: [{ id: 't1', title: 'Диаграмма', type: 'line', metric: 'rids' }], author: 'Вы', updated: new Date().toISOString(), views: 0, star: false,
+      seed: Math.floor(Math.random() * 90) + 3,
+    })
+
+  const sources = Array.from(new Set(queries.map((x) => x.source)))
+  const list = queries
+    .filter((x) => (tab === 'mine' ? x.author === 'Вы' : tab === 'star' ? x.star : true))
+    .filter((x) => !src || x.source === src)
+    .filter((x) => !q || `${x.title} ${x.desc} ${x.author}`.toLowerCase().includes(q.toLowerCase()))
+    .sort((a, b) => b.updated.localeCompare(a.updated))
+
+  const counts = { all: queries.length, mine: queries.filter((x) => x.author === 'Вы').length, star: queries.filter((x) => x.star).length }
+
+  return (
+    <>
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-gradient-to-br from-cyan-500/20 to-blue-500/10"><Code2 className="h-5 w-5 text-cyan-300" /></div>
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight text-white">Запросы</h1>
+            <p className="text-sm text-slate-400">SQL-запросы к источникам данных и диаграммы на их основе</p>
+          </div>
+        </div>
+        <button onClick={create} className="btn-primary"><Plus className="h-4 w-4" /> Новый запрос</button>
+      </div>
+
+      <div className="mb-4 flex flex-wrap gap-2">
+        {([['all', 'Все'], ['mine', 'Мои'], ['star', 'Избранные']] as const).map(([id, l]) => (
+          <button key={id} onClick={() => setTab(id)} className={cx('rounded-xl border px-3.5 py-2 text-sm transition', tab === id ? 'border-violet-500/60 bg-violet-500/10 text-violet-200' : 'border-transparent bg-white/[0.04] text-slate-300 hover:bg-white/[0.07]')}>
+            {l} <span className="ml-1 text-slate-500">{counts[id]}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="card overflow-hidden">
+        <div className="flex flex-col gap-2 border-b border-white/[0.06] p-3 sm:flex-row">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+            <input className="input pl-9" placeholder="Поиск по названию, описанию, автору" value={q} onChange={(e) => setQ(e.target.value)} />
+          </div>
+          <select className="input sm:w-56" value={src} onChange={(e) => setSrc(e.target.value)}>
+            <option value="">Все источники</option>
+            {sources.map((x) => <option key={x}>{x}</option>)}
+          </select>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[900px] text-left text-sm">
+            <thead>
+              <tr className="border-b border-white/[0.06] text-[13px] text-slate-400">
+                <th className="w-10 px-3 py-3" />
+                <th className="px-3 py-3 font-medium">Название</th>
+                <th className="px-3 py-3 font-medium">Источник</th>
+                <th className="px-3 py-3 font-medium">Диаграммы</th>
+                <th className="px-3 py-3 font-medium">Превью</th>
+                <th className="px-3 py-3 font-medium">Автор</th>
+                <th className="px-3 py-3 font-medium">Изменён</th>
+                <th className="px-3 py-3 font-medium"><Eye className="h-4 w-4" /></th>
+                <th className="w-12 px-3 py-3" />
+              </tr>
+            </thead>
+            <tbody>
+              {list.map((x) => (
+                <tr key={x.id} onClick={() => setOpen(x)} className="cursor-pointer border-b border-white/[0.04] transition hover:bg-white/[0.02]">
+                  <td className="px-3 py-3" onClick={(e) => e.stopPropagation()}>
+                    <button onClick={() => upsert({ ...x, star: !x.star })} title="Избранное" className="rounded p-1 text-slate-500 hover:text-amber-400">
+                      <Star className={cx('h-4 w-4', x.star && 'fill-amber-400 text-amber-400')} />
+                    </button>
+                  </td>
+                  <td className="max-w-[340px] px-3 py-3">
+                    <div className="truncate font-medium text-white">{x.title}</div>
+                    <div className="truncate text-xs text-slate-500">{x.desc || 'Нет описания'}</div>
+                  </td>
+                  <td className="px-3 py-3">
+                    <span className="inline-flex items-center gap-1.5 text-slate-300"><Database className="h-3.5 w-3.5 text-amber-400" /> {x.source}</span>
+                  </td>
+                  <td className="px-3 py-3">
+                    <div className="flex items-center gap-1">
+                      {x.tabs.map((t) => {
+                        const I = chartIcon[t.type]
+                        return <span key={t.id} title={t.title} className="grid h-6 w-6 place-items-center rounded-md bg-white/[0.05] text-slate-300"><I className="h-3.5 w-3.5" /></span>
+                      })}
+                    </div>
+                  </td>
+                  <td className="px-3 py-2"><Spark q={x} /></td>
+                  <td className="whitespace-nowrap px-3 py-3 text-slate-300">{x.author}</td>
+                  <td className="whitespace-nowrap px-3 py-3 text-slate-400">{fmtUpdated(x.updated)}</td>
+                  <td className="px-3 py-3 tabular-nums text-slate-400">{x.views}</td>
+                  <td className="px-3 py-3" onClick={(e) => e.stopPropagation()}>
+                    <div className="relative">
+                      <button onClick={() => setMenu(menu === x.id ? null : x.id)} className="rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"><MoreVertical className="h-4 w-4" /></button>
+                      {menu === x.id && (
+                        <>
+                          <div className="fixed inset-0 z-30" onClick={() => setMenu(null)} />
+                          <div className="absolute right-0 z-40 mt-1 w-44 rounded-xl border border-white/10 bg-ink-850 p-1 shadow-2xl">
+                            <button onClick={() => { setOpen(x); setMenu(null) }} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-white/5"><Pencil className="h-4 w-4" /> Открыть</button>
+                            <button onClick={() => { upsert({ ...x, id: 'q' + Date.now(), title: x.title + ' (копия)', author: 'Вы', views: 0, star: false, updated: new Date().toISOString() }); setMenu(null) }} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-white/5"><Copy className="h-4 w-4" /> Дублировать</button>
+                            <button onClick={() => { setQueries((xs) => xs.filter((y) => y.id !== x.id)); setMenu(null) }} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-rose-300 hover:bg-white/5"><Trash2 className="h-4 w-4" /> Удалить</button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {list.length === 0 && (
+                <tr><td colSpan={9} className="px-4 py-16 text-center text-sm text-slate-500">Запросов не найдено</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
   )
 }
