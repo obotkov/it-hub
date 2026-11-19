@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, ArrowRight, Check, Copy, Diamond, GitFork, Grid3x3, Layers, Plus, Search, Upload } from 'lucide-react'
-import { Card, Code, cx } from '../../components/ui'
-import { LineChart, series } from '../../components/charts'
+import { ReactNode, useEffect, useMemo, useState } from 'react'
+import { ArrowLeft, ArrowRight, Check, Copy, Diamond, GitFork, Grid3x3, Layers, Plus, RefreshCw, Search, Upload } from 'lucide-react'
+import { Card, Modal, cx } from '../../components/ui'
+import { series } from '../../components/charts'
 
 type Env = 'Production' | 'Development'
 type Health = 'Healthy' | 'Degraded' | 'Down'
@@ -17,6 +17,7 @@ type Service = {
   rps: number
   p99: number
   rev: number
+  history?: { rev: number; file: string; at: string }[]
 }
 
 const TEAMS = [
@@ -223,65 +224,414 @@ function ServicesList({ services, onOpen, onCreate }: { services: Service[]; onO
   )
 }
 
-function ServiceView({ s, onBack }: { s: Service; onBack: () => void }) {
+type Field = { name: string; type: string; desc: string }
+type Details = {
+  desc: string
+  task: string
+  mode: 'Single Model' | 'Ensemble'
+  inputs: Field[]
+  outputs: Field[]
+  cpu: string
+  ram: string
+  replicas: number
+  smoke: 'PASSED' | 'FAILED'
+  correctness: 'VERIFIED' | 'NOT_VERIFIED'
+  errorRate: string
+  uptime: string
+}
+
+const DETAILS: Record<string, Partial<Details>> = {
+  'fraud-scoring': {
+    desc: 'Определение риска операции на основе табличных признаков.',
+    task: 'Binary classification',
+    inputs: [
+      { name: 'amount', type: 'float32', desc: 'Сумма операции' },
+      { name: 'merchant_category', type: 'string', desc: 'Категория торговой точки' },
+      { name: 'country_code', type: 'string', desc: 'Код страны' },
+    ],
+    outputs: [{ name: 'fraud_probability', type: 'float32', desc: 'Вероятность целевого класса' }],
+  },
+  'product-classifier': {
+    desc: 'Классификация товаров по категориям каталога по названию и описанию.',
+    task: 'Multiclass classification',
+    cpu: '1× T4 GPU',
+    ram: '16 GiB',
+    correctness: 'VERIFIED',
+    inputs: [
+      { name: 'title', type: 'string', desc: 'Название товара' },
+      { name: 'description', type: 'string', desc: 'Описание товара' },
+    ],
+    outputs: [
+      { name: 'category_id', type: 'int64', desc: 'ID категории' },
+      { name: 'score', type: 'float32', desc: 'Уверенность модели' },
+    ],
+  },
+  'risk-ensemble': {
+    desc: 'Ансамбль моделей риска: градиентный бустинг + нейросеть по последовательностям.',
+    task: 'Binary classification',
+    mode: 'Ensemble',
+    replicas: 1,
+  },
+  'ranking-v2': {
+    desc: 'Ранжирование товаров в ленте рекомендаций.',
+    task: 'Learning to rank',
+    replicas: 8,
+    cpu: '8 CPU',
+    ram: '16 GiB',
+    correctness: 'VERIFIED',
+    inputs: [
+      { name: 'user_id', type: 'int64', desc: 'Пользователь' },
+      { name: 'item_ids', type: 'int64[]', desc: 'Кандидаты для ранжирования' },
+    ],
+    outputs: [{ name: 'scores', type: 'float32[]', desc: 'Скоры кандидатов' }],
+  },
+  'fraud-experimental': { desc: 'Экспериментальная модель антифрода на новых признаках.', task: 'Binary classification', smoke: 'PASSED', errorRate: '1.4%', uptime: '98.70%', replicas: 1 },
+  'search-quality': {
+    desc: 'Оценка релевантности поисковой выдачи.',
+    task: 'Regression',
+    cpu: '1× T4 GPU',
+    ram: '16 GiB',
+    inputs: [
+      { name: 'query', type: 'string', desc: 'Поисковый запрос' },
+      { name: 'doc_id', type: 'int64', desc: 'Документ' },
+    ],
+    outputs: [{ name: 'relevance', type: 'float32', desc: 'Оценка релевантности' }],
+  },
+}
+
+function details(s: Service): Details {
+  const d = DETAILS[s.name.replace(/-copy(-\d+)?$/, '')] ?? {}
+  return {
+    desc: 'Inference-сервис, созданный через платформу.',
+    task: 'Binary classification',
+    mode: ext(s.file) === 'zip' ? 'Ensemble' : 'Single Model',
+    inputs: [{ name: 'features', type: 'float32[]', desc: 'Вектор признаков' }],
+    outputs: [{ name: 'prediction', type: 'float32', desc: 'Предсказание модели' }],
+    cpu: '4 CPU',
+    ram: '8 GiB',
+    replicas: s.env === 'Production' ? 3 : 1,
+    smoke: 'PASSED',
+    correctness: 'NOT_VERIFIED',
+    errorRate: '0.02%',
+    uptime: '99.98%',
+    ...d,
+  }
+}
+
+const envShort = (e: Env) => (e === 'Production' ? 'prod' : 'dev')
+const fmtDate = (iso?: string) => {
+  const d = iso ? new Date(iso) : new Date('2026-11-17T17:28:00')
+  return `${d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }).replace('.', '')}, ${d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`
+}
+
+function Eyebrow({ children }: { children: ReactNode }) {
+  return (
+    <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-violet-400">
+      <span className="h-1.5 w-1.5 rounded-full bg-violet-400" /> {children}
+    </div>
+  )
+}
+
+function Pill({ tone, children }: { tone: 'green' | 'amber' | 'blue' | 'slate'; children: ReactNode }) {
+  const c = { green: 'bg-emerald-500/10 text-emerald-400', amber: 'bg-amber-500/10 text-amber-400', blue: 'bg-blue-500/10 text-blue-400', slate: 'bg-white/[0.06] text-slate-400' }[tone]
+  return <span className={cx('inline-flex whitespace-nowrap rounded-lg px-2.5 py-1 text-xs font-medium', c)}>{children}</span>
+}
+
+function KV({ items }: { items: [string, ReactNode][] }) {
+  return (
+    <dl className="grid grid-cols-2 gap-x-6 gap-y-5">
+      {items.map(([k, v]) => (
+        <div key={k} className="min-w-0">
+          <dt className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">{k}</dt>
+          <dd className="mt-1.5 truncate font-semibold text-white">{v}</dd>
+        </div>
+      ))}
+    </dl>
+  )
+}
+
+function Note({ children }: { children: ReactNode }) {
+  return <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 text-xs leading-relaxed text-slate-400">{children}</div>
+}
+
+function MiniStat({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">
+      <div className="text-lg font-semibold tabular-nums text-white">{value}</div>
+      <div className="mt-1 text-xs text-slate-500">{label}</div>
+    </div>
+  )
+}
+
+function FieldTable({ rows, tone }: { rows: Field[]; tone: 'blue' | 'green' }) {
+  return (
+    <div className="overflow-x-auto rounded-xl border border-white/[0.06]">
+      <table className="w-full text-left text-sm">
+        <thead>
+          <tr className="bg-white/[0.02] text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+            <th className="w-[35%] px-4 py-2.5 font-semibold">Имя</th>
+            <th className="w-[20%] px-4 py-2.5 font-semibold">Тип</th>
+            <th className="px-4 py-2.5 font-semibold">Описание</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((f) => (
+            <tr key={f.name} className="border-t border-white/[0.04]">
+              <td className="px-4 py-3 font-mono font-semibold text-white">{f.name}</td>
+              <td className="px-4 py-3"><Pill tone={tone}>{f.type}</Pill></td>
+              <td className="px-4 py-3 text-slate-400">{f.desc}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+type SvcTab = 'overview' | 'model' | 'tests' | 'monitoring' | 'history'
+
+function ServiceView({ s, onBack, onRedeploy, onClone }: { s: Service; onBack: () => void; onRedeploy: (file: string) => void; onClone: () => void }) {
+  const d = details(s)
+  const [tab, setTab] = useState<SvcTab>('overview')
   const [copied, setCopied] = useState(false)
-  const labels = Array.from({ length: 24 }, (_, i) => `${i}:00`)
-  const revs = Array.from({ length: Math.min(s.rev, 5) }, (_, i) => s.rev - i)
+  const [modal, setModal] = useState(false)
+  const [file, setFile] = useState('')
+  const url = `https://auto-deploy.ai-studio.space/${s.name}`
+  const bars = useMemo(() => series(26, s.rps, s.rps * 0.45, s.rev + s.name.length), [s.rps, s.rev, s.name])
+  const max = Math.max(...bars)
+  const history = s.history?.length ? s.history : [{ rev: s.rev, file: s.file, at: '' }]
+
+  const tabs: { id: SvcTab; label: string }[] = [
+    { id: 'overview', label: 'Обзор' },
+    { id: 'model', label: 'Модель' },
+    { id: 'tests', label: 'Тесты' },
+    { id: 'monitoring', label: 'Мониторинг' },
+    { id: 'history', label: 'История' },
+  ]
+
   return (
     <>
-      <button onClick={onBack} className="mb-4 inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white">
-        <ArrowLeft className="h-4 w-4" /> Все сервисы
-      </button>
-      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-center gap-4">
-          <FormatIcon file={s.file} />
-          <div>
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-2xl font-semibold tracking-tight text-white">{s.name}</h1>
-              <EnvBadge env={s.env} />
-              <HealthDot s={s.status} />
-            </div>
-            <p className="mt-1 text-sm text-slate-400">{s.file} · {s.backend} · {s.team} · v{s.rev}</p>
-          </div>
+      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div className="min-w-0">
+          <button onClick={onBack} className="btn-ghost mb-4 px-3 py-1.5 text-xs">
+            <ArrowLeft className="h-3.5 w-3.5" /> К списку сервисов
+          </button>
+          <Eyebrow>Service details / ML Platform</Eyebrow>
+          <h1 className="truncate text-2xl font-semibold tracking-tight text-white sm:text-3xl">{s.name}</h1>
+          <p className="mt-2 text-sm text-slate-400">{d.mode} · {s.backend} · v{s.rev} · {envShort(s.env)}</p>
         </div>
-        <div className="flex gap-2">
-          <button className="btn-ghost">Откатить ревизию</button>
-          <button className="btn-primary"><Upload className="h-4 w-4" /> Новая ревизия</button>
+        <div className="flex flex-wrap items-center gap-2">
+          <HealthDot s={s.status} />
+          <button onClick={onClone} className="btn-ghost"><Copy className="h-4 w-4" /> Клонировать</button>
+          <button onClick={() => setModal(true)} className="btn-primary"><RefreshCw className="h-4 w-4" /> Изменить модель / Redeploy</button>
         </div>
       </div>
-      <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <SummaryCard label="RPS" value={s.rps} hint="Запросов в секунду, сейчас" />
-        <SummaryCard label="P99, ms" value={s.p99} hint="Задержка 99-го перцентиля" />
-        <SummaryCard label="Реплики" value={s.env === 'Production' ? 6 : 1} hint={s.env === 'Production' ? 'Автомасштабирование 2–12' : 'Фиксированно'} />
-        <SummaryCard label="Ревизия" value={s.rev} hint="Текущая активная версия" />
-      </div>
-      <div className="grid gap-4 lg:grid-cols-3">
-        <Card title="Нагрузка, RPS за 24 часа" className="lg:col-span-2">
-          <LineChart series={[{ name: 'rps', data: series(24, s.rps, s.rps * 0.35, s.rev), color: '#a78bfa' }]} labels={labels} />
-        </Card>
-        <Card title="История ревизий">
-          <div className="space-y-2">
-            {revs.map((r, i) => (
-              <div key={r} className="flex items-center justify-between rounded-xl border border-white/[0.06] px-3 py-2 text-sm">
-                <span className="font-medium text-white">v{r}</span>
-                <span className="text-xs text-slate-500">{i === 0 ? 'активна' : `${i * 4} дн. назад`}</span>
-                {i === 0 ? <Check className="h-4 w-4 text-emerald-400" /> : <button className="text-xs text-violet-400 hover:text-violet-300">Откатить</button>}
+
+      <div className="card overflow-hidden">
+        <div className="flex gap-1 overflow-x-auto border-b border-white/[0.06] px-4">
+          {tabs.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className={cx('relative whitespace-nowrap px-3 py-4 text-sm font-medium transition', tab === t.id ? 'text-violet-400' : 'text-slate-400 hover:text-white')}
+            >
+              {t.label}
+              {tab === t.id && <span className="absolute inset-x-1 bottom-0 h-0.5 rounded-full bg-violet-400" />}
+            </button>
+          ))}
+        </div>
+
+        <div className="p-4 sm:p-5">
+          {tab === 'overview' && (
+            <div className="grid gap-4 lg:grid-cols-[1.6fr_1fr]">
+              <div className="space-y-4">
+                <Card>
+                  <div className="mb-4 flex items-center justify-between gap-2">
+                    <h3 className="text-sm font-semibold text-white">Публичный endpoint</h3>
+                    <Pill tone="green">Stable URL</Pill>
+                  </div>
+                  <div className="theme-fixed rounded-xl bg-[#14111f] p-4 text-slate-300">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Production / development API</div>
+                    <div className="mt-2 break-all font-mono text-sm text-white">{url}</div>
+                    <div className="mt-3 border-t border-white/10 pt-3 text-xs text-slate-400">Нативный маршрут {s.backend}</div>
+                  </div>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <button
+                      onClick={() => {
+                        navigator.clipboard?.writeText(url).catch(() => {})
+                        setCopied(true)
+                        setTimeout(() => setCopied(false), 1500)
+                      }}
+                      className="btn-ghost px-3 py-1.5 text-xs"
+                    >
+                      {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />} {copied ? 'Скопировано' : 'Скопировать адрес'}
+                    </button>
+                    <button onClick={() => setTab('model')} className="btn-ghost px-3 py-1.5 text-xs">Посмотреть контракт</button>
+                  </div>
+                </Card>
+                <Card>
+                  <h3 className="text-sm font-semibold text-white">Описание</h3>
+                  <p className="mt-3 text-sm text-slate-400">{d.desc}</p>
+                  <div className="my-5 h-px bg-white/[0.06]" />
+                  <KV items={[['Тип', d.mode], ['Задача', d.task], ['Backend', s.backend], ['Артефакт', s.file], ['Окружение', s.env], ['Реплики', d.replicas]]} />
+                </Card>
               </div>
-            ))}
-          </div>
-        </Card>
-        <Card title="Вызов сервиса" className="lg:col-span-3">
-          <div className="relative">
-            <Code>{`curl -X POST https://inference.ai-studio.space/v1/${s.name}/predict \\
-  -H "Authorization: Bearer $TOKEN" \\
-  -H "Content-Type: application/json" \\
-  -d '{"inputs": [{"features": [0.42, 1.7, 3]}]}'`}</Code>
-            <button onClick={() => { setCopied(true); setTimeout(() => setCopied(false), 1500) }} className="absolute right-2 top-2 rounded-lg bg-white/5 p-1.5 text-slate-400 hover:text-white">
-              {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+              <div className="space-y-4">
+                <Card>
+                  <h3 className="text-sm font-semibold text-white">Статус</h3>
+                  <div className="mt-3"><HealthDot s={s.status} /></div>
+                  <div className="my-5 h-px bg-white/[0.06]" />
+                  <KV items={[['RPS', fmtN(s.rps)], ['P99 latency', `${s.p99} ms`], ['CPU / GPU', d.cpu], ['RAM', d.ram]]} />
+                </Card>
+                <Card>
+                  <h3 className="text-sm font-semibold text-white">Последнее обновление</h3>
+                  <p className="mt-3 text-sm text-slate-500">{fmtDate(history[0].at)} · v{s.rev}</p>
+                  <div className="mt-4"><Pill tone={d.correctness === 'VERIFIED' ? 'green' : 'amber'}>Correctness: {d.correctness}</Pill></div>
+                  <button onClick={() => setTab('tests')} className="btn-ghost mt-4">Все проверки <ArrowRight className="h-4 w-4" /></button>
+                </Card>
+              </div>
+            </div>
+          )}
+
+          {tab === 'model' && (
+            <div className="grid gap-4 lg:grid-cols-[1.6fr_1fr]">
+              <Card>
+                <h3 className="text-sm font-semibold text-white">Контракт модели и признаки</h3>
+                <p className="mt-1 text-sm text-slate-500">Данные о модели и технический контракт входов и выходов.</p>
+                <h4 className="mb-3 mt-5 text-sm font-semibold text-white">Входы / фичи</h4>
+                <FieldTable rows={d.inputs} tone="blue" />
+                <h4 className="mb-3 mt-6 text-sm font-semibold text-white">Выходы</h4>
+                <FieldTable rows={d.outputs} tone="green" />
+              </Card>
+              <Card className="self-start">
+                <h3 className="mb-5 text-sm font-semibold text-white">Model metadata</h3>
+                <KV items={[['Название', s.name], ['Файл', s.file], ['Формат', ext(s.file)], ['Version', `v${s.rev}`], ['Команда', s.team], ['Режим', d.mode]]} />
+                <div className="my-5 h-px bg-white/[0.06]" />
+                <button onClick={() => setModal(true)} className="btn-primary"><RefreshCw className="h-4 w-4" /> Заменить модель и создать revision</button>
+                <div className="mt-4"><Note>Артефакт, сигнатура и бизнес-семантика ответа должны иметь независимые версии в реальной реализации.</Note></div>
+              </Card>
+            </div>
+          )}
+
+          {tab === 'tests' && (
+            <div className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-3">
+                <div className="card p-5">
+                  <div className="text-xs font-medium text-slate-400">Smoke test</div>
+                  <div className={cx('mt-3 text-2xl font-semibold', d.smoke === 'PASSED' ? 'text-white' : 'text-rose-400')}>{d.smoke}</div>
+                  <div className="mt-2 text-xs text-slate-500">Контракт API и готовность</div>
+                </div>
+                <div className="card p-5">
+                  <div className="text-xs font-medium text-slate-400">Correctness</div>
+                  <div className={cx('mt-3 text-2xl font-semibold', d.correctness === 'VERIFIED' ? 'text-emerald-400' : 'text-amber-400')}>{d.correctness}</div>
+                  <div className="mt-2 text-xs text-slate-500">{d.correctness === 'VERIFIED' ? 'Golden samples совпадают' : 'Golden samples отсутствуют'}</div>
+                </div>
+                <div className="card p-5">
+                  <div className="text-xs font-medium text-slate-400">Benchmark</div>
+                  <div className="mt-3 text-2xl font-semibold text-white">BASELINE</div>
+                  <div className="mt-2 text-xs text-slate-500">Иллюстративный результат</div>
+                </div>
+              </div>
+              <Card>
+                <div className="mb-4 flex items-center justify-between gap-2">
+                  <h3 className="text-sm font-semibold text-white">Последний отчёт нагрузочного тестирования</h3>
+                  <Pill tone="slate">Демо-данные</Pill>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <MiniStat value={fmtN(s.rps)} label="Throughput RPS" />
+                  <MiniStat value={`${s.p99} ms`} label="p99 latency" />
+                  <MiniStat value={d.errorRate} label="Error rate" />
+                </div>
+                <div className="mt-4"><Note>Тестовые данные располагаются перед оптимизацией; отсутствие golden samples не блокирует benchmark, но не подтверждает корректность модели.</Note></div>
+              </Card>
+            </div>
+          )}
+
+          {tab === 'monitoring' && (
+            <div className="grid gap-4 lg:grid-cols-[1.6fr_1fr]">
+              <Card>
+                <div className="mb-4 flex items-center justify-between gap-2">
+                  <h3 className="text-sm font-semibold text-white">Inference requests · RPS</h3>
+                  <Pill tone="slate">Демо-метрики</Pill>
+                </div>
+                <div className="flex h-24 items-end gap-1.5">
+                  {bars.map((v, i) => (
+                    <div
+                      key={i}
+                      title={`${fmtN(Math.round(v))} RPS`}
+                      className="flex-1 rounded-t-md bg-gradient-to-t from-violet-400 to-violet-600 transition hover:opacity-80"
+                      style={{ height: `${Math.max(12, (v / max) * 100)}%` }}
+                    />
+                  ))}
+                </div>
+                <div className="mt-2 grid gap-3 sm:grid-cols-3">
+                  <MiniStat value={fmtN(s.rps)} label="RPS" />
+                  <MiniStat value={`${s.p99} ms`} label="p99" />
+                  <MiniStat value={d.uptime} label="Доступность" />
+                </div>
+                <div className="my-5 h-px bg-white/[0.06]" />
+                <p className="text-xs text-slate-500">В реальной платформе здесь подключаются Grafana / Prometheus / Thanos и engine-specific метрики; числовые показатели демонстрационные.</p>
+              </Card>
+              <Card className="self-start">
+                <h3 className="mb-5 text-sm font-semibold text-white">Runtime &amp; resources</h3>
+                <KV items={[['Backend', s.backend], ['Replicas', d.replicas], ['CPU / GPU', d.cpu], ['Memory', d.ram], ['Окружение', envShort(s.env)], ['Health', s.status.toLowerCase()]]} />
+              </Card>
+            </div>
+          )}
+
+          {tab === 'history' && (
+            <Card>
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <h3 className="text-sm font-semibold text-white">Ревизии и операции</h3>
+                  <p className="mt-1 text-sm text-slate-500">Новая публикация не меняет публичный URL.</p>
+                </div>
+                <Pill tone="green">Текущая v{s.rev}</Pill>
+              </div>
+              <div className="mt-4 divide-y divide-white/[0.06]">
+                {history.map((h, i) => (
+                  <div key={h.rev} className="flex items-center gap-3 py-3">
+                    <span className={cx('grid h-8 w-8 shrink-0 place-items-center rounded-lg', i === 0 ? 'bg-violet-500/15' : 'bg-white/[0.04]')}>
+                      <span className={cx('h-1.5 w-1.5 rounded-full', i === 0 ? 'bg-violet-400' : 'bg-slate-500')} />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm font-semibold text-white">{i === 0 ? `Текущая версия · v${h.rev}` : `v${h.rev}`}</div>
+                      <div className="truncate text-xs text-slate-500">Артефакт: {h.file} · {fmtDate(h.at)} · {i === 0 ? 'активна' : 'архив'}</div>
+                    </div>
+                    {i > 0 && <button onClick={() => onRedeploy(h.file)} className="btn-ghost px-3 py-1.5 text-xs">Откатить</button>}
+                  </div>
+                ))}
+              </div>
+              <div className="mt-2"><Note><b className="text-slate-300">Как работает rollback:</b> выбираете старую версию, проверяете конфигурацию и выпускаете новую revision на её основе — без изменения запущенных Pod без проверок. Все действия появятся после подключения Auto Deploy backend.</Note></div>
+            </Card>
+          )}
+        </div>
+      </div>
+
+      <Modal open={modal} onClose={() => setModal(false)} title="Изменить модель / Redeploy">
+        <div className="space-y-4">
+          <p className="text-sm text-slate-400">Будет создана ревизия v{s.rev + 1}. Публичный URL не изменится, трафик переключится после smoke-теста.</p>
+          <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-white/15 px-4 py-5 text-sm text-slate-400 hover:border-violet-500/50">
+            <Upload className="h-5 w-5" />
+            {file ? <span className="font-mono text-white">{file}</span> : `Новый артефакт (.${ext(s.file)}) — или оставьте текущий ${s.file}`}
+            <input type="file" hidden accept=".cbm,.onnx,.zip" onChange={(e) => setFile(e.target.files?.[0]?.name ?? '')} />
+          </label>
+          <div className="flex justify-end gap-2">
+            <button onClick={() => setModal(false)} className="btn-ghost">Отмена</button>
+            <button
+              onClick={() => {
+                onRedeploy(file || s.file)
+                setFile('')
+                setModal(false)
+                setTab('history')
+              }}
+              className="btn-primary"
+            >
+              <RefreshCw className="h-4 w-4" /> Создать v{s.rev + 1}
             </button>
           </div>
-        </Card>
-      </div>
+        </div>
+      </Modal>
     </>
   )
 }
@@ -382,7 +732,7 @@ export function MlInference() {
 
   return (
     <>
-      <div className="mb-6">
+      {!(open && tab === 'list') && <div className="mb-6">
       <div className="inline-flex gap-1 rounded-2xl border border-white/[0.06] bg-ink-900 p-1.5">
         <button onClick={() => { setTab('list'); setOpen(null) }} className={tabCls(tab === 'list')}>
           <Layers className="h-4 w-4" /> Сервисы
@@ -391,7 +741,7 @@ export function MlInference() {
           <Plus className="h-4 w-4" /> Создать сервис
         </button>
       </div>
-      </div>
+      </div>}
       {tab === 'create' ? (
         <CreateService
           onCancel={() => setTab('list')}
@@ -402,7 +752,26 @@ export function MlInference() {
           }}
         />
       ) : open ? (
-        <ServiceView s={open} onBack={() => setOpen(null)} />
+        <ServiceView
+          key={open.id}
+          s={open}
+          onBack={() => setOpen(null)}
+          onRedeploy={(file) => {
+            const now = new Date().toISOString()
+            const prev = open.history?.length ? open.history : [{ rev: open.rev, file: open.file, at: '' }]
+            const next: Service = { ...open, file, rev: open.rev + 1, history: [{ rev: open.rev + 1, file, at: now }, ...prev] }
+            setServices((x) => x.map((y) => (y.id === open.id ? next : y)))
+            setOpen(next)
+          }}
+          onClone={() => {
+            const base = `${open.name}-copy`
+            let name = base
+            for (let i = 2; services.some((x) => x.name === name); i++) name = `${base}-${i}`
+            const c: Service = { ...open, id: `s${Date.now()}`, name, env: 'Development', rev: 1, history: undefined }
+            setServices((x) => [c, ...x])
+            setOpen(c)
+          }}
+        />
       ) : (
         <ServicesList services={services} onOpen={setOpen} onCreate={() => setTab('create')} />
       )}
