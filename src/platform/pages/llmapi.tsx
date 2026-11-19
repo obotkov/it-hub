@@ -138,7 +138,7 @@ export function LlmApi() {
       {tab === 'usage' && (
         <div className="grid gap-4 lg:grid-cols-3">
           <Card title="Запросы по дням" className="lg:col-span-2">
-            <LineChart labels={days(30)} series={[{ name: 'Успешные', data: series(30, 52000, 26000, 4), color: '#a78bfa' }, { name: 'Ошибки', data: series(30, 900, 600, 9), color: '#f43f5e' }]} />
+            <LineChart labels={days(30)} series={[{ name: 'Успешные', data: series(30, 52000, 26000, 4), color: '#1677ff' }, { name: 'Ошибки', data: series(30, 900, 600, 9), color: '#ff4d4f' }]} />
           </Card>
           <Card title="Расходы по моделям, ₽">
             <BarChart data={[{ label: 'Opus', value: 6120 }, { label: 'Sonnet', value: 4380 }, { label: 'GPT', value: 2110 }, { label: 'DeepSeek', value: 1090 }, { label: 'Qwen', value: 680 }]} />
@@ -255,7 +255,7 @@ curl_setopt_array($ch, [
 echo json_decode(curl_exec($ch))->choices[0]->message->content;`,
   }
   const steps = [
-    { t: 'Создайте API-ключ', d: 'Ограничьте его проектом, правами и месячным лимитом.', a: <button onClick={onKeys} className="btn-ghost px-3 py-1.5 text-xs">К ключам</button> },
+    { t: 'Создайте API-ключ', d: 'Ограничьте его проектом, правами и месячным лимитом.', a: <button onClick={onKeys} className="btn-ghost px-3 h-6 text-xs">К ключам</button> },
     { t: 'Укажите base URL', d: 'API совместим с OpenAI SDK — меняется только адрес и ключ.', a: <span className="flex items-center gap-1 font-mono text-xs text-slate-300">{BASE_URL} <CopyBtn text={BASE_URL} className="p-1" /></span> },
     { t: 'Выберите модель', d: 'Переключайтесь между моделями, меняя одно поле model.', a: null },
   ]

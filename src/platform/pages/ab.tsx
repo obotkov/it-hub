@@ -14,10 +14,10 @@ type Platform = 'android' | 'ios' | 'web'
 type App = { id: string; name: string; color: string }
 
 const apps: App[] = [
-  { id: 'shop', name: 'Shop', color: '#a855f7' },
-  { id: 'travel', name: 'Shop Travel', color: '#f97316' },
-  { id: 'pay', name: 'Shop Pay', color: '#22c55e' },
-  { id: 'seller', name: 'Seller', color: '#3b82f6' },
+  { id: 'shop', name: 'Shop', color: '#9254de' },
+  { id: 'travel', name: 'Shop Travel', color: '#fa541c' },
+  { id: 'pay', name: 'Shop Pay', color: '#52c41a' },
+  { id: 'seller', name: 'Seller', color: '#1677ff' },
 ]
 
 const layers = [
@@ -496,7 +496,7 @@ function ExperimentView({ exp, onBack }: { exp: Exp; onBack: () => void }) {
       ) : (
         <div className="grid gap-4 lg:grid-cols-3">
           <Card title={`${exp.metric} по дням`} className="lg:col-span-2">
-            <LineChart labels={days(n)} series={[{ name: 'Контроль (A)', data: a, color: '#64748b' }, { name: 'Тест (B)', data: b, color: '#fb923c' }]} />
+            <LineChart labels={days(n)} series={[{ name: 'Контроль (A)', data: a, color: '#8c8c8c' }, { name: 'Тест (B)', data: b, color: '#fa8c16' }]} />
           </Card>
           <Card title="Метрики">
             <div className="space-y-2">

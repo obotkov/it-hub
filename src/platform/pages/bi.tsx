@@ -3,8 +3,8 @@ import { DatabaseZap, Plus, Upload, BellRing, Database, FileSpreadsheet, Mail, M
 import { Badge, Card, Modal, PageHeader, StatusDot, Table, Toggle, cx } from '../../components/ui'
 
 const sourceTypes = [
-  { n: 'PostgreSQL', c: '#60a5fa' }, { n: 'ClickHouse', c: '#facc15' }, { n: 'MySQL', c: '#38bdf8' }, { n: 'BigQuery', c: '#4ade80' },
-  { n: 'Greenplum', c: '#34d399' }, { n: 'Wildmetrics', c: '#fb923c' }, { n: 'Google Sheets', c: '#22c55e' }, { n: 'CSV / Excel', c: '#a78bfa' },
+  { n: 'PostgreSQL', c: '#2f54eb' }, { n: 'ClickHouse', c: '#fadb14' }, { n: 'MySQL', c: '#13c2c2' }, { n: 'BigQuery', c: '#73d13d' },
+  { n: 'Greenplum', c: '#52c41a' }, { n: 'Wildmetrics', c: '#fa8c16' }, { n: 'Google Sheets', c: '#52c41a' }, { n: 'CSV / Excel', c: '#1677ff' },
 ]
 
 export function BiSources() {

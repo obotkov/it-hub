@@ -62,7 +62,7 @@ export function Counters() {
                   setCopied(true)
                   setTimeout(() => setCopied(false), 1500)
                 }}
-                className="btn-ghost absolute right-2 top-2 px-2.5 py-1 text-xs"
+                className="btn-ghost absolute right-2 top-2 px-2.5 h-6 text-xs"
               >
                 {copied ? <><Check className="h-3.5 w-3.5" /> Скопировано</> : <><Copy className="h-3.5 w-3.5" /> Копировать</>}
               </button>
@@ -76,7 +76,7 @@ export function Counters() {
             </div>
           </Card>
           <Card title="Посещаемость за 30 дней">
-            <LineChart labels={days(30)} series={[{ name: 'Визиты', data: series(30, c.visits / 40 || 5, c.visits / 60 || 4, c.id % 7), color: '#fb923c' }]} />
+            <LineChart labels={days(30)} series={[{ name: 'Визиты', data: series(30, c.visits / 40 || 5, c.visits / 60 || 4, c.id % 7), color: '#fa8c16' }]} />
           </Card>
         </div>
       </div>
@@ -137,16 +137,16 @@ export function Reports() {
       <div className="mb-4"><Tabs value={tab} onChange={setTab} tabs={[{ id: 'traffic', label: 'Посещаемость' }, { id: 'tech', label: 'Технологии' }, { id: 'sources', label: 'Источники' }, { id: 'geo', label: 'География' }]} /></div>
       {tab === 'traffic' && (
         <Card title="Визиты и посетители">
-          <LineChart labels={days(period)} series={[{ name: 'Визиты', data: series(period, 32000, 16000, 2), color: '#fb923c' }, { name: 'Посетители', data: series(period, 14000, 7000, 5), color: '#a78bfa' }]} height={280} />
+          <LineChart labels={days(period)} series={[{ name: 'Визиты', data: series(period, 32000, 16000, 2), color: '#fa8c16' }, { name: 'Посетители', data: series(period, 14000, 7000, 5), color: '#1677ff' }]} height={280} />
         </Card>
       )}
       {tab === 'tech' && (
         <div className="grid gap-4 lg:grid-cols-3">
-          <Card title="Устройства"><Donut data={[{ label: 'Смартфоны', value: 62, color: '#fb923c' }, { label: 'Десктоп', value: 31, color: '#a78bfa' }, { label: 'Планшеты', value: 7, color: '#22d3ee' }]} /></Card>
-          <Card title="Браузеры"><Donut data={[{ label: 'Chrome', value: 48, color: '#34d399' }, { label: 'Safari', value: 27, color: '#60a5fa' }, { label: 'Яндекс', value: 16, color: '#f43f5e' }, { label: 'Другие', value: 9, color: '#64748b' }]} /></Card>
-          <Card title="ОС"><Donut data={[{ label: 'Android', value: 41, color: '#34d399' }, { label: 'iOS', value: 23, color: '#94a3b8' }, { label: 'Windows', value: 26, color: '#60a5fa' }, { label: 'macOS', value: 10, color: '#a78bfa' }]} /></Card>
+          <Card title="Устройства"><Donut data={[{ label: 'Смартфоны', value: 62, color: '#fa8c16' }, { label: 'Десктоп', value: 31, color: '#1677ff' }, { label: 'Планшеты', value: 7, color: '#13c2c2' }]} /></Card>
+          <Card title="Браузеры"><Donut data={[{ label: 'Chrome', value: 48, color: '#52c41a' }, { label: 'Safari', value: 27, color: '#2f54eb' }, { label: 'Яндекс', value: 16, color: '#ff4d4f' }, { label: 'Другие', value: 9, color: '#8c8c8c' }]} /></Card>
+          <Card title="ОС"><Donut data={[{ label: 'Android', value: 41, color: '#52c41a' }, { label: 'iOS', value: 23, color: '#bfbfbf' }, { label: 'Windows', value: 26, color: '#2f54eb' }, { label: 'macOS', value: 10, color: '#1677ff' }]} /></Card>
           <Card title="Разрешения экрана" className="lg:col-span-3">
-            <BarChart color="#fb923c" data={[{ label: '390×844', value: 182 }, { label: '1920×1080', value: 151 }, { label: '412×915', value: 120 }, { label: '1536×864', value: 74 }, { label: '1440×900', value: 61 }, { label: '360×800', value: 55 }, { label: '2560×1440', value: 33 }]} />
+            <BarChart color="#fa8c16" data={[{ label: '390×844', value: 182 }, { label: '1920×1080', value: 151 }, { label: '412×915', value: 120 }, { label: '1536×864', value: 74 }, { label: '1440×900', value: 61 }, { label: '360×800', value: 55 }, { label: '2560×1440', value: 33 }]} />
           </Card>
         </div>
       )}
@@ -234,13 +234,13 @@ export function Heatmap() {
                       width: `${6 + p.w * 14}%`,
                       aspectRatio: '1',
                       transform: 'translate(-50%,-50%)',
-                      background: `radial-gradient(circle, rgba(239,68,68,${0.35 + p.w * 0.6}) 0%, rgba(250,204,21,${0.25 + p.w * 0.3}) 35%, rgba(59,130,246,0.15) 60%, transparent 72%)`,
+                      background: `radial-gradient(circle, rgba(255,77,79,${0.35 + p.w * 0.6}) 0%, rgba(250,173,20,${0.25 + p.w * 0.3}) 35%, rgba(22,119,255,0.15) 60%, transparent 72%)`,
                     }}
                   />
                 ))}
               </div>
             ) : (
-              <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(239,68,68,.45) 0%, rgba(250,204,21,.4) 35%, rgba(34,197,94,.3) 60%, rgba(59,130,246,.3) 80%, rgba(30,41,59,.5) 100%)' }}>
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(255,77,79,.45) 0%, rgba(250,173,20,.4) 35%, rgba(82,196,26,.3) 60%, rgba(22,119,255,.3) 80%, rgba(30,41,59,.5) 100%)' }}>
                 {[25, 50, 75].map((p) => (
                   <div key={p} className="absolute inset-x-0 border-t border-dashed border-slate-900/40" style={{ top: `${p}%` }}>
                     <span className="ml-2 rounded bg-slate-900/70 px-1.5 text-[10px] text-white">{100 - p * 0.9}% дочитали</span>
@@ -393,7 +393,7 @@ export function AppTracker() {
       </div>
       <div className="grid gap-4 lg:grid-cols-3">
         <Card title="Установки по дням" className="lg:col-span-2">
-          <LineChart labels={days(30)} series={[{ name: 'iOS', data: series(30, 500, 300, 8), color: '#94a3b8' }, { name: 'Android', data: series(30, 800, 400, 9), color: '#34d399' }]} />
+          <LineChart labels={days(30)} series={[{ name: 'iOS', data: series(30, 500, 300, 8), color: '#bfbfbf' }, { name: 'Android', data: series(30, 800, 400, 9), color: '#52c41a' }]} />
         </Card>
         <Card title="Приложения">
           <div className="space-y-3">

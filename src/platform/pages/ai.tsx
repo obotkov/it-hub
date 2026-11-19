@@ -424,13 +424,13 @@ export function RagHub() {
 
 type NodeT = { id: string; x: number; y: number; type: string; title: string }
 const nodeTypes: Record<string, { icon: typeof Bot; color: string; label: string }> = {
-  trigger: { icon: Webhook, color: '#f59e0b', label: 'Триггер' },
-  schedule: { icon: Clock, color: '#f59e0b', label: 'Расписание' },
-  agent: { icon: Bot, color: '#a78bfa', label: 'AI-агент' },
-  rag: { icon: Library, color: '#22d3ee', label: 'RAG-поиск' },
-  tool: { icon: Plug, color: '#34d399', label: 'MCP-инструмент' },
-  condition: { icon: Filter, color: '#f472b6', label: 'Условие' },
-  output: { icon: Send, color: '#60a5fa', label: 'Отправка' },
+  trigger: { icon: Webhook, color: '#faad14', label: 'Триггер' },
+  schedule: { icon: Clock, color: '#faad14', label: 'Расписание' },
+  agent: { icon: Bot, color: '#1677ff', label: 'AI-агент' },
+  rag: { icon: Library, color: '#13c2c2', label: 'RAG-поиск' },
+  tool: { icon: Plug, color: '#52c41a', label: 'MCP-инструмент' },
+  condition: { icon: Filter, color: '#eb2f96', label: 'Условие' },
+  output: { icon: Send, color: '#2f54eb', label: 'Отправка' },
 }
 
 type Flow = {
@@ -596,7 +596,7 @@ export function AgentWorld() {
               <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
                 <span className="w-24"><StatusDot status={flowStatus[f.status].dot} /></span>
                 <Toggle on={f.status === 'running'} onChange={(v) => setFlows((xs) => xs.map((x) => (x.id === f.id ? { ...x, status: v ? 'running' : 'stopped' } : x)))} />
-                <button onClick={() => setEditing(f)} className="btn-ghost px-3 py-1.5 text-xs">Открыть</button>
+                <button onClick={() => setEditing(f)} className="btn-ghost px-3 h-6 text-xs">Открыть</button>
                 <button onClick={() => setFlows((xs) => xs.filter((x) => x.id !== f.id))} title="Удалить" className="rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-rose-400"><Trash2 className="h-4 w-4" /></button>
               </div>
             </div>
@@ -683,7 +683,7 @@ function AgentEditor({ flow, onBack, onSave }: { flow: Flow; onBack: () => void;
                 const mx = (x1 + x2) / 2
                 const live = running >= 0 && nodes.findIndex((n) => n.id === b) < running
                 return (
-                  <path key={i} d={`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`} fill="none" stroke={live ? '#a78bfa' : 'currentColor'} className="text-white/15" strokeWidth={live ? 2.5 : 1.5} strokeDasharray={live ? '6 4' : undefined}>
+                  <path key={i} d={`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`} fill="none" stroke={live ? '#1677ff' : 'currentColor'} className="text-white/15" strokeWidth={live ? 2.5 : 1.5} strokeDasharray={live ? '6 4' : undefined}>
                     {live && <animate attributeName="stroke-dashoffset" from="20" to="0" dur="0.6s" repeatCount="indefinite" />}
                   </path>
                 )

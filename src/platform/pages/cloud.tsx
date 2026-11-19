@@ -52,7 +52,7 @@ export function Vms() {
         />
       </Card>
       <Card title="Загрузка CPU, %" className="mt-4">
-        <LineChart labels={days(14)} series={[{ name: 'web-01', data: series(14, 30, 30, 3), color: '#818cf8' }, { name: 'worker-02', data: series(14, 50, 30, 6), color: '#22d3ee' }]} />
+        <LineChart labels={days(14)} series={[{ name: 'web-01', data: series(14, 30, 30, 3), color: '#722ed1' }, { name: 'worker-02', data: series(14, 50, 30, 6), color: '#13c2c2' }]} />
       </Card>
       <Modal open={modal} onClose={() => setModal(false)} title="Новый сервер" wide>
         <div className="space-y-5">

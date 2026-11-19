@@ -36,15 +36,15 @@ export function Overview() {
 
       <div className="mb-6 grid gap-4 lg:grid-cols-3">
         <Card title="Расходы по дням" className="lg:col-span-2">
-          <LineChart labels={days(30)} series={[{ name: 'Расходы, ₽', data: series(30, 180, 160, 7), color: '#a78bfa' }]} />
+          <LineChart labels={days(30)} series={[{ name: 'Расходы, ₽', data: series(30, 180, 160, 7), color: '#1677ff' }]} />
         </Card>
         <Card title="Структура расходов">
           <Donut
             data={[
-              { label: 'GPU', value: 42, color: '#34d399' },
-              { label: 'AI Platform', value: 28, color: '#a78bfa' },
-              { label: 'Облако', value: 18, color: '#818cf8' },
-              { label: 'Аналитика', value: 12, color: '#fb923c' },
+              { label: 'GPU', value: 42, color: '#52c41a' },
+              { label: 'AI Platform', value: 28, color: '#1677ff' },
+              { label: 'Облако', value: 18, color: '#722ed1' },
+              { label: 'Аналитика', value: 12, color: '#fa8c16' },
             ]}
           />
         </Card>

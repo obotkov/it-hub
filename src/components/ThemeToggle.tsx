@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Moon, Sun } from 'lucide-react'
 import { cx } from './ui'
 
@@ -8,25 +8,6 @@ const current = (): Theme => (document.documentElement.dataset.theme === 'light'
 
 export function useTheme() {
   const [theme, setTheme] = useState<Theme>(current)
-
-  useEffect(() => {
-    // Follow the OS setting until the user picks a theme explicitly.
-    const mq = window.matchMedia('(prefers-color-scheme: light)')
-    const onChange = () => {
-      let saved: string | null = null
-      try {
-        saved = localStorage.getItem('hub.theme')
-      } catch {
-        /* ignore */
-      }
-      if (saved) return
-      const t: Theme = mq.matches ? 'light' : 'dark'
-      document.documentElement.dataset.theme = t
-      setTheme(t)
-    }
-    mq.addEventListener('change', onChange)
-    return () => mq.removeEventListener('change', onChange)
-  }, [])
 
   const set = (t: Theme) => {
     document.documentElement.dataset.theme = t
@@ -48,9 +29,9 @@ export default function ThemeToggle({ className }: { className?: string }) {
       onClick={toggle}
       title={theme === 'light' ? 'Тёмная тема' : 'Светлая тема'}
       aria-label="Переключить тему"
-      className={cx('grid h-9 w-9 place-items-center rounded-xl text-slate-400 transition hover:bg-white/10 hover:text-white', className)}
+      className={cx('grid h-8 w-8 place-items-center rounded-lg text-slate-400 transition-colors hover:bg-white/[0.06] hover:text-slate-200', className)}
     >
-      {theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+      {theme === 'light' ? <Moon className="h-[18px] w-[18px]" /> : <Sun className="h-[18px] w-[18px]" />}
     </button>
   )
 }
