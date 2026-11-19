@@ -42,7 +42,7 @@ export default function Login() {
               <label className="label">Пароль</label>
               <input className="input" type="password" placeholder="любой для демо" value={pass} onChange={(e) => setPass(e.target.value)} />
             </div>
-            <button className="btn-primary w-full h-10">
+            <button className="btn-primary w-full py-2.5">
               Войти <ArrowRight className="h-4 w-4" />
             </button>
             <div className="flex items-center gap-3 py-1 text-xs text-slate-500">

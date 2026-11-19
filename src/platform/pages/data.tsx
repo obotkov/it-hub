@@ -84,7 +84,7 @@ export function Pipelines() {
             <span className={p.last === 'ошибка' ? 'text-rose-400' : 'text-emerald-400'}>{p.last}</span>,
             p.dur,
             runs[p.name] ? <StatusDot status="pending" /> : <StatusDot status={p.status} />,
-            <button onClick={() => { setRuns((r) => ({ ...r, [p.name]: true })); setTimeout(() => setRuns((r) => ({ ...r, [p.name]: false })), 2000) }} className="btn-ghost px-2.5 h-6 text-xs"><Play className="h-3 w-3" /> Запуск</button>,
+            <button onClick={() => { setRuns((r) => ({ ...r, [p.name]: true })); setTimeout(() => setRuns((r) => ({ ...r, [p.name]: false })), 2000) }} className="btn-ghost px-2.5 py-1 text-xs"><Play className="h-3 w-3" /> Запуск</button>,
           ])}
         />
       </Card>
@@ -104,7 +104,7 @@ export function DataQuality() {
       </div>
       <div className="grid gap-4 lg:grid-cols-2">
         <Card title="Результаты за неделю">
-          <BarChart color="#eb2f96" data={['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].map((l, i) => ({ label: l, value: [96, 97, 95, 98, 97, 99, 97][i] }))} />
+          <BarChart color="#f472b6" data={['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].map((l, i) => ({ label: l, value: [96, 97, 95, 98, 97, 99, 97][i] }))} />
         </Card>
         <Card title="Инциденты">
           <div className="space-y-3">

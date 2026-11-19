@@ -160,7 +160,7 @@ export function GpuDeploy() {
               <Line icon={<MemoryStick className="h-4 w-4" />} k="RAM" v={`${ram} GB`} />
               <Line icon={<HardDrive className="h-4 w-4" />} k="Диск" v={`${disk} GB NVMe`} />
               <Line icon={<Terminal className="h-4 w-4" />} k="ОС" v={os} />
-              <button onClick={deploy} className="btn-primary mt-2 h-10 w-full text-base">
+              <button onClick={deploy} className="btn on-accent mt-2 w-full bg-gradient-to-r from-emerald-500 to-teal-500 py-3 text-white shadow-lg shadow-emerald-900/30 hover:from-emerald-400 hover:to-teal-400">
                 <Rocket className="h-4 w-4" /> Запустить под
               </button>
               <p className="text-center text-xs text-slate-500">Оплата поминутно с баланса кабинета</p>
@@ -231,15 +231,15 @@ export function GpuPods() {
                 )}
               </div>
               <div className="flex gap-2">
-                <button disabled={p.status !== 'running'} className="btn-ghost px-3 h-6 text-xs"><ExternalLink className="h-3.5 w-3.5" /> Подключиться</button>
+                <button disabled={p.status !== 'running'} className="btn-ghost px-3 py-1.5 text-xs"><ExternalLink className="h-3.5 w-3.5" /> Подключиться</button>
                 <button
                   onClick={() => setPods((ps) => ps.map((x) => (x.id === p.id ? { ...x, status: x.status === 'running' ? 'stopped' : 'running', uptime: x.status === 'running' ? '—' : 'только что' } : x)))}
-                  className="btn-ghost px-2.5"
+                  className="btn-ghost px-2.5 py-1.5"
                   title={p.status === 'running' ? 'Остановить' : 'Запустить'}
                 >
                   {p.status === 'running' ? <Square className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
                 </button>
-                <button onClick={() => setPods((ps) => ps.filter((x) => x.id !== p.id))} className="btn-ghost px-2.5 text-rose-300" title="Удалить">
+                <button onClick={() => setPods((ps) => ps.filter((x) => x.id !== p.id))} className="btn-ghost px-2.5 py-1.5 text-rose-300" title="Удалить">
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
               </div>

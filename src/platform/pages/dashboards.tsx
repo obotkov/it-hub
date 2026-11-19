@@ -12,7 +12,7 @@ type WType = 'stat' | 'line' | 'bar' | 'donut'
 type Widget = { id: string; type: WType; title: string; span: 1 | 2 | 3 | 4; seed: number; value?: string; delta?: string; cats?: string[] }
 type Dashboard = { id: string; title: string; desc: string; author: string; updated: string; views: number; star: boolean; widgets: Widget[] }
 
-const PALETTE = ['#13c2c2', '#1677ff', '#52c41a', '#fa8c16', '#eb2f96', '#2f54eb', '#bfbfbf']
+const PALETTE = ['#22d3ee', '#a78bfa', '#34d399', '#fb923c', '#f472b6', '#60a5fa', '#94a3b8']
 
 const plural = (n: number, one: string, few: string, many: string) => {
   const m10 = n % 10, m100 = n % 100
@@ -142,7 +142,7 @@ function WidgetCard({ wd, period, onRemove, onResize }: { wd: Widget; period: nu
           labels={days(period)}
           series={[
             { name: 'Текущий период', data: series(period, 400 + (wd.seed % 7) * 60, 260, wd.seed), color: PALETTE[wd.seed % 6] },
-            { name: 'Прошлый период', data: series(period, 340 + (wd.seed % 5) * 50, 220, wd.seed + 4), color: '#8c8c8c' },
+            { name: 'Прошлый период', data: series(period, 340 + (wd.seed % 5) * 50, 220, wd.seed + 4), color: '#64748b' },
           ]}
         />
       )}
@@ -220,9 +220,9 @@ function DashboardView({ d, onBack, onSave }: { d: Dashboard; onBack: (d: Dashbo
             <option value={90}>Последние 90 дней</option>
           </select>
         </div>
-        <button onClick={() => setRefreshed(new Date())} className="btn-ghost"><RefreshCw className="h-4 w-4" /> Обновить</button>
+        <button onClick={() => setRefreshed(new Date())} className="btn-ghost py-1.5"><RefreshCw className="h-4 w-4" /> Обновить</button>
         <span className="text-xs text-slate-500">Данные на {pad2(refreshed.getHours())}:{pad2(refreshed.getMinutes())}</span>
-        <button onClick={() => setAdd(true)} className="btn-primary ml-auto"><Plus className="h-4 w-4" /> Виджет</button>
+        <button onClick={() => setAdd(true)} className="btn-primary ml-auto py-1.5"><Plus className="h-4 w-4" /> Виджет</button>
       </div>
 
       {widgets.length === 0 ? (
@@ -319,7 +319,7 @@ function Thumb({ d }: { d: Dashboard }) {
         const I = typeMeta[wd.type].icon
         return (
           <div key={wd.id} className={cx('grid place-items-center rounded-md bg-white/[0.05]', wd.type === 'stat' ? 'h-6' : 'h-12', { 1: 'col-span-1', 2: 'col-span-2', 3: 'col-span-3', 4: 'col-span-4' }[wd.span])}>
-            <I className="h-3.5 w-3.5" style={{ color: wd.type === 'stat' ? '#8c8c8c' : PALETTE[wd.seed % 6] }} />
+            <I className="h-3.5 w-3.5" style={{ color: wd.type === 'stat' ? '#64748b' : PALETTE[wd.seed % 6] }} />
           </div>
         )
       })}

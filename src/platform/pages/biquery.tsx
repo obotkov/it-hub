@@ -223,7 +223,7 @@ function TimeChart({ rows, metric, type, height = 520 }: { rows: Row[]; metric: 
   const yfmt = (v: number) => (isPct ? `${(v * 100).toFixed(1).replace('.', ',')} %` : v >= 1000 ? `${(v / 1000).toFixed(v >= 10000 ? 0 : 1).replace('.', ',')} тыс.` : v.toFixed(0))
   const labelEvery = Math.max(1, Math.ceil(n / Math.max(2, Math.floor(iw / 84))))
   const d = vals.map((v, i) => `${i ? 'L' : 'M'}${x(i)},${y(v)}`).join(' ')
-  const color = '#4096ff'
+  const color = '#5b8db8'
   const bw = Math.max(2, (iw / n) * 0.7)
 
   const onMove = (e: RME<SVGSVGElement>) => {
@@ -985,8 +985,8 @@ function Spark({ q }: { q: Query }) {
   const d = v.map((x, i) => `${i ? 'L' : 'M'}${(i / (v.length - 1)) * 100},${28 - ((x - min) / (max - min || 1)) * 24}`).join(' ')
   return (
     <svg viewBox="0 0 100 30" preserveAspectRatio="none" className="h-8 w-28">
-      <path d={`${d} L100,30 L0,30 Z`} fill="#4096ff" opacity={0.18} />
-      <path d={d} fill="none" stroke="#4096ff" strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
+      <path d={`${d} L100,30 L0,30 Z`} fill="#5b8db8" opacity={0.18} />
+      <path d={d} fill="none" stroke="#5b8db8" strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
     </svg>
   )
 }

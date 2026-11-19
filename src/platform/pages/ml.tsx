@@ -27,7 +27,7 @@ export function MlProjects() {
                 <div className="font-mono text-sm font-medium text-white">{p.name}</div>
                 <div className="mt-1 flex gap-2"><Badge tone="cyan">{p.task}</Badge><Badge>{p.owner}</Badge></div>
               </div>
-              <Sparkline data={series(14, 50, 30, i + 2)} color="#2f54eb" />
+              <Sparkline data={series(14, 50, 30, i + 2)} color="#60a5fa" />
             </div>
             <div className="mt-5 grid grid-cols-3 gap-3 border-t border-white/5 pt-4 text-sm">
               <div><div className="text-xs text-slate-500">Запусков</div><div className="text-white">{p.runs}</div></div>
@@ -62,7 +62,7 @@ export function MlTraining() {
           action={
             <div className="flex items-center gap-3">
               <StatusDot status={running && epoch < 30 ? 'running' : 'stopped'} />
-              <button onClick={() => setRunning(!running)} className="btn-ghost px-2.5 h-6 text-xs">{running ? <><Square className="h-3 w-3" /> Стоп</> : <><Play className="h-3 w-3" /> Продолжить</>}</button>
+              <button onClick={() => setRunning(!running)} className="btn-ghost px-2.5 py-1.5 text-xs">{running ? <><Square className="h-3 w-3" /> Стоп</> : <><Play className="h-3 w-3" /> Продолжить</>}</button>
             </div>
           }
         >
@@ -70,7 +70,7 @@ export function MlTraining() {
             <span className="text-slate-400">Эпоха <span className="text-white">{epoch}/30</span></span>
             <div className="h-1.5 flex-1 rounded-full bg-white/5"><div className="h-full rounded-full bg-gradient-to-r from-sky-500 to-indigo-400 transition-all" style={{ width: `${(epoch / 30) * 100}%` }} /></div>
           </div>
-          <LineChart series={[{ name: 'train loss', data: loss, color: '#2f54eb' }, { name: 'val loss', data: val, color: '#eb2f96' }]} labels={loss.map((_, i) => String(i + 1))} />
+          <LineChart series={[{ name: 'train loss', data: loss, color: '#60a5fa' }, { name: 'val loss', data: val, color: '#f472b6' }]} labels={loss.map((_, i) => String(i + 1))} />
         </Card>
         <Card title="Конфигурация">
           <div className="space-y-2.5 text-sm">
@@ -117,10 +117,10 @@ export function MlRegistry() {
           <Table
             head={['Модель', 'Версия', 'Метрика', 'Фреймворк', 'Стадия', '']}
             rows={[
-              ['churn-xgb', 'v7', 'AUC 0.912', 'XGBoost', <Badge tone="green">Production</Badge>, <button className="btn-ghost px-2.5 h-6 text-xs">Деплой</button>],
-              ['support-intent-lora', 'v3', 'F1 0.88', 'PyTorch', <Badge tone="amber">Staging</Badge>, <button className="btn-ghost px-2.5 h-6 text-xs">Деплой</button>],
-              ['demand-prophet', 'v12', 'MAPE 7.4%', 'Prophet', <Badge tone="green">Production</Badge>, <button className="btn-ghost px-2.5 h-6 text-xs">Деплой</button>],
-              ['recs-two-tower', 'v2', 'NDCG 0.41', 'TensorFlow', <Badge>Archived</Badge>, <button className="btn-ghost px-2.5 h-6 text-xs">Деплой</button>],
+              ['churn-xgb', 'v7', 'AUC 0.912', 'XGBoost', <Badge tone="green">Production</Badge>, <button className="btn-ghost px-2.5 py-1 text-xs">Деплой</button>],
+              ['support-intent-lora', 'v3', 'F1 0.88', 'PyTorch', <Badge tone="amber">Staging</Badge>, <button className="btn-ghost px-2.5 py-1 text-xs">Деплой</button>],
+              ['demand-prophet', 'v12', 'MAPE 7.4%', 'Prophet', <Badge tone="green">Production</Badge>, <button className="btn-ghost px-2.5 py-1 text-xs">Деплой</button>],
+              ['recs-two-tower', 'v2', 'NDCG 0.41', 'TensorFlow', <Badge>Archived</Badge>, <button className="btn-ghost px-2.5 py-1 text-xs">Деплой</button>],
             ]}
           />
         </Card>
@@ -142,7 +142,7 @@ export function MlRegistry() {
             </div>
           </Card>
           <Card title="Нагрузка, запросов/мин">
-            <LineChart series={[{ name: 'rpm', data: series(24, 6000, 4000, 4), color: '#2f54eb' }]} labels={Array.from({ length: 24 }, (_, i) => `${i}:00`)} />
+            <LineChart series={[{ name: 'rpm', data: series(24, 6000, 4000, 4), color: '#60a5fa' }]} labels={Array.from({ length: 24 }, (_, i) => `${i}:00`)} />
           </Card>
         </div>
       )}

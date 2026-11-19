@@ -27,7 +27,7 @@ export function LineChart({ series, labels, height = 220 }: { series: Series[]; 
         {ticks.map((t, i) => (
           <g key={i}>
             <line x1={pad.l} x2={w - pad.r} y1={y(t)} y2={y(t)} stroke="currentColor" className="text-white/5" />
-            <text x={pad.l - 6} y={y(t) + 3} textAnchor="end" fontSize="10" fill="#8c8c8c">
+            <text x={pad.l - 6} y={y(t) + 3} textAnchor="end" fontSize="10" fill="#64748b">
               {fmt(t)}
             </text>
           </g>
@@ -44,7 +44,7 @@ export function LineChart({ series, labels, height = 220 }: { series: Series[]; 
         {labels &&
           labels.map((l, i) =>
             i % Math.ceil(labels.length / 8) === 0 ? (
-              <text key={i} x={x(i)} y={h - 6} textAnchor="middle" fontSize="10" fill="#8c8c8c">
+              <text key={i} x={x(i)} y={h - 6} textAnchor="middle" fontSize="10" fill="#64748b">
                 {l}
               </text>
             ) : null,
@@ -64,7 +64,7 @@ export function LineChart({ series, labels, height = 220 }: { series: Series[]; 
   )
 }
 
-export function BarChart({ data, color = '#1677ff', height = 200 }: { data: { label: string; value: number }[]; color?: string; height?: number }) {
+export function BarChart({ data, color = '#8b5cf6', height = 200 }: { data: { label: string; value: number }[]; color?: string; height?: number }) {
   const max = Math.max(...data.map((d) => d.value)) || 1
   return (
     <div className="flex items-stretch gap-2" style={{ height }}>
@@ -115,7 +115,7 @@ export function Donut({ data, size = 150 }: { data: { label: string; value: numb
   )
 }
 
-export function Sparkline({ data, color = '#1677ff' }: { data: number[]; color?: string }) {
+export function Sparkline({ data, color = '#a78bfa' }: { data: number[]; color?: string }) {
   const max = Math.max(...data)
   const min = Math.min(...data)
   const d = data.map((v, i) => `${i ? 'L' : 'M'}${(i / (data.length - 1)) * 100},${30 - ((v - min) / (max - min || 1)) * 28}`).join(' ')

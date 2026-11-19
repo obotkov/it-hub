@@ -29,7 +29,7 @@ export const sections: Section[] = [
     short: 'AI',
     icon: Sparkles,
     gradient: 'from-violet-500 to-fuchsia-500',
-    accent: '#1677ff',
+    accent: '#a78bfa',
     tagline: 'LLM-чаты, агенты, MCP и RAG в одном месте',
     items: [
       { path: 'ai/chat', title: 'Чат с LLM', icon: MessageSquare, desc: 'Десятки моделей, файлы и документы в диалоге' },
@@ -49,7 +49,7 @@ export const sections: Section[] = [
     short: 'ML',
     icon: BrainCircuit,
     gradient: 'from-sky-500 to-indigo-500',
-    accent: '#2f54eb',
+    accent: '#60a5fa',
     tagline: 'Обучение и запуск моделей прямо в интерфейсе',
     items: [
       { path: 'ml/overview', title: 'Проекты', icon: FlaskConical, desc: 'Эксперименты, датасеты и метрики' },
@@ -63,7 +63,7 @@ export const sections: Section[] = [
     short: 'GPU',
     icon: Server,
     gradient: 'from-emerald-500 to-teal-400',
-    accent: '#52c41a',
+    accent: '#34d399',
     tagline: 'Поды с видеокартами за минуту: ComfyUI, vLLM, PyTorch',
     items: [
       { path: 'gpu/deploy', title: 'Новый под', icon: Rocket, desc: 'Шаблон + конфигурация вычислений' },
@@ -76,7 +76,7 @@ export const sections: Section[] = [
     short: 'Analytics',
     icon: BarChart3,
     gradient: 'from-orange-500 to-rose-500',
-    accent: '#fa8c16',
+    accent: '#fb923c',
     tagline: 'Wildmetrics: счётчик, отчёты, воронки и A/B-тесты',
     items: [
       { path: 'analytics/counters', title: 'Wildmetrics', icon: Gauge, desc: 'Счётчики и код для установки на сайт' },
@@ -94,7 +94,7 @@ export const sections: Section[] = [
     short: 'BI',
     icon: LayoutDashboard,
     gradient: 'from-cyan-500 to-blue-500',
-    accent: '#13c2c2',
+    accent: '#22d3ee',
     tagline: 'Источники, SQL, дашборды и алерты',
     items: [
       { path: 'bi/sources', title: 'Источники данных', icon: DatabaseZap, desc: 'Базы данных и файлы' },
@@ -109,7 +109,7 @@ export const sections: Section[] = [
     short: 'Cloud',
     icon: Cloud,
     gradient: 'from-blue-500 to-violet-500',
-    accent: '#722ed1',
+    accent: '#818cf8',
     tagline: 'Виртуальные машины, управляемые БД и Kubernetes',
     items: [
       { path: 'cloud/vms', title: 'Серверы и VM', icon: HardDrive, desc: 'Аренда виртуальных машин' },
@@ -123,7 +123,7 @@ export const sections: Section[] = [
     short: 'Data',
     icon: Network,
     gradient: 'from-pink-500 to-orange-400',
-    accent: '#eb2f96',
+    accent: '#f472b6',
     tagline: 'Каталог, пайплайны и качество данных',
     items: [
       { path: 'data/catalog', title: 'Каталог данных', icon: BookOpen, desc: 'Таблицы, владельцы и lineage' },
@@ -137,7 +137,7 @@ export const sections: Section[] = [
     short: 'Soon',
     icon: Hammer,
     gradient: 'from-slate-500 to-slate-400',
-    accent: '#bfbfbf',
+    accent: '#94a3b8',
     tagline: 'Скоро на платформе',
     soon: true,
     items: [

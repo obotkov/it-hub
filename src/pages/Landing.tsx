@@ -59,10 +59,10 @@ export default function Landing() {
             AI и ML платформы, GPU-инференс, продуктовая аналитика, BI, облако и платформа данных. Один аккаунт, единый биллинг, кабинеты для физлиц и компаний.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link to="/login" className="btn-primary px-6 h-10 text-base">
+            <Link to="/login" className="btn-primary px-6 py-3 text-base">
               Начать бесплатно <ArrowRight className="h-4 w-4" />
             </Link>
-            <a href="#products" className="btn-ghost px-6 h-10 text-base">Смотреть продукты</a>
+            <a href="#products" className="btn-ghost px-6 py-3 text-base">Смотреть продукты</a>
           </div>
 
           {/* hero mock */}
@@ -91,7 +91,7 @@ export default function Landing() {
                       Конверсия «корзина → оплата» снизилась на 4.2%. Основная просадка — мобильный Safari. Предлагаю 3 гипотезы…
                     </div>
                     <div className="rounded-lg bg-ink-950 p-2">
-                      <LineChart height={90} series={[{ name: 'CR', data: series(20, 40, 18, 3), color: '#1677ff' }]} />
+                      <LineChart height={90} series={[{ name: 'CR', data: series(20, 40, 18, 3), color: '#a78bfa' }]} />
                     </div>
                   </div>
                   <div className="space-y-3">
@@ -267,7 +267,7 @@ export default function Landing() {
           <div className="grid-bg pointer-events-none absolute inset-0 opacity-40" />
           <h2 className="relative text-3xl font-bold text-white sm:text-4xl">Готовы попробовать?</h2>
           <p className="relative mx-auto mt-4 max-w-lg text-slate-300">Откройте платформу и посмотрите все сервисы изнутри.</p>
-          <Link to="/login" className="btn-primary relative mt-8 px-6 h-10 text-base">
+          <Link to="/login" className="btn-primary relative mt-8 px-6 py-3 text-base">
             Войти на платформу <ArrowRight className="h-4 w-4" />
           </Link>
         </div>

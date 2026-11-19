@@ -2,27 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Ant Design v5 tokens. Colours as "r g b" so they work with alpha. */
-:root,
-.theme-fixed {
-  --ant-primary: 22 104 220;
-  --ant-primary-hover: 60 137 232;
-  --ant-primary-active: 21 84 173;
-  --ant-border: 66 66 66;
-  --ant-split: 48 48 48;
-  --ant-fill: 255 255 255;
-  --ant-elevated: 31 31 31;
-}
-:root[data-theme='light'] {
-  --ant-primary: 22 119 255;
-  --ant-primary-hover: 64 150 255;
-  --ant-primary-active: 9 88 217;
-  --ant-border: 217 217 217;
-  --ant-split: 240 240 240;
-  --ant-fill: 0 0 0;
-  --ant-elevated: 255 255 255;
-}
-
 html,
 body,
 #root {
@@ -31,94 +10,39 @@ body,
 
 body {
   @apply bg-ink-950 font-sans text-slate-200 antialiased;
-  font-size: 14px;
-  line-height: 1.5714;
 }
 
 ::selection {
-  background: rgb(var(--ant-primary) / 0.25);
+  background: rgba(139, 92, 246, 0.35);
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgb(var(--ant-fill) / 0.2) transparent;
+  scrollbar-color: #2a3045 transparent;
 }
 
 @layer components {
   .card {
-    @apply rounded-lg border bg-ink-900;
-    border-color: rgb(var(--ant-split));
+    @apply rounded-2xl border border-white/[0.06] bg-ink-900/80 backdrop-blur;
   }
   .btn {
-    @apply inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-lg border px-[15px] text-sm transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition active:scale-[.98] disabled:opacity-50;
   }
   .btn-primary {
     --c-white: 255 255 255;
-    @apply btn border-transparent text-white;
-    background: rgb(var(--ant-primary));
-    box-shadow: 0 2px 0 rgb(5 145 255 / 0.1);
-  }
-  .btn-primary:hover:not(:disabled) {
-    background: rgb(var(--ant-primary-hover));
-  }
-  .btn-primary:active:not(:disabled) {
-    background: rgb(var(--ant-primary-active));
+    @apply btn bg-gradient-to-r from-violet-600 to-indigo-500 text-white shadow-lg shadow-violet-900/30 hover:from-violet-500 hover:to-indigo-400;
   }
   .btn-ghost {
-    @apply btn bg-ink-850 text-slate-200;
-    border-color: rgb(var(--ant-border));
-    box-shadow: 0 2px 0 rgb(0 0 0 / 0.02);
-  }
-  .btn-ghost:hover:not(:disabled) {
-    color: rgb(var(--ant-primary-hover));
-    border-color: rgb(var(--ant-primary-hover));
-  }
-  .btn-ghost:active:not(:disabled) {
-    color: rgb(var(--ant-primary-active));
-    border-color: rgb(var(--ant-primary-active));
+    @apply btn border border-white/10 bg-white/[0.03] text-slate-200 hover:bg-white/[0.07];
   }
   .input {
-    @apply w-full rounded-lg border bg-ink-850 px-[11px] py-[5px] text-sm text-slate-200 outline-none transition-colors duration-200 placeholder:text-slate-500;
-    border-color: rgb(var(--ant-border));
-  }
-  .input:hover {
-    border-color: rgb(var(--ant-primary-hover));
-  }
-  .input:focus {
-    border-color: rgb(var(--ant-primary));
-    box-shadow: 0 0 0 2px rgb(5 145 255 / 0.1);
+    @apply w-full rounded-xl border border-white/10 bg-ink-850 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 outline-none transition focus:border-violet-500/60 focus:ring-2 focus:ring-violet-500/20;
   }
   .label {
-    @apply mb-2 block text-sm text-slate-200;
+    @apply mb-1.5 block text-xs font-medium uppercase tracking-wide text-slate-400;
   }
   .text-gradient {
-    color: rgb(var(--ant-primary));
-  }
-  .seg {
-    @apply inline-flex flex-wrap gap-0.5 rounded-lg p-0.5;
-    background: rgb(var(--ant-fill) / 0.04);
-  }
-  .seg-item {
-    @apply rounded-md px-3 py-1 text-sm text-slate-400 transition-colors hover:text-slate-200;
-  }
-  .seg-item-active {
-    @apply rounded-md px-3 py-1 text-sm text-white shadow;
-    background: rgb(var(--ant-elevated));
-  }
-  :root:not([data-theme='light']) .seg-item-active {
-    background: rgb(var(--c-ink-600));
-  }
-  .menu-item {
-    @apply flex items-center gap-2.5 rounded-lg px-3 text-sm text-slate-200 transition-colors;
-    height: 40px;
-  }
-  .menu-item:hover {
-    background: rgb(var(--ant-fill) / 0.06);
-  }
-  .menu-item-active,
-  .menu-item-active:hover {
-    color: rgb(var(--ant-primary));
-    background: rgb(var(--ant-primary) / 0.1);
+    @apply bg-gradient-to-r from-violet-400 via-fuchsia-300 to-cyan-300 bg-clip-text text-transparent;
   }
   .grid-bg {
     background-image: linear-gradient(rgb(var(--c-white) / 0.035) 1px, transparent 1px),
@@ -132,5 +56,5 @@ body {
 }
 
 :root[data-theme='light'] .card {
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03), 0 1px 6px -1px rgb(0 0 0 / 0.02), 0 2px 4px 0 rgb(0 0 0 / 0.02);
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 4px 16px rgb(15 23 42 / 0.04);
 }
