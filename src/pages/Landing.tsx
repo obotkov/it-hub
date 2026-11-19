@@ -1,260 +1,213 @@
+import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Check, Zap, ShieldCheck, Building2, User, Globe2, Layers, Terminal, ChevronRight } from 'lucide-react'
+import { ArrowRight, Check, ShieldCheck, Building2, User, Globe2, Layers } from 'lucide-react'
 import Logo from '../components/Logo'
 import ThemeToggle from '../components/ThemeToggle'
 import { sections } from '../nav'
-import { LineChart, series } from '../components/charts'
 
-const stats = [
+const facts = [
   ['40+', 'сервисов в одном аккаунте'],
   ['A100 · H100 · RTX 4090', 'GPU для инференса и обучения'],
-  ['99.95%', 'SLA облачной инфраструктуры'],
+  ['99,95%', 'SLA облачной инфраструктуры'],
   ['152-ФЗ', 'данные хранятся в РФ'],
 ]
 
+const steps = [
+  { t: 'Создайте кабинет', d: 'Личный — для себя, или кабинет компании с реквизитами, договором и командой' },
+  { t: 'Подключите сервисы', d: 'Включайте нужные продукты: от чата с LLM до кластера Kubernetes. Без отдельных договоров' },
+  { t: 'Платите за использование', d: 'Единый баланс и детализация по каждому сервису. Поминутная тарификация GPU' },
+]
+
 const pricing = [
-  { name: 'Старт', price: '0 ₽', note: 'для знакомства', feats: ['Чат с LLM — 50 запросов/день', 'Wildmetrics до 10K событий', '1 BI-дашборд', 'Сообщество и документация'] },
+  { name: 'Старт', price: '0 ₽', note: 'для знакомства', feats: ['Чат с LLM — 50 запросов в день', 'Wildmetrics до 10K событий', '1 BI-дашборд', 'Сообщество и документация'] },
   { name: 'Pro', price: '2 990 ₽', note: 'в месяц', hot: true, feats: ['Все модели в чате без лимитов', 'Agent World и RAG Hub', 'A/B-тесты и RawData', 'GPU по минутной тарификации', 'Приоритетная поддержка'] },
   { name: 'Business', price: 'от 49 000 ₽', note: 'в месяц, для юрлиц', feats: ['Отдельные кабинеты команд', 'SSO, аудит и роли', 'Выделенные GPU и VPC', 'Договор, ЭДО, закрывающие', 'Персональный менеджер'] },
 ]
 
+const wrap = 'mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8'
+
 export default function Landing() {
+  const live = sections.filter((s) => !s.soon)
   return (
     <div className="min-h-screen overflow-x-hidden bg-ink-950">
-      {/* nav */}
-      <header className="fixed inset-x-0 top-0 z-40 border-b border-white/[0.05] bg-ink-950/70 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
+      <header className="fixed inset-x-0 top-0 z-40 border-b border-white/[0.06] bg-ink-950/90 backdrop-blur">
+        <div className={`${wrap} flex h-16 items-center justify-between gap-4`}>
           <Logo />
           <nav className="hidden items-center gap-8 text-sm text-slate-400 md:flex">
-            <a href="#products" className="hover:text-white">Продукты</a>
-            <a href="#how" className="hover:text-white">Как это работает</a>
-            <a href="#business" className="hover:text-white">Для бизнеса</a>
-            <a href="#pricing" className="hover:text-white">Тарифы</a>
+            <a href="#products" className="transition-colors hover:text-white">Продукты</a>
+            <a href="#how" className="transition-colors hover:text-white">Как это работает</a>
+            <a href="#business" className="transition-colors hover:text-white">Для бизнеса</a>
+            <a href="#pricing" className="transition-colors hover:text-white">Тарифы</a>
           </nav>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <ThemeToggle />
-            <Link to="/login" className="btn hidden text-slate-300 hover:text-white sm:inline-flex">Войти</Link>
-            <Link to="/login" className="btn-primary whitespace-nowrap">
-              <span className="hidden sm:inline">Открыть платформу</span><span className="sm:hidden">Войти</span> <ArrowRight className="h-4 w-4" />
+            <Link to="/login" className="hidden px-3 text-sm text-slate-400 transition-colors hover:text-white sm:inline">Войти</Link>
+            <Link to="/login" className="btn-primary">
+              <span className="hidden sm:inline">Открыть платформу</span>
+              <span className="sm:hidden">Войти</span>
             </Link>
           </div>
         </div>
       </header>
 
       {/* hero */}
-      <section className="relative pt-32 pb-20 sm:pt-40">
-        <div className="grid-bg pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_at_top,black_30%,transparent_70%)]" />
-        <div className="pointer-events-none absolute left-1/2 top-0 h-[600px] w-[1000px] -translate-x-1/2 rounded-full bg-violet-600/20 blur-[120px]" />
-        <div className="pointer-events-none absolute right-0 top-40 h-[400px] w-[400px] rounded-full bg-cyan-500/10 blur-[100px]" />
-        <div className="relative mx-auto max-w-7xl px-4 text-center sm:px-6">
-          <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-slate-300">
-            <span className="on-accent rounded-full bg-violet-500 px-2 py-0.5 text-[10px] font-semibold text-white">NEW</span>
-            Agent World — собирайте AI-агентов в визуальные workflow
-            <ChevronRight className="h-3 w-3" />
-          </div>
-          <h1 className="mx-auto max-w-4xl text-4xl font-bold leading-[1.05] tracking-tight text-white sm:text-6xl lg:text-7xl">
-            Все IT-сервисы для&nbsp;роста <span className="text-gradient animate-shimmer bg-[length:200%_auto]">в одном хабе</span>
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-400">
-            AI и ML платформы, GPU-инференс, продуктовая аналитика, BI, облако и платформа данных. Один аккаунт, единый биллинг, кабинеты для физлиц и компаний.
-          </p>
-          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link to="/login" className="btn-primary px-6 py-3 text-base">
-              Начать бесплатно <ArrowRight className="h-4 w-4" />
-            </Link>
-            <a href="#products" className="btn-ghost px-6 py-3 text-base">Смотреть продукты</a>
-          </div>
-
-          {/* hero mock */}
-          <div className="relative mx-auto mt-16 max-w-5xl">
-            <div className="absolute -inset-px rounded-3xl bg-gradient-to-b from-violet-500/40 via-white/5 to-transparent" />
-            <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-ink-900 text-left shadow-2xl shadow-violet-950/50">
-              <div className="flex items-center gap-2 border-b border-white/5 px-4 py-3">
-                <span className="h-3 w-3 rounded-full bg-rose-500/70" />
-                <span className="h-3 w-3 rounded-full bg-amber-500/70" />
-                <span className="h-3 w-3 rounded-full bg-emerald-500/70" />
-                <span className="ml-3 rounded-md bg-white/5 px-3 py-0.5 font-mono text-xs text-slate-500">ai-studio.space/app</span>
-              </div>
-              <div className="flex">
-                <div className="hidden w-52 shrink-0 space-y-1 border-r border-white/5 p-3 sm:block">
-                  {sections.slice(0, 7).map((s, i) => (
-                    <div key={s.id} className={`flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs ${i === 0 ? 'bg-white/10 text-white' : 'text-slate-400'}`}>
-                      <s.icon className="h-3.5 w-3.5" /> {s.title}
-                    </div>
-                  ))}
-                </div>
-                <div className="grid flex-1 gap-3 p-4 md:grid-cols-3">
-                  <div className="space-y-3 rounded-xl border border-white/5 bg-ink-850 p-4 md:col-span-2">
-                    <div className="text-xs text-slate-500">Чат · Claude Opus 5.5</div>
-                    <div className="ml-auto w-fit max-w-[80%] rounded-2xl rounded-br-sm on-accent bg-violet-600/80 px-3 py-2 text-xs text-white">Сравни конверсию воронки за неделю и предложи гипотезы для A/B</div>
-                    <div className="w-fit max-w-[85%] rounded-2xl rounded-bl-sm bg-white/5 px-3 py-2 text-xs text-slate-300">
-                      Конверсия «корзина → оплата» снизилась на 4.2%. Основная просадка — мобильный Safari. Предлагаю 3 гипотезы…
-                    </div>
-                    <div className="rounded-lg bg-ink-950 p-2">
-                      <LineChart height={90} series={[{ name: 'CR', data: series(20, 40, 18, 3), color: '#a78bfa' }]} />
-                    </div>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="rounded-xl border border-white/5 bg-ink-850 p-4">
-                      <div className="text-xs text-slate-500">GPU под · vLLM</div>
-                      <div className="mt-1 text-sm font-semibold text-white">2× H100 80GB</div>
-                      <div className="mt-3 h-1.5 rounded-full bg-white/5"><div className="h-full w-3/4 rounded-full bg-emerald-400" /></div>
-                      <div className="mt-1 text-[10px] text-slate-500">утилизация 74%</div>
-                    </div>
-                    <div className="rounded-xl border border-white/5 bg-ink-850 p-4">
-                      <div className="text-xs text-slate-500">Wildmetrics · сегодня</div>
-                      <div className="mt-1 text-2xl font-semibold text-white">48 213</div>
-                      <div className="text-xs text-emerald-400">+12.4% визитов</div>
-                    </div>
-                  </div>
-                </div>
+      <section className="pt-28 sm:pt-40">
+        <div className={wrap}>
+          <div className="grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-12">
+            <div className="lg:col-span-7">
+              <Link to="/login" className="mb-6 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white">
+                <span className="text-violet-400">Новое</span> Agent World — workflow из AI-агентов
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+              <h1 className="text-[40px] font-medium leading-[1.04] tracking-[-0.02em] text-white sm:text-[56px] sm:tracking-[-0.03em] lg:text-[64px]">
+                LLM, GPU, аналитика и облако на одном балансе
+              </h1>
+            </div>
+            <div className="lg:col-span-5 lg:pb-2">
+              <p className="max-w-[36rem] text-lg leading-7 text-slate-400">
+                Чат с моделями и агенты, обучение и GPU-инференс, продуктовая аналитика, BI, облако и платформа данных. Один аккаунт, поминутная тарификация, кабинеты для физлиц и компаний
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link to="/login" className="btn-primary btn-lg">
+                  Начать бесплатно <ArrowRight className="h-4 w-4" />
+                </Link>
+                <a href="#products" className="btn-ghost btn-lg">Смотреть продукты</a>
               </div>
             </div>
           </div>
+
+          <ProductPreview />
         </div>
       </section>
 
-      {/* stats */}
-      <section className="border-y border-white/[0.05] bg-ink-900/40">
-        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 py-10 sm:px-6 md:grid-cols-4">
-          {stats.map(([v, l]) => (
+      {/* facts */}
+      <section className="mt-20 border-y border-white/[0.06]">
+        <dl className={`${wrap} grid grid-cols-2 gap-x-6 gap-y-8 py-10 md:grid-cols-4`}>
+          {facts.map(([v, l]) => (
             <div key={l}>
-              <div className="text-xl font-semibold text-white sm:text-2xl">{v}</div>
-              <div className="mt-1 text-sm text-slate-500">{l}</div>
+              <dt className="text-xl font-medium tabular-nums text-white sm:text-2xl">{v}</dt>
+              <dd className="mt-1 text-sm text-slate-500">{l}</dd>
             </div>
           ))}
-        </div>
+        </dl>
       </section>
 
       {/* products */}
-      <section id="products" className="mx-auto max-w-7xl px-4 py-24 sm:px-6">
-        <div className="mb-14 max-w-2xl">
-          <div className="mb-3 text-sm font-medium text-violet-400">Продукты</div>
-          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Семь платформ, которые работают вместе</h2>
-          <p className="mt-4 text-slate-400">Данные из аналитики попадают в BI и платформу данных, модели обучаются на ML-платформе и разворачиваются на GPU, а AI-агенты используют всё это как инструменты.</p>
-        </div>
+      <section id="products" className={`${wrap} scroll-mt-16 py-24 lg:py-32`}>
+        <SectionHead label="Продукты" title="Семь платформ, которые работают вместе">
+          Данные из аналитики попадают в BI и платформу данных, модели обучаются на ML-платформе и разворачиваются на GPU, а AI-агенты используют всё это как инструменты
+        </SectionHead>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {sections.filter((s) => !s.soon).map((s, idx) => (
-            <Link
-              to="/login"
-              key={s.id}
-              className={`group relative overflow-hidden rounded-3xl border border-white/[0.06] bg-ink-900 p-6 transition hover:border-white/15 hover:bg-ink-850 ${idx === 0 ? 'lg:col-span-2 lg:row-span-2' : ''}`}
-            >
-              <div className={`pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-gradient-to-br ${s.gradient} opacity-10 blur-3xl transition group-hover:opacity-25`} />
-              <div className={`on-accent mb-5 grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br ${s.gradient} shadow-lg`}>
-                <s.icon className="h-5 w-5 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-white">{s.title}</h3>
-              <p className="mt-1.5 text-sm text-slate-400">{s.tagline}</p>
-              <ul className={`mt-5 grid gap-2 ${idx === 0 ? 'sm:grid-cols-2' : ''}`}>
-                {s.items.map((i) => (
-                  <li key={i.path} className="flex items-start gap-2.5 text-sm">
-                    <i.icon className="mt-0.5 h-4 w-4 shrink-0" style={{ color: s.accent }} />
-                    <span>
-                      <span className="text-slate-200">{i.title}</span>
-                      {idx === 0 && <span className="block text-xs text-slate-500">{i.desc}</span>}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-6 flex items-center gap-1 text-sm font-medium text-slate-300 group-hover:text-white">
-                Попробовать <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-              </div>
-            </Link>
-          ))}
-          <div className="relative overflow-hidden rounded-3xl border border-dashed border-white/10 p-6">
-            <div className="mb-5 grid h-11 w-11 place-items-center rounded-2xl bg-white/5">
-              <Layers className="h-5 w-5 text-slate-400" />
-            </div>
-            <h3 className="text-xl font-semibold text-white">И это только начало</h3>
-            <p className="mt-1.5 text-sm text-slate-400">В разработке: Security Center, CI/CD, маркетплейс решений и AI-поддержка для сайтов.</p>
+          {live.map((s, idx) => {
+            const wide = idx === 0
+            return (
+              <Link
+                to="/login"
+                key={s.id}
+                className={`group flex flex-col rounded-2xl border border-white/[0.07] bg-ink-900 p-6 transition-colors hover:border-white/[0.14] ${wide ? 'md:col-span-2' : ''}`}
+              >
+                <s.icon className="h-[18px] w-[18px] text-slate-400" strokeWidth={1.5} />
+                <h3 className="mt-5 text-lg font-medium text-white">{s.title}</h3>
+                <p className="mt-1 text-sm text-slate-400">{s.tagline}</p>
+                <ul className={`mt-6 grid gap-x-8 gap-y-3 ${wide ? 'sm:grid-cols-2 sm:gap-y-5' : ''}`}>
+                  {s.items.map((i) => (
+                    <li key={i.path} className="flex items-start gap-2.5 text-sm">
+                      <i.icon className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" strokeWidth={1.5} />
+                      <span>
+                        <span className="text-slate-200">{i.title}</span>
+                        {wide && <span className="mt-0.5 block text-[13px] leading-5 text-slate-500">{i.desc}</span>}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-auto flex items-center gap-1.5 pt-6 text-sm text-slate-400 transition-colors group-hover:text-white">
+                  Попробовать <ArrowRight className="h-4 w-4" />
+                </div>
+              </Link>
+            )
+          })}
+          <div className="rounded-2xl border border-dashed border-white/[0.1] p-6">
+            <Layers className="h-[18px] w-[18px] text-slate-500" strokeWidth={1.5} />
+            <h3 className="mt-5 text-lg font-medium text-white">В разработке</h3>
+            <p className="mt-1 text-sm text-slate-400">Security Center, CI/CD, маркетплейс решений и AI-поддержка для сайтов</p>
           </div>
         </div>
       </section>
 
       {/* how */}
-      <section id="how" className="relative border-y border-white/[0.05] bg-ink-900/40 py-24">
-        <div className="dot-bg pointer-events-none absolute inset-0 opacity-50 [mask-image:linear-gradient(to_bottom,transparent,black,transparent)]" />
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
-          <h2 className="text-center text-3xl font-bold tracking-tight text-white sm:text-4xl">Запуск за три шага</h2>
-          <div className="mt-14 grid gap-6 md:grid-cols-3">
-            {[
-              { icon: User, t: 'Создайте кабинет', d: 'Личный — для себя, или кабинет компании с реквизитами, договором и командой.' },
-              { icon: Zap, t: 'Подключите сервисы', d: 'Включайте нужные продукты: от чата с LLM до кластера Kubernetes. Без отдельных договоров.' },
-              { icon: Terminal, t: 'Платите за использование', d: 'Единый баланс и детализация по каждому сервису. Поминутная тарификация GPU.' },
-            ].map((s, i) => (
-              <div key={s.t} className="card relative p-6">
-                <div className="absolute right-6 top-6 font-mono text-5xl font-bold text-white/[0.04]">0{i + 1}</div>
-                <s.icon className="h-6 w-6 text-violet-400" />
-                <h3 className="mt-4 text-lg font-semibold text-white">{s.t}</h3>
-                <p className="mt-2 text-sm text-slate-400">{s.d}</p>
-              </div>
+      <section id="how" className="scroll-mt-16 border-y border-white/[0.06] bg-ink-900/50 py-24 lg:py-32">
+        <div className={wrap}>
+          <SectionHead label="Как это работает" title="Запуск за три шага" />
+          <ol className="grid gap-10 md:grid-cols-3 md:gap-8">
+            {steps.map((s, i) => (
+              <li key={s.t} className="border-t border-white/[0.1] pt-6">
+                <div className="meter text-sm text-slate-500">{String(i + 1).padStart(2, '0')}</div>
+                <h3 className="mt-4 text-lg font-medium text-white">{s.t}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-400">{s.d}</p>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
       {/* business */}
-      <section id="business" className="mx-auto max-w-7xl px-4 py-24 sm:px-6">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
+      <section id="business" className={`${wrap} scroll-mt-16 py-24 lg:py-32`}>
+        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
-            <div className="mb-3 text-sm font-medium text-violet-400">Физлица и компании</div>
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Кабинеты для любой формы работы</h2>
-            <p className="mt-4 text-slate-400">Переключайтесь между личным кабинетом и кабинетами компаний в один клик. У каждого — свой баланс, ресурсы и доступы.</p>
+            <div className="mb-3 text-sm text-slate-500">Физлица и компании</div>
+            <h2 className="text-[32px] font-medium leading-[1.1] tracking-[-0.02em] text-white sm:text-[40px]">Кабинеты для любой формы работы</h2>
+            <p className="mt-4 max-w-xl text-slate-400">Переключайтесь между личным кабинетом и кабинетами компаний в один клик. У каждого — свой баланс, ресурсы и доступы</p>
             <ul className="mt-8 space-y-3">
               {['Оплата картой или по счёту', 'Договор-оферта и закрывающие документы через ЭДО', 'Роли и права для сотрудников', 'Отдельные лимиты и бюджеты по проектам'].map((f) => (
                 <li key={f} className="flex items-center gap-3 text-slate-300">
-                  <span className="grid h-5 w-5 place-items-center rounded-full bg-emerald-500/15"><Check className="h-3 w-3 text-emerald-400" /></span>
+                  <Check className="h-4 w-4 shrink-0 text-slate-500" strokeWidth={1.5} />
                   {f}
                 </li>
               ))}
             </ul>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="card p-6">
-              <User className="h-6 w-6 text-cyan-300" />
-              <div className="mt-4 font-semibold text-white">Физическое лицо</div>
-              <p className="mt-1 text-sm text-slate-400">Быстрый старт, оплата картой, персональные проекты.</p>
-            </div>
-            <div className="card p-6 sm:translate-y-8">
-              <Building2 className="h-6 w-6 text-violet-300" />
-              <div className="mt-4 font-semibold text-white">Юридическое лицо</div>
-              <p className="mt-1 text-sm text-slate-400">ИНН/КПП, счета, ЭДО, команда и аудит действий.</p>
-            </div>
-            <div className="card p-6">
-              <ShieldCheck className="h-6 w-6 text-emerald-300" />
-              <div className="mt-4 font-semibold text-white">Безопасность</div>
-              <p className="mt-1 text-sm text-slate-400">Шифрование, изоляция ресурсов, 2FA и SSO.</p>
-            </div>
-            <div className="card p-6 sm:translate-y-8">
-              <Globe2 className="h-6 w-6 text-amber-300" />
-              <div className="mt-4 font-semibold text-white">Данные в РФ</div>
-              <p className="mt-1 text-sm text-slate-400">Дата-центры уровня Tier III, соответствие 152-ФЗ.</p>
-            </div>
+            {[
+              { icon: User, t: 'Физическое лицо', d: 'Быстрый старт, оплата картой, персональные проекты' },
+              { icon: Building2, t: 'Юридическое лицо', d: 'ИНН/КПП, счета, ЭДО, команда и аудит действий' },
+              { icon: ShieldCheck, t: 'Безопасность', d: 'Шифрование, изоляция ресурсов, 2FA и SSO' },
+              { icon: Globe2, t: 'Данные в РФ', d: 'Дата-центры уровня Tier III, соответствие 152-ФЗ' },
+            ].map((c) => (
+              <div key={c.t} className="card p-6">
+                <c.icon className="h-[18px] w-[18px] text-slate-400" strokeWidth={1.5} />
+                <div className="mt-5 font-medium text-white">{c.t}</div>
+                <p className="mt-1 text-sm text-slate-400">{c.d}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* pricing */}
-      <section id="pricing" className="border-t border-white/[0.05] bg-ink-900/40 py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <h2 className="text-center text-3xl font-bold tracking-tight text-white sm:text-4xl">Прозрачные тарифы</h2>
-          <p className="mx-auto mt-4 max-w-xl text-center text-slate-400">Инфраструктура (GPU, VM, базы данных) тарифицируется отдельно по факту использования.</p>
-          <div className="mt-14 grid gap-6 lg:grid-cols-3">
+      <section id="pricing" className="scroll-mt-16 border-t border-white/[0.06] bg-ink-900/50 py-24 lg:py-32">
+        <div className={wrap}>
+          <SectionHead label="Тарифы" title="Подписка на платформы, инфраструктура по факту">
+            GPU, виртуальные машины и базы данных тарифицируются отдельно — поминутно, с баланса кабинета
+          </SectionHead>
+          <div className="grid gap-4 lg:grid-cols-3">
             {pricing.map((p) => (
-              <div key={p.name} className={`card relative p-7 ${p.hot ? 'border-violet-500/40 bg-gradient-to-b from-violet-500/10 to-ink-900' : ''}`}>
-                {p.hot && <span className="on-accent absolute right-6 top-6 rounded-full bg-violet-500 px-2.5 py-0.5 text-xs font-medium text-white">Популярный</span>}
-                <div className="text-sm font-medium text-slate-400">{p.name}</div>
-                <div className="mt-3 text-3xl font-bold text-white">{p.price}</div>
-                <div className="text-sm text-slate-500">{p.note}</div>
-                <ul className="mt-6 space-y-3">
+              <div key={p.name} className={`card flex flex-col p-7 ${p.hot ? 'border-violet-500/40' : ''}`}>
+                <div className="flex items-center justify-between">
+                  <span className="text-[15px] text-slate-300">{p.name}</span>
+                  {p.hot && <span className="text-xs text-violet-400">Популярный</span>}
+                </div>
+                <div className="meter mt-5 text-[32px] font-medium leading-none text-white">{p.price}</div>
+                <div className="mt-2 text-sm text-slate-500">{p.note}</div>
+                <ul className="mt-7 flex-1 space-y-3 border-t border-white/[0.07] pt-6">
                   {p.feats.map((f) => (
                     <li key={f} className="flex items-start gap-2.5 text-sm text-slate-300">
-                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-violet-400" /> {f}
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" strokeWidth={1.5} /> {f}
                     </li>
                   ))}
                 </ul>
-                <Link to="/login" className={`${p.hot ? 'btn-primary' : 'btn-ghost'} mt-8 w-full`}>Выбрать</Link>
+                <Link to="/login" className={`${p.hot ? 'btn-primary' : 'btn-ghost'} mt-8 w-full`}>
+                  Выбрать {p.name}
+                </Link>
               </div>
             ))}
           </div>
@@ -262,23 +215,168 @@ export default function Landing() {
       </section>
 
       {/* cta */}
-      <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6">
-        <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-violet-600/30 via-ink-900 to-cyan-500/20 p-10 text-center sm:p-16">
-          <div className="grid-bg pointer-events-none absolute inset-0 opacity-40" />
-          <h2 className="relative text-3xl font-bold text-white sm:text-4xl">Готовы попробовать?</h2>
-          <p className="relative mx-auto mt-4 max-w-lg text-slate-300">Откройте платформу и посмотрите все сервисы изнутри.</p>
-          <Link to="/login" className="btn-primary relative mt-8 px-6 py-3 text-base">
-            Войти на платформу <ArrowRight className="h-4 w-4" />
+      <section className={`${wrap} py-24 lg:py-32`}>
+        <div className="card flex flex-col gap-8 p-8 sm:p-12 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h2 className="text-[28px] font-medium leading-[1.15] text-white sm:text-[32px]">Начните с тарифа Старт за <span className="meter">0 ₽</span></h2>
+            <p className="mt-3 max-w-xl text-slate-400">Чат с LLM, Wildmetrics до 10K событий и BI-дашборд без оплаты. Инфраструктура — отдельно, по факту использования</p>
+          </div>
+          <Link to="/login" className="btn-primary btn-lg shrink-0">
+            Открыть платформу <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </section>
 
-      <footer className="border-t border-white/[0.05]">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-8 text-sm text-slate-500 sm:flex-row sm:px-6">
+      <footer className="border-t border-white/[0.06]">
+        <div className={`${wrap} flex flex-col gap-4 py-8 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between`}>
           <Logo />
-          <span>© {new Date().getFullYear()} AI Studio. Хаб IT-сервисов.</span>
+          <span>© {new Date().getFullYear()} IT Hub · хаб IT-сервисов · данные хранятся в РФ</span>
         </div>
       </footer>
+    </div>
+  )
+}
+
+function SectionHead({ label, title, children }: { label: string; title: string; children?: ReactNode }) {
+  return (
+    <div className="mb-12 max-w-2xl lg:mb-16">
+      <div className="mb-3 text-sm text-slate-500">{label}</div>
+      <h2 className="text-[32px] font-medium leading-[1.1] tracking-[-0.02em] text-white sm:text-[40px]">{title}</h2>
+      {children && <p className="mt-4 text-slate-400">{children}</p>}
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/* Hero product view: the one rich moment on the page                  */
+/* ------------------------------------------------------------------ */
+
+// GPU utilisation of a 2× H100 vLLM pod over the last 24 hours, % (plausible daily curve)
+const util = [38, 34, 31, 29, 28, 30, 36, 47, 58, 66, 71, 74, 76, 73, 75, 79, 82, 80, 77, 73, 70, 67, 65, 64]
+// requests per second, scaled to the same 0–100 axis for the comparison line
+const rps = [22, 19, 17, 15, 15, 17, 22, 31, 40, 47, 52, 55, 57, 54, 56, 60, 63, 61, 58, 54, 51, 48, 46, 45]
+
+const spend = [
+  { k: 'GPU-инференс', v: 3536 },
+  { k: 'AI Platform', v: 2358 },
+  { k: 'Облако', v: 1516 },
+  { k: 'Аналитика', v: 1010 },
+]
+
+function smooth(data: number[], w: number, h: number, pad = 4) {
+  const pts = data.map((v, i) => [(i / (data.length - 1)) * w, pad + (h - pad * 2) * (1 - v / 100)] as const)
+  let d = `M${pts[0][0]},${pts[0][1]}`
+  for (let i = 0; i < pts.length - 1; i++) {
+    const [x0, y0] = pts[Math.max(i - 1, 0)]
+    const [x1, y1] = pts[i]
+    const [x2, y2] = pts[i + 1]
+    const [x3, y3] = pts[Math.min(i + 2, pts.length - 1)]
+    const c1x = x1 + (x2 - x0) / 6
+    const c1y = y1 + (y2 - y0) / 6
+    const c2x = x2 - (x3 - x1) / 6
+    const c2y = y2 - (y3 - y1) / 6
+    d += ` C${c1x.toFixed(1)},${c1y.toFixed(1)} ${c2x.toFixed(1)},${c2y.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)}`
+  }
+  return { d, last: pts[pts.length - 1] }
+}
+
+function ProductPreview() {
+  const W = 640
+  const H = 200
+  const u = smooth(util, W, H)
+  const r = smooth(rps, W, H)
+  const max = spend[0].v
+  const nav = sections.filter((s) => !s.soon)
+  return (
+    <div className="preview-window mt-16 overflow-hidden rounded-2xl border border-white/[0.08] bg-ink-900">
+      <div className="flex h-10 items-center gap-1.5 border-b border-white/[0.06] px-4">
+        <span className="h-2.5 w-2.5 rounded-full bg-ink-600" />
+        <span className="h-2.5 w-2.5 rounded-full bg-ink-600" />
+        <span className="h-2.5 w-2.5 rounded-full bg-ink-600" />
+        <span className="meter ml-3 text-xs text-slate-500">ai-studio.space/app/gpu/pods</span>
+      </div>
+      <div className="flex">
+        <div className="hidden w-52 shrink-0 space-y-0.5 border-r border-white/[0.06] p-3 md:block">
+          {nav.map((s) => {
+            const on = s.id === 'gpu'
+            return (
+              <div key={s.id} className={`flex h-8 items-center gap-2.5 rounded-lg px-2.5 text-[13px] ${on ? 'bg-ink-800 text-white' : 'text-slate-400'}`}>
+                <s.icon className={`h-4 w-4 shrink-0 ${on ? 'text-violet-400' : 'text-slate-500'}`} strokeWidth={1.5} />
+                <span className="truncate">{s.title}</span>
+              </div>
+            )
+          })}
+        </div>
+
+        <div className="min-w-0 flex-1 p-4 sm:p-6">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <div className="text-[13px] text-slate-500">GPU-поды</div>
+              <div className="mt-1 text-xl font-medium text-white">llama-70b-prod</div>
+            </div>
+            <div className="flex items-center gap-2 text-[13px] text-slate-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Работает · 2× H100 80GB · vLLM
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-4 lg:grid-cols-3">
+            {/* main chart */}
+            <div className="rounded-xl border border-white/[0.06] bg-ink-950/60 p-4 sm:p-5 lg:col-span-2">
+              <div className="flex flex-wrap items-baseline justify-between gap-3">
+                <div>
+                  <div className="text-[13px] text-slate-400">Утилизация GPU за 24 часа</div>
+                  <div className="mt-2 flex items-baseline gap-2">
+                    <span className="text-[28px] font-medium leading-none tabular-nums text-white">64%</span>
+                    <span className="text-xs text-slate-500">сейчас · пик 82% в 16:00</span>
+                  </div>
+                </div>
+                <div className="flex gap-4 text-xs text-slate-500">
+                  <span className="flex items-center gap-1.5"><span className="h-0.5 w-3 rounded bg-violet-500" /> Утилизация</span>
+                  <span className="flex items-center gap-1.5"><span className="h-0.5 w-3 rounded bg-slate-500" /> Запросы в секунду</span>
+                </div>
+              </div>
+              <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="mt-5 h-[160px] w-full sm:h-[200px]" aria-label="График утилизации GPU">
+                {[0, 25, 50, 75, 100].map((t) => {
+                  const y = 4 + (H - 8) * (1 - t / 100)
+                  return <line key={t} x1="0" x2={W} y1={y} y2={y} className="stroke-white/[0.06]" strokeDasharray={t === 0 ? undefined : '2 4'} vectorEffect="non-scaling-stroke" />
+                })}
+                <path d={`${u.d} L${W},${H} L0,${H} Z`} className="fill-violet-500/[0.06]" />
+                <path d={r.d} fill="none" className="stroke-slate-500" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+                <path d={u.d} fill="none" className="stroke-violet-500" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+              </svg>
+              <div className="meter mt-2 flex justify-between text-[11px] text-slate-500">
+                <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>сейчас</span>
+              </div>
+            </div>
+
+            {/* balance meter */}
+            <div className="rounded-xl border border-white/[0.06] bg-ink-950/60 p-4 sm:p-5">
+              <div className="text-[13px] text-slate-400">Баланс кабинета</div>
+              <div className="meter mt-2 whitespace-nowrap text-[24px] font-medium leading-none text-white xl:text-[28px]">12 450,00 ₽</div>
+              <div className="meter mt-2 text-xs text-slate-500">−0,84 ₽/мин · списание поминутно</div>
+              <div className="mt-6 border-t border-white/[0.06] pt-4">
+                <div className="mb-3 flex justify-between text-xs text-slate-500">
+                  <span>Расход за ноябрь</span>
+                  <span className="meter">8 420 ₽</span>
+                </div>
+                <ul className="space-y-3">
+                  {spend.map((s, i) => (
+                    <li key={s.k}>
+                      <div className="flex justify-between text-[13px]">
+                        <span className="text-slate-300">{s.k}</span>
+                        <span className="meter text-slate-400">{s.v.toLocaleString('ru-RU')} ₽</span>
+                      </div>
+                      <div className="mt-1.5 h-1 rounded-full bg-white/[0.06]">
+                        <div className={`h-full rounded-full ${i === 0 ? 'bg-violet-500' : 'bg-slate-600'}`} style={{ width: `${(s.v / max) * 100}%` }} />
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

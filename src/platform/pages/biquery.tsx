@@ -333,10 +333,10 @@ function FiltersPanel({ params, setParams }: { params: Param[]; setParams: (p: P
   return (
     <div>
       <div className="flex items-center gap-2 border-b border-white/[0.05] px-4 py-3">
-        <button onClick={() => setOpen(!open)} className="flex items-center gap-2 text-sm font-semibold text-white">
+        <button onClick={() => setOpen(!open)} className="flex items-center gap-2 text-sm font-medium text-white">
           {open ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />} Фильтры
         </button>
-        <span className="on-accent grid h-5 min-w-5 place-items-center rounded-full bg-violet-600 px-1.5 text-[11px] font-semibold text-white">{params.length}</span>
+        <span className="on-accent grid h-5 min-w-5 place-items-center rounded-full bg-violet-600 px-1.5 text-[11px] font-medium text-white">{params.length}</span>
         <button onClick={() => setParams([...params, { id: 'p' + Date.now(), name: `Параметр ${params.length + 1}`, type: 'Строка', value: '' }])} title="Добавить параметр" className="ml-auto grid h-7 w-7 place-items-center rounded-lg border border-white/10 text-slate-300 hover:bg-white/5"><Plus className="h-4 w-4" /></button>
       </div>
       {open && (
@@ -444,9 +444,9 @@ function QueryEditor({ q, onBack, onSave }: { q: Query; onBack: (q: Query) => vo
       <div className="card flex items-center gap-3 px-4 py-3">
         <button onClick={() => onBack(snapshot())} title="К списку запросов" className="rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"><ArrowLeft className="h-5 w-5" /></button>
         {editTitle ? (
-          <input autoFocus value={title} onChange={(e) => setTitle(e.target.value)} onBlur={() => setEditTitle(false)} onKeyDown={(e) => e.key === 'Enter' && setEditTitle(false)} className="input max-w-md py-1 text-lg font-semibold" />
+          <input autoFocus value={title} onChange={(e) => setTitle(e.target.value)} onBlur={() => setEditTitle(false)} onKeyDown={(e) => e.key === 'Enter' && setEditTitle(false)} className="input max-w-md py-1 text-lg font-medium" />
         ) : (
-          <h1 className="min-w-0 truncate text-xl font-semibold tracking-tight text-white">{title || 'Без названия'}</h1>
+          <h1 className="min-w-0 truncate text-xl font-medium tracking-tight text-white">{title || 'Без названия'}</h1>
         )}
         <button onClick={() => setEditTitle(true)} title="Переименовать" className="rounded-lg p-1 text-slate-500 hover:text-white"><Pencil className="h-4 w-4" /></button>
         <button onClick={() => setStar(!star)} title="В избранное" className="rounded-lg p-1 text-slate-500 hover:text-amber-400"><Star className={cx('h-4 w-4', star && 'fill-amber-400 text-amber-400')} /></button>
@@ -481,7 +481,7 @@ function QueryEditor({ q, onBack, onSave }: { q: Query; onBack: (q: Query) => vo
         {/* left panel */}
         <div className="card flex w-full shrink-0 flex-col lg:w-[400px]">
           <div className="border-b border-white/[0.05] p-4">
-            <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-white">
+            <div className="mb-3 flex items-center gap-2 text-sm font-medium text-white">
               Источник данных и поля
               <span className="on-accent grid h-5 min-w-5 place-items-center rounded-full bg-violet-600 px-1.5 text-[11px] text-white">{fields.length}</span>
             </div>
@@ -528,13 +528,13 @@ function QueryEditor({ q, onBack, onSave }: { q: Query; onBack: (q: Query) => vo
                   <>
                     <div className="fixed inset-0 z-30" onClick={() => setTabMenu(null)} />
                     <div className="absolute left-0 top-full z-40 mt-1 w-60 rounded-xl border border-white/10 bg-ink-850 p-1 shadow-2xl">
-                      <div className="px-3 pb-1 pt-2 text-[11px] uppercase tracking-wide text-slate-500">Тип</div>
+                      <div className="px-3 pb-1 pt-2 text-[11px] text-slate-500">Тип</div>
                       {([['area', 'Площадь', AreaChart], ['line', 'Линия', LineIcon], ['bar', 'Столбцы', BarChart3]] as const).map(([v, l, I]) => (
                         <button key={v} onClick={() => setTabs(tabs.map((x) => (x.id === t.id ? { ...x, type: v } : x)))} className="flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-sm text-slate-200 hover:bg-white/5">
                           <I className="h-4 w-4" /> {l} {t.type === v && <Check className="ml-auto h-4 w-4 text-violet-400" />}
                         </button>
                       ))}
-                      <div className="px-3 pb-1 pt-2 text-[11px] uppercase tracking-wide text-slate-500">Показатель</div>
+                      <div className="px-3 pb-1 pt-2 text-[11px] text-slate-500">Показатель</div>
                       {(['percent', 'rids_not_in_events', 'rids'] as const).map((m) => (
                         <button key={m} onClick={() => setTabs(tabs.map((x) => (x.id === t.id ? { ...x, metric: m } : x)))} className="flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-left text-sm text-slate-200 hover:bg-white/5">
                           <span className="truncate">{metricName[m]}</span> {t.metric === m && <Check className="ml-auto h-4 w-4 shrink-0 text-violet-400" />}
@@ -652,7 +652,7 @@ function SqlView({ initialSql, seed, source, setSource, params, setParams, onCan
     <div className="-m-4 flex min-h-[calc(100vh-4rem)] flex-col bg-ink-950 sm:-m-6 lg:-m-8">
       <div className="flex items-center gap-3 border-b border-white/[0.06] bg-ink-900 px-5 py-3">
         <Code2 className="h-5 w-5 text-violet-400" />
-        <h1 className="text-lg font-semibold text-white">SQL-редактор</h1>
+        <h1 className="text-lg font-medium text-white">SQL-редактор</h1>
         <div className="ml-auto flex gap-2">
           <button onClick={onCancel} className="btn-ghost">Отмена</button>
           <button disabled={!res || busy} onClick={() => res && onApply(sql, res)} className="btn-primary">Применить</button>
@@ -663,7 +663,7 @@ function SqlView({ initialSql, seed, source, setSource, params, setParams, onCan
         {left && !full && (
           <div className="card flex w-[360px] shrink-0 flex-col">
             <div className="flex items-center gap-2 border-b border-white/[0.05] px-4 py-3">
-              <span className="text-sm font-semibold text-white">Источник данных</span>
+              <span className="text-sm font-medium text-white">Источник данных</span>
               <button onClick={() => setLeft(false)} title="Свернуть" className="ml-auto rounded-lg p-1 text-slate-500 hover:text-white"><ChevronsLeft className="h-4 w-4" /></button>
             </div>
             <div className="space-y-2 border-b border-white/[0.05] p-4">
@@ -716,7 +716,7 @@ function SqlView({ initialSql, seed, source, setSource, params, setParams, onCan
         <div className="flex min-w-0 flex-1 flex-col gap-3">
           <div className="card">
             <div className="flex items-center gap-1 border-b border-white/[0.05] px-4 py-2.5">
-              <span className="text-sm font-semibold text-white">Редактор</span>
+              <span className="text-sm font-medium text-white">Редактор</span>
               <div className="ml-auto flex items-center gap-1 text-slate-500">
                 <button onClick={() => setSql(formatSql(sql))} title="Форматировать" className="rounded-lg p-1.5 hover:bg-white/10 hover:text-white"><AlignLeft className="h-4 w-4" /></button>
                 <button onClick={run} title="Выполнить (⌘+Enter)" className="rounded-lg p-1.5 text-violet-400 hover:bg-white/10"><Zap className="h-4 w-4" /></button>
@@ -726,7 +726,7 @@ function SqlView({ initialSql, seed, source, setSource, params, setParams, onCan
                     <>
                       <div className="fixed inset-0 z-30" onClick={() => setShowHistory(false)} />
                       <div className="absolute right-0 z-40 mt-1 w-80 rounded-xl border border-white/10 bg-ink-850 p-1 shadow-2xl">
-                        <div className="px-3 py-1.5 text-[11px] uppercase tracking-wide text-slate-500">История</div>
+                        <div className="px-3 py-1.5 text-[11px] text-slate-500">История</div>
                         {history.length === 0 && <div className="px-3 py-2 text-xs text-slate-500">Пока пусто</div>}
                         {history.map((h, i) => (
                           <button key={i} onClick={() => { setSql(h); setShowHistory(false) }} className="block w-full truncate rounded-lg px-3 py-2 text-left font-mono text-xs text-slate-300 hover:bg-white/5">{h.replace(/\s+/g, ' ').slice(0, 80)}</button>
@@ -760,7 +760,7 @@ function SqlView({ initialSql, seed, source, setSource, params, setParams, onCan
           {!full && (
             <div className="card flex min-h-0 flex-1 flex-col">
               <div className="flex items-center gap-2 border-b border-white/[0.05] px-4 py-3">
-                <button onClick={() => setPreviewOpen(!previewOpen)} className="flex items-center gap-2 text-sm font-semibold text-white">
+                <button onClick={() => setPreviewOpen(!previewOpen)} className="flex items-center gap-2 text-sm font-medium text-white">
                   {previewOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />} Предпросмотр
                 </button>
               </div>
@@ -1042,9 +1042,9 @@ export function BiQueries() {
     <>
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-gradient-to-br from-cyan-500/20 to-blue-500/10"><Code2 className="h-5 w-5 text-cyan-300" /></div>
+          <div className="grid h-10 w-10 place-items-center rounded-xl border border-white/[0.08] bg-ink-800"><Code2 className="h-5 w-5 text-cyan-300" /></div>
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-white">Запросы</h1>
+            <h1 className="text-2xl font-medium tracking-tight text-white">Запросы</h1>
             <p className="text-sm text-slate-400">SQL-запросы к источникам данных и диаграммы на их основе</p>
           </div>
         </div>

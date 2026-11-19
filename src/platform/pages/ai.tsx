@@ -2,14 +2,14 @@ import { FormEvent, PointerEvent as RPE, useEffect, useMemo, useRef, useState } 
 import {
   MessageSquare, Plus, Paperclip, Send, Bot, FileText, X, ChevronDown, Plug, Search, Check, Puzzle, Library, Upload,
   Workflow, Play, Clapperboard, Mic, Video, AudioLines, Languages, Subtitles, Image as ImageIcon, Laptop, Apple, Download,
-  Monitor, Terminal, GitBranch, Zap, Globe, Mail, Database, Code2, Webhook, Clock, Filter, Sparkles, Star, Save, ArrowLeft, ChevronRight, Trash2,
+  Monitor, Terminal, GitBranch, Zap, Globe, Mail, Database, Code2, Webhook, Clock, Filter, Cpu, Star, Save, ArrowLeft, ChevronRight, Trash2,
 } from 'lucide-react'
 import { Badge, Card, Empty, Modal, PageHeader, Stat, Table, Tabs, Toggle, cx, StatusDot } from '../../components/ui'
 
 /* ------------------------------ Chat ------------------------------ */
 
 export const models = [
-  { id: 'berrylm', name: 'BerryLM', vendor: 'AI Studio', ctx: '256K', tag: 'Лучший' },
+  { id: 'berrylm', name: 'BerryLM', vendor: 'IT Hub', ctx: '256K', tag: 'Лучший' },
   { id: 'claude-opus-5-5', name: 'Claude Opus 5.5', vendor: 'Anthropic', ctx: '1M', tag: 'Лучший' },
   { id: 'claude-sonnet-5-5', name: 'Claude Sonnet 5.5', vendor: 'Anthropic', ctx: '1M' },
   { id: 'gpt', name: 'GPT-5', vendor: 'OpenAI', ctx: '400K' },
@@ -87,7 +87,7 @@ export function Chat() {
         >
           <Plus className="h-4 w-4" /> Новый чат
         </button>
-        <div className="px-2 pb-1 pt-2 text-[11px] uppercase tracking-wide text-slate-500">История</div>
+        <div className="px-2 pb-1 pt-2 text-[11px] text-slate-500">История</div>
         <div className="flex-1 space-y-0.5 overflow-y-auto">
           {chats.map((c) => (
             <button
@@ -112,7 +112,7 @@ export function Chat() {
         <div className="flex items-center gap-3 border-b border-white/[0.05] px-4 py-3">
           <div className="relative">
             <button onClick={() => setPick(!pick)} className="flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm font-medium text-white hover:bg-white/5">
-              <Sparkles className="h-4 w-4 text-violet-400" />
+              <Cpu className="h-4 w-4 text-slate-500" strokeWidth={1.5} />
               {model.name}
               <ChevronDown className="h-4 w-4 text-slate-500" />
             </button>
@@ -150,10 +150,10 @@ export function Chat() {
         <div className="flex-1 overflow-y-auto px-4 py-6">
           {msgs.length === 0 ? (
             <div className="mx-auto flex h-full max-w-2xl flex-col items-center justify-center text-center">
-              <div className="on-accent grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-lg shadow-violet-900/40">
+              <div className="grid h-14 w-14 place-items-center rounded-2xl border border-white/[0.08] bg-ink-800">
                 <Bot className="h-7 w-7 text-white" />
               </div>
-              <h2 className="mt-5 text-2xl font-semibold text-white">Чем помочь?</h2>
+              <h2 className="mt-5 text-2xl font-medium text-white">Чем помочь?</h2>
               <p className="mt-2 text-sm text-slate-400">Прикрепляйте файлы и документы — PDF, DOCX, XLSX, изображения, код.</p>
               <div className="mt-8 grid w-full gap-2 sm:grid-cols-2">
                 {suggestions.map((s) => (
@@ -168,7 +168,7 @@ export function Chat() {
               {msgs.map((m, i) => (
                 <div key={i} className={cx('flex gap-3', m.role === 'user' && 'justify-end')}>
                   {m.role === 'assistant' && (
-                    <div className="on-accent grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500">
+                    <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-white/[0.08] bg-ink-800">
                       <Bot className="h-4 w-4 text-white" />
                     </div>
                   )}
@@ -299,13 +299,13 @@ export function McpHub() {
 /* ------------------------------ Skill Hub ------------------------------ */
 
 const skills = [
-  { name: 'Анализ договоров', author: 'AI Studio', desc: 'Находит риски и нестандартные условия в договорах', uses: '12.4K', cat: 'Юристы' },
-  { name: 'SQL-аналитик', author: 'AI Studio', desc: 'Пишет и оптимизирует SQL под вашу схему', uses: '31K', cat: 'Данные' },
+  { name: 'Анализ договоров', author: 'IT Hub', desc: 'Находит риски и нестандартные условия в договорах', uses: '12.4K', cat: 'Юристы' },
+  { name: 'SQL-аналитик', author: 'IT Hub', desc: 'Пишет и оптимизирует SQL под вашу схему', uses: '31K', cat: 'Данные' },
   { name: 'Код-ревьюер', author: 'community', desc: 'Ревью pull request с фокусом на баги и безопасность', uses: '22K', cat: 'Разработка' },
   { name: 'Маркетинговые тексты', author: 'community', desc: 'Посты, рассылки и лендинги в тоне бренда', uses: '18K', cat: 'Маркетинг' },
-  { name: 'Презентации', author: 'AI Studio', desc: 'Генерация слайдов PPTX из документа', uses: '9.7K', cat: 'Офис' },
+  { name: 'Презентации', author: 'IT Hub', desc: 'Генерация слайдов PPTX из документа', uses: '9.7K', cat: 'Офис' },
   { name: 'Исследование рынка', author: 'community', desc: 'Глубокий поиск с отчётом и источниками', uses: '15K', cat: 'Аналитика' },
-  { name: 'Excel-мастер', author: 'AI Studio', desc: 'Формулы, сводные таблицы и графики в XLSX', uses: '27K', cat: 'Офис' },
+  { name: 'Excel-мастер', author: 'IT Hub', desc: 'Формулы, сводные таблицы и графики в XLSX', uses: '27K', cat: 'Офис' },
   { name: 'Поддержка клиентов', author: 'community', desc: 'Ответы клиентам по базе знаний', uses: '11K', cat: 'Сервис' },
 ]
 
@@ -655,7 +655,7 @@ function AgentEditor({ flow, onBack, onSave }: { flow: Flow; onBack: () => void;
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex min-w-0 items-center gap-3">
           <button onClick={onBack} className="btn-ghost px-3"><ArrowLeft className="h-4 w-4" /> Все агенты</button>
-          <input value={name} onChange={(e) => setName(e.target.value)} className="min-w-0 flex-1 rounded-lg border border-transparent bg-transparent px-2 py-1 text-2xl font-semibold tracking-tight text-white outline-none hover:border-white/10 focus:border-violet-500/50" />
+          <input value={name} onChange={(e) => setName(e.target.value)} className="min-w-0 flex-1 rounded-lg border border-transparent bg-transparent px-2 py-1 text-2xl font-medium tracking-tight text-white outline-none hover:border-white/10 focus:border-violet-500/50" />
         </div>
         <div className="flex gap-2">
           <button onClick={() => onSave({ ...flow, name: name || 'Без названия', nodes, edges, trigger: nodes.find((n) => n.type === 'trigger' || n.type === 'schedule')?.title ?? flow.trigger })} className="btn-ghost"><Save className="h-4 w-4" /> Сохранить</button>
@@ -764,7 +764,7 @@ export function MediaAgents() {
       <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {tools.map((x) => (
           <div key={x.t} className="card group p-5 transition hover:border-white/15">
-            <div className={`on-accent grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br ${x.c}`}><x.icon className="h-5 w-5 text-white" /></div>
+            <div className={`grid h-11 w-11 place-items-center rounded-xl border border-white/[0.08] bg-ink-800`}><x.icon className="h-5 w-5 text-white" /></div>
             <div className="mt-4 font-medium text-white">{x.t}</div>
             <p className="mt-1 text-sm text-slate-400">{x.d}</p>
             <button className="btn-ghost mt-4 w-full"><Upload className="h-4 w-4" /> Загрузить файл</button>
@@ -793,9 +793,8 @@ export function CodeAgent() {
       <PageHeader title="Code-агент для ПК" subtitle="Десктоп-приложение: AI-агент, который читает ваш проект, пишет код, запускает тесты и делает коммиты." icon={Laptop} badge="beta" />
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="card relative overflow-hidden p-8">
-          <div className="absolute -right-10 -top-10 h-48 w-48 rounded-full bg-violet-600/20 blur-3xl" />
-          <Apple className="h-10 w-10 text-white" />
-          <h3 className="mt-5 text-xl font-semibold text-white">macOS</h3>
+          <Apple className="h-8 w-8 text-slate-400" strokeWidth={1.5} />
+          <h3 className="mt-5 text-xl font-medium text-white">macOS</h3>
           <p className="mt-1 text-sm text-slate-400">Apple Silicon и Intel · macOS 13+</p>
           <div className="mt-6 flex flex-wrap gap-2">
             <button className="btn-primary"><Download className="h-4 w-4" /> Скачать .dmg</button>
@@ -803,9 +802,8 @@ export function CodeAgent() {
           </div>
         </div>
         <div className="card relative overflow-hidden p-8">
-          <div className="absolute -right-10 -top-10 h-48 w-48 rounded-full bg-cyan-500/20 blur-3xl" />
-          <Monitor className="h-10 w-10 text-white" />
-          <h3 className="mt-5 text-xl font-semibold text-white">Windows</h3>
+          <Monitor className="h-8 w-8 text-slate-400" strokeWidth={1.5} />
+          <h3 className="mt-5 text-xl font-medium text-white">Windows</h3>
           <p className="mt-1 text-sm text-slate-400">Windows 10/11 · x64 и ARM64</p>
           <div className="mt-6 flex flex-wrap gap-2">
             <button className="btn-primary"><Download className="h-4 w-4" /> Скачать .exe</button>

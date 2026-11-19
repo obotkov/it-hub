@@ -115,7 +115,7 @@ function WidgetCard({ wd, period, onRemove, onResize }: { wd: Widget; period: nu
   return (
     <div className={cx('card relative p-4', wd.type === 'stat' ? 'sm:col-span-1' : 'sm:col-span-2', spanCls[wd.span])}>
       <div className="mb-3 flex items-start justify-between gap-2">
-        <h3 className={cx('text-sm', wd.type === 'stat' ? 'text-slate-400' : 'font-semibold text-white')}>{wd.title}</h3>
+        <h3 className={cx('text-sm', wd.type === 'stat' ? 'text-slate-400' : 'font-medium text-white')}>{wd.title}</h3>
         <div className="relative">
           <button onClick={() => setMenu(!menu)} className="-mr-1 -mt-1 rounded-lg p-1 text-slate-500 hover:bg-white/10 hover:text-white"><MoreVertical className="h-4 w-4" /></button>
           {menu && (
@@ -133,7 +133,7 @@ function WidgetCard({ wd, period, onRemove, onResize }: { wd: Widget; period: nu
       </div>
       {wd.type === 'stat' && (
         <div className="flex items-baseline gap-2">
-          <span className="text-2xl font-semibold tabular-nums text-white">{wd.value ?? '—'}</span>
+          <span className="text-2xl font-medium tabular-nums text-white">{wd.value ?? '—'}</span>
           {wd.delta && <span className={cx('text-xs font-medium', neg ? 'text-rose-400' : 'text-emerald-400')}>{wd.delta}</span>}
         </div>
       )}
@@ -188,9 +188,9 @@ function DashboardView({ d, onBack, onSave }: { d: Dashboard; onBack: (d: Dashbo
       <div className="card flex items-center gap-3 px-4 py-3">
         <button onClick={() => onBack(snapshot())} title="К списку дашбордов" className="rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"><ArrowLeft className="h-5 w-5" /></button>
         {editTitle ? (
-          <input autoFocus value={title} onChange={(e) => setTitle(e.target.value)} onBlur={() => setEditTitle(false)} onKeyDown={(e) => e.key === 'Enter' && setEditTitle(false)} className="input max-w-md py-1 text-lg font-semibold" />
+          <input autoFocus value={title} onChange={(e) => setTitle(e.target.value)} onBlur={() => setEditTitle(false)} onKeyDown={(e) => e.key === 'Enter' && setEditTitle(false)} className="input max-w-md py-1 text-lg font-medium" />
         ) : (
-          <h1 className="min-w-0 truncate text-xl font-semibold tracking-tight text-white">{title || 'Без названия'}</h1>
+          <h1 className="min-w-0 truncate text-xl font-medium tracking-tight text-white">{title || 'Без названия'}</h1>
         )}
         <button onClick={() => setEditTitle(true)} title="Переименовать" className="rounded-lg p-1 text-slate-500 hover:text-white"><Pencil className="h-4 w-4" /></button>
         <button onClick={() => setStar(!star)} title="В избранное" className="rounded-lg p-1 text-slate-500 hover:text-amber-400"><Star className={cx('h-4 w-4', star && 'fill-amber-400 text-amber-400')} /></button>
@@ -369,9 +369,9 @@ export function BiDashboards() {
     <>
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-gradient-to-br from-cyan-500/20 to-blue-500/10"><LayoutDashboard className="h-5 w-5 text-cyan-300" /></div>
+          <div className="grid h-10 w-10 place-items-center rounded-xl border border-white/[0.08] bg-ink-800"><LayoutDashboard className="h-5 w-5 text-cyan-300" /></div>
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-white">Дашборды</h1>
+            <h1 className="text-2xl font-medium tracking-tight text-white">Дашборды</h1>
             <p className="text-sm text-slate-400">Отчёты из виджетов на основе запросов</p>
           </div>
         </div>

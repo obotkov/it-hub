@@ -68,7 +68,7 @@ export function MlTraining() {
         >
           <div className="mb-3 flex items-center gap-4 text-sm">
             <span className="text-slate-400">Эпоха <span className="text-white">{epoch}/30</span></span>
-            <div className="h-1.5 flex-1 rounded-full bg-white/5"><div className="h-full rounded-full bg-gradient-to-r from-sky-500 to-indigo-400 transition-all" style={{ width: `${(epoch / 30) * 100}%` }} /></div>
+            <div className="h-1.5 flex-1 rounded-full bg-white/5"><div className="h-full rounded-full bg-violet-500 transition-colors" style={{ width: `${(epoch / 30) * 100}%` }} /></div>
           </div>
           <LineChart series={[{ name: 'train loss', data: loss, color: '#60a5fa' }, { name: 'val loss', data: val, color: '#f472b6' }]} labels={loss.map((_, i) => String(i + 1))} />
         </Card>

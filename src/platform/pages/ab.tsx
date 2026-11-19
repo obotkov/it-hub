@@ -262,8 +262,8 @@ export function AbPlatform() {
     <>
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-gradient-to-br from-orange-500/20 to-rose-500/10"><Split className="h-5 w-5 text-orange-300" /></div>
-          <h1 className="text-2xl font-semibold tracking-tight text-white">Эксперименты</h1>
+          <div className="grid h-10 w-10 place-items-center rounded-xl border border-white/[0.08] bg-ink-800"><Split className="h-5 w-5 text-orange-300" /></div>
+          <h1 className="text-2xl font-medium tracking-tight text-white">Эксперименты</h1>
         </div>
         <button onClick={() => setModal(true)} className="btn-primary"><Plus className="h-4 w-4" /> Новый эксперимент</button>
       </div>
@@ -481,7 +481,7 @@ function ExperimentView({ exp, onBack }: { exp: Exp; onBack: () => void }) {
             <AppChip app={exp.app} />
             <Badge tone={statusMeta[exp.status].tone}>{statusMeta[exp.status].label}</Badge>
           </div>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white">{exp.title}</h1>
+          <h1 className="mt-2 text-2xl font-medium tracking-tight text-white">{exp.title}</h1>
         </div>
         {exp.status !== 'draft' && <Badge tone={sig ? 'green' : 'amber'}>{sig ? `Значимо · p = ${exp.p}` : `Не значимо · p = ${exp.p}`}</Badge>}
       </div>

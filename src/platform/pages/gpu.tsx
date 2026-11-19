@@ -1,19 +1,19 @@
 import { ReactNode, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Rocket, Server, Check, Cpu, MemoryStick, HardDrive, Terminal, ExternalLink, Square, Play, Trash2, Search, Plus } from 'lucide-react'
+import { Rocket, Server, Check, Cpu, MemoryStick, HardDrive, Terminal, ExternalLink, Square, Play, Trash2, Search, Plus, Workflow, Flame, Zap, Bot, MessageSquare, Image, BookOpen, Mic, Box } from 'lucide-react'
 import { Badge, Card, Empty, PageHeader, Range, StatusDot, cx } from '../../components/ui'
 
 const templates = [
-  { id: 'comfyui', name: 'ComfyUI', desc: 'Генерация изображений и видео на нодах', img: '🎨', tag: 'Популярный', port: 8188 },
-  { id: 'pytorch', name: 'PyTorch 2.6', desc: 'CUDA 12.8 + JupyterLab', img: '🔥', port: 8888 },
-  { id: 'vllm', name: 'vLLM', desc: 'Быстрый OpenAI-совместимый LLM-сервер', img: '⚡', tag: 'LLM', port: 8000 },
-  { id: 'ollama', name: 'Ollama', desc: 'NVIDIA CUDA · локальные LLM в один клик', img: '🦙', port: 11434 },
-  { id: 'ubuntu', name: 'Ubuntu 24.04', desc: 'Чистая система с CUDA-драйверами', img: '🐧', port: 22 },
-  { id: 'tgi', name: 'Text Generation Inference', desc: 'HF TGI для продакшн-инференса', img: '🤗', port: 8080 },
-  { id: 'sd-webui', name: 'Stable Diffusion WebUI', desc: 'Forge / A1111 интерфейс', img: '🖼️', port: 7860 },
-  { id: 'jupyter', name: 'TensorFlow + Jupyter', desc: 'TF 2.18 и ноутбуки', img: '📓', port: 8888 },
-  { id: 'whisper', name: 'Whisper API', desc: 'Распознавание речи faster-whisper', img: '🎙️', port: 9000 },
-  { id: 'custom', name: 'Свой образ', desc: 'Любой Docker-образ из реестра', img: '🐳', port: 0 },
+  { id: 'comfyui', name: 'ComfyUI', desc: 'Генерация изображений и видео на нодах', img: Workflow, tag: 'Популярный', port: 8188 },
+  { id: 'pytorch', name: 'PyTorch 2.6', desc: 'CUDA 12.8 + JupyterLab', img: Flame, port: 8888 },
+  { id: 'vllm', name: 'vLLM', desc: 'Быстрый OpenAI-совместимый LLM-сервер', img: Zap, tag: 'LLM', port: 8000 },
+  { id: 'ollama', name: 'Ollama', desc: 'NVIDIA CUDA · локальные LLM в один клик', img: Bot, port: 11434 },
+  { id: 'ubuntu', name: 'Ubuntu 24.04', desc: 'Чистая система с CUDA-драйверами', img: Terminal, port: 22 },
+  { id: 'tgi', name: 'Text Generation Inference', desc: 'HF TGI для продакшн-инференса', img: MessageSquare, port: 8080 },
+  { id: 'sd-webui', name: 'Stable Diffusion WebUI', desc: 'Forge / A1111 интерфейс', img: Image, port: 7860 },
+  { id: 'jupyter', name: 'TensorFlow + Jupyter', desc: 'TF 2.18 и ноутбуки', img: BookOpen, port: 8888 },
+  { id: 'whisper', name: 'Whisper API', desc: 'Распознавание речи faster-whisper', img: Mic, port: 9000 },
+  { id: 'custom', name: 'Свой образ', desc: 'Любой Docker-образ из реестра', img: Box, port: 0 },
 ]
 
 const gpus = [
@@ -97,7 +97,7 @@ export function GpuDeploy() {
               {templates.filter((x) => x.name.toLowerCase().includes(q.toLowerCase())).map((x) => (
                 <button key={x.id} onClick={() => setTpl(x.id)} className={cx('relative rounded-2xl border p-4 text-left transition', tpl === x.id ? 'border-emerald-400/60 bg-emerald-500/[0.07]' : 'border-white/[0.06] bg-ink-850 hover:border-white/15')}>
                   <div className="flex items-start justify-between">
-                    <span className="text-2xl">{x.img}</span>
+                    <x.img className="h-5 w-5 text-slate-400" strokeWidth={1.5} />
                     {tpl === x.id ? <span className="on-accent grid h-5 w-5 place-items-center rounded-full bg-emerald-500"><Check className="h-3 w-3 text-white" /></span> : x.tag && <Badge tone="green">{x.tag}</Badge>}
                   </div>
                   <div className="mt-3 text-sm font-medium text-white">{x.name}</div>
@@ -148,19 +148,19 @@ export function GpuDeploy() {
 
         <div className="xl:sticky xl:top-0 xl:self-start">
           <div className="card overflow-hidden">
-            <div className="bg-gradient-to-br from-emerald-500/20 to-teal-400/5 p-5">
-              <div className="text-xs uppercase tracking-wide text-slate-400">Итого</div>
-              <div className="mt-1 text-4xl font-bold text-white">{hourly} ₽<span className="text-base font-normal text-slate-400">/час</span></div>
-              <div className="mt-1 text-xs text-slate-400">≈ {(hourly * 24 * 30).toLocaleString('ru-RU')} ₽ в месяц при 24/7</div>
+            <div className="border-b border-white/[0.07] bg-ink-850 p-5">
+              <div className="text-xs text-slate-400">Итого</div>
+              <div className="meter mt-1 text-[32px] font-medium leading-tight text-white">{hourly} ₽<span className="text-base font-normal text-slate-400">/час</span></div>
+              <div className="meter mt-1 text-xs text-slate-400">≈ {(hourly * 24 * 30).toLocaleString('ru-RU')} ₽ в месяц при 24/7</div>
             </div>
             <div className="space-y-3 p-5 text-sm">
-              <Line icon={<span>{t.img}</span>} k="Шаблон" v={t.name} />
+              <Line icon={<t.img className="h-4 w-4" />} k="Шаблон" v={t.name} />
               <Line icon={<Server className="h-4 w-4" />} k="GPU" v={gpuCount ? `${gpuCount}× ${g.name}` : 'нет'} />
               <Line icon={<Cpu className="h-4 w-4" />} k="vCPU" v={`${cpu}`} />
               <Line icon={<MemoryStick className="h-4 w-4" />} k="RAM" v={`${ram} GB`} />
               <Line icon={<HardDrive className="h-4 w-4" />} k="Диск" v={`${disk} GB NVMe`} />
               <Line icon={<Terminal className="h-4 w-4" />} k="ОС" v={os} />
-              <button onClick={deploy} className="btn on-accent mt-2 w-full bg-gradient-to-r from-emerald-500 to-teal-500 py-3 text-white shadow-lg shadow-emerald-900/30 hover:from-emerald-400 hover:to-teal-400">
+              <button onClick={deploy} className="btn-primary btn-lg mt-2 w-full">
                 <Rocket className="h-4 w-4" /> Запустить под
               </button>
               <p className="text-center text-xs text-slate-500">Оплата поминутно с баланса кабинета</p>

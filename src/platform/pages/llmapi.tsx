@@ -279,7 +279,7 @@ echo json_decode(curl_exec($ch))->choices[0]->message->content;`,
         {steps.map((s, i) => (
           <div key={s.t} className="card p-4">
             <div className="flex items-center gap-3">
-              <span className="grid h-7 w-7 place-items-center rounded-lg bg-violet-500/15 text-sm font-semibold text-violet-300">{i + 1}</span>
+              <span className="grid h-7 w-7 place-items-center rounded-lg bg-violet-500/15 text-sm font-medium text-violet-300">{i + 1}</span>
               <span className="font-medium text-white">{s.t}</span>
             </div>
             <p className="mt-2 text-sm text-slate-400">{s.d}</p>
