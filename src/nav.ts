@@ -54,7 +54,7 @@ export const sections: Section[] = [
     items: [
       { path: 'ml/overview', title: 'Проекты', icon: FlaskConical, desc: 'Эксперименты, датасеты и метрики' },
       { path: 'ml/training', title: 'Обучение', icon: Cpu, desc: 'Запуск обучения на GPU в один клик' },
-      { path: 'ml/registry', title: 'Модели и деплой', icon: Rocket, desc: 'Реестр моделей и эндпоинты инференса' },
+      { path: 'ml/registry', title: 'Вывод моделей в прод', icon: Rocket, desc: 'Inference-сервисы: деплой, статусы и метрики' },
     ],
   },
   {

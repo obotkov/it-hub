@@ -7,12 +7,13 @@ import { Overview, Soon, Cabinets, Billing } from './platform/pages/misc'
 import { Chat, McpHub, SkillHub, RagHub, AgentWorld, MediaAgents, CodeAgent } from './platform/pages/ai'
 import { ProChat } from './platform/pages/prochat'
 import { LlmApi } from './platform/pages/llmapi'
-import { MlProjects, MlTraining, MlRegistry } from './platform/pages/ml'
+import { MlProjects, MlTraining } from './platform/pages/ml'
 import { GpuDeploy, GpuPods } from './platform/pages/gpu'
 import { Counters, Reports, Heatmap, Funnels, RawData, AppTracker } from './platform/pages/analytics'
 import { AbPlatform } from './platform/pages/ab'
 import { BiSources, BiAlerts } from './platform/pages/bi'
 import { BiDashboards } from './platform/pages/dashboards'
+import { MlInference } from './platform/pages/inference'
 import { BiQueries } from './platform/pages/biquery'
 import { Vms, Databases, K8s } from './platform/pages/cloud'
 import { DataCatalog, Pipelines, DataQuality } from './platform/pages/data'
@@ -52,7 +53,7 @@ export default function App() {
 
         <Route path="ml/overview" element={<MlProjects />} />
         <Route path="ml/training" element={<MlTraining />} />
-        <Route path="ml/registry" element={<MlRegistry />} />
+        <Route path="ml/registry" element={<MlInference />} />
 
         <Route path="gpu/deploy" element={<GpuDeploy />} />
         <Route path="gpu/pods" element={<GpuPods />} />

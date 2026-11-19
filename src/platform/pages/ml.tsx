@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { FlaskConical, Cpu, Rocket, Plus, Play, Square, Database, Copy, Check } from 'lucide-react'
-import { Badge, Card, Code, Modal, PageHeader, Stat, StatusDot, Table, Tabs } from '../../components/ui'
+import { FlaskConical, Cpu, Rocket, Plus, Play, Square, Database } from 'lucide-react'
+import { Badge, Card, Code, Modal, PageHeader, Stat, StatusDot } from '../../components/ui'
 import { LineChart, Sparkline, series } from '../../components/charts'
 
 export function MlProjects() {
@@ -101,51 +101,6 @@ export function MlTraining() {
           <div className="flex justify-end gap-2"><button onClick={() => setModal(false)} className="btn-ghost">Отмена</button><button onClick={() => { setEpoch(1); setRunning(true); setModal(false) }} className="btn-primary">Запустить</button></div>
         </div>
       </Modal>
-    </>
-  )
-}
-
-export function MlRegistry() {
-  const [tab, setTab] = useState<'models' | 'endpoints'>('models')
-  const [copied, setCopied] = useState(false)
-  return (
-    <>
-      <PageHeader title="Модели и деплой" subtitle="Версионированный реестр моделей и автомасштабируемые эндпоинты инференса." icon={Rocket} />
-      <div className="mb-4"><Tabs value={tab} onChange={setTab} tabs={[{ id: 'models', label: 'Реестр' }, { id: 'endpoints', label: 'Эндпоинты' }]} /></div>
-      {tab === 'models' ? (
-        <Card>
-          <Table
-            head={['Модель', 'Версия', 'Метрика', 'Фреймворк', 'Стадия', '']}
-            rows={[
-              ['churn-xgb', 'v7', 'AUC 0.912', 'XGBoost', <Badge tone="green">Production</Badge>, <button className="btn-ghost px-2.5 py-1 text-xs">Деплой</button>],
-              ['support-intent-lora', 'v3', 'F1 0.88', 'PyTorch', <Badge tone="amber">Staging</Badge>, <button className="btn-ghost px-2.5 py-1 text-xs">Деплой</button>],
-              ['demand-prophet', 'v12', 'MAPE 7.4%', 'Prophet', <Badge tone="green">Production</Badge>, <button className="btn-ghost px-2.5 py-1 text-xs">Деплой</button>],
-              ['recs-two-tower', 'v2', 'NDCG 0.41', 'TensorFlow', <Badge>Archived</Badge>, <button className="btn-ghost px-2.5 py-1 text-xs">Деплой</button>],
-            ]}
-          />
-        </Card>
-      ) : (
-        <div className="grid gap-4 lg:grid-cols-2">
-          <Card title="churn-xgb-prod" action={<StatusDot status="running" />}>
-            <div className="mb-4 grid grid-cols-3 gap-3 text-sm">
-              <div><div className="text-xs text-slate-500">RPS</div><div className="text-white">142</div></div>
-              <div><div className="text-xs text-slate-500">p95</div><div className="text-white">38 мс</div></div>
-              <div><div className="text-xs text-slate-500">Реплики</div><div className="text-white">2–6</div></div>
-            </div>
-            <div className="relative">
-              <Code>{`curl -X POST https://ml.ai-studio.space/v1/churn-xgb-prod/predict \\
-  -H "Authorization: Bearer $TOKEN" \\
-  -d '{"user_id": 1042, "features": {...}}'`}</Code>
-              <button onClick={() => { setCopied(true); setTimeout(() => setCopied(false), 1500) }} className="absolute right-2 top-2 rounded-lg bg-white/5 p-1.5 text-slate-400 hover:text-white">
-                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-              </button>
-            </div>
-          </Card>
-          <Card title="Нагрузка, запросов/мин">
-            <LineChart series={[{ name: 'rpm', data: series(24, 6000, 4000, 4), color: '#60a5fa' }]} labels={Array.from({ length: 24 }, (_, i) => `${i}:00`)} />
-          </Card>
-        </div>
-      )}
     </>
   )
 }
