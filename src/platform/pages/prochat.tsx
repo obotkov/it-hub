@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useRef, useState } from 'react'
 import {
   Bot, Check, ChevronDown, ChevronRight, Code2, Database, FileText, GitBranch, Globe, Library, Loader2, Paperclip,
-  Plug, Puzzle, Send, Settings2, SlidersHorizontal, Sparkles, Terminal, Trash2, Wrench, X, Zap, BookOpen, Layers,
+  Plug, Puzzle, Send, Settings2, SlidersHorizontal, Cpu, Terminal, Trash2, Wrench, X, Zap, BookOpen, Layers,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { Badge, Toggle, cx } from '../../components/ui'
@@ -174,7 +174,7 @@ export function ProChat() {
         <div className="flex flex-wrap items-center gap-2 border-b border-white/[0.05] px-4 py-3">
           <div className="relative">
             <button onClick={() => setPick(!pick)} className="flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm font-medium text-white hover:bg-white/5">
-              <Sparkles className="h-4 w-4 text-violet-400" /> {model.name} <ChevronDown className="h-4 w-4 text-slate-500" />
+              <Cpu className="h-4 w-4 text-slate-500" strokeWidth={1.5} /> {model.name} <ChevronDown className="h-4 w-4 text-slate-500" />
             </button>
             {pick && (
               <>
@@ -209,10 +209,10 @@ export function ProChat() {
         <div className="flex-1 overflow-y-auto px-4 py-6">
           {msgs.length === 0 ? (
             <div className="mx-auto flex h-full max-w-2xl flex-col items-center justify-center text-center">
-              <div className="on-accent grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-violet-500 to-cyan-400 shadow-lg shadow-violet-900/40">
+              <div className="grid h-14 w-14 place-items-center rounded-2xl border border-white/[0.08] bg-ink-800">
                 <Wrench className="h-7 w-7 text-white" />
               </div>
-              <h2 className="mt-5 text-2xl font-semibold text-white">Pro чат</h2>
+              <h2 className="mt-5 text-2xl font-medium text-white">Pro чат</h2>
               <p className="mt-2 max-w-md text-sm text-slate-400">Модель сама вызывает подключённые инструменты: ищет в базах знаний (RAG), обращается к MCP-серверам, гуглит и запускает код — и показывает каждый шаг.</p>
               <div className="mt-6 flex flex-wrap justify-center gap-2">
                 {presets.map((p) => (
@@ -333,7 +333,7 @@ function Group({ title, items, on, toggle }: { title: string; items: Source[]; o
   return (
     <div>
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{title}</span>
+        <span className="text-[11px] font-medium text-slate-500">{title}</span>
         <span className="text-[11px] text-slate-500">{items.filter((i) => on[i.id]).length}/{items.length}</span>
       </div>
       <div className="space-y-1.5">
@@ -382,7 +382,7 @@ function AssistantMsg({ m }: { m: Msg }) {
   const doneCount = steps.filter((s) => s.done).length
   return (
     <div className="flex gap-3">
-      <div className="on-accent grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-violet-500 to-cyan-400"><Bot className="h-4 w-4 text-white" /></div>
+      <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-white/[0.08] bg-ink-800"><Bot className="h-4 w-4 text-white" /></div>
       <div className="min-w-0 flex-1 space-y-3">
         {steps.length > 0 && (
           <div className="rounded-2xl border border-white/[0.06] bg-ink-900">

@@ -100,7 +100,7 @@ function SummaryCard({ label, value, hint }: { label: string; value: number; hin
   return (
     <div className="card p-5">
       <div className="text-xs font-medium text-slate-400">{label}</div>
-      <div className="mt-3 text-3xl font-semibold tabular-nums text-white">{value}</div>
+      <div className="mt-3 text-3xl font-medium tabular-nums text-white">{value}</div>
       <div className="mt-3 text-xs text-slate-500">{hint}</div>
     </div>
   )
@@ -129,10 +129,10 @@ function ServicesList({ services, onOpen, onCreate }: { services: Service[]; onO
     <>
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-violet-400">
+          <div className="mb-2 flex items-center gap-2 text-xs font-medium text-slate-500">
             <span className="h-1.5 w-1.5 rounded-full bg-violet-400" /> Inference services
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">Все inference-сервисы</h1>
+          <h1 className="text-2xl font-medium tracking-tight text-white sm:text-3xl">Все inference-сервисы</h1>
           <p className="mt-2 text-sm text-slate-400">Развёрнутые модели и ансамбли, статусы, производительность и история.</p>
         </div>
         <div className="flex items-center gap-2">
@@ -165,14 +165,14 @@ function ServicesList({ services, onOpen, onCreate }: { services: Service[]; onO
         <div className="overflow-x-auto">
           <table className="w-full min-w-[1000px] text-left text-sm">
             <thead>
-              <tr className="border-y border-white/[0.06] bg-white/[0.02] text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-                <th className="px-5 py-3 font-semibold">Сервис / артефакт</th>
-                <th className="px-3 py-3 font-semibold">Команда</th>
-                <th className="px-3 py-3 font-semibold">Backend</th>
-                <th className="px-3 py-3 font-semibold">Окружение</th>
-                <th className="px-3 py-3 font-semibold">Статус</th>
-                <th className="px-3 py-3 font-semibold">RPS / P99</th>
-                <th className="px-3 py-3 font-semibold">Revision</th>
+              <tr className="border-y border-white/[0.06] bg-white/[0.02] text-[11px] font-medium text-slate-500">
+                <th className="px-5 py-3 font-medium">Сервис / артефакт</th>
+                <th className="px-3 py-3 font-medium">Команда</th>
+                <th className="px-3 py-3 font-medium">Backend</th>
+                <th className="px-3 py-3 font-medium">Окружение</th>
+                <th className="px-3 py-3 font-medium">Статус</th>
+                <th className="px-3 py-3 font-medium">RPS / P99</th>
+                <th className="px-3 py-3 font-medium">Revision</th>
                 <th className="px-5 py-3" />
               </tr>
             </thead>
@@ -183,7 +183,7 @@ function ServicesList({ services, onOpen, onCreate }: { services: Service[]; onO
                     <div className="flex items-center gap-3">
                       <FormatIcon file={s.file} />
                       <div className="min-w-0">
-                        <div className="truncate font-semibold text-white">{s.name}</div>
+                        <div className="truncate font-medium text-white">{s.name}</div>
                         <div className="truncate text-xs text-slate-500">{s.file}</div>
                       </div>
                     </div>
@@ -196,7 +196,7 @@ function ServicesList({ services, onOpen, onCreate }: { services: Service[]; onO
                   <td className="px-3 py-3.5"><EnvBadge env={s.env} /></td>
                   <td className="px-3 py-3.5"><HealthDot s={s.status} /></td>
                   <td className="px-3 py-3.5">
-                    <div className="font-semibold tabular-nums text-white">{fmtN(s.rps)}</div>
+                    <div className="font-medium tabular-nums text-white">{fmtN(s.rps)}</div>
                     <div className="text-xs text-slate-500">{s.p99} ms</div>
                   </td>
                   <td className="px-3 py-3.5 text-slate-200">v{s.rev}</td>
@@ -326,7 +326,7 @@ const fmtDate = (iso?: string) => {
 
 function Eyebrow({ children }: { children: ReactNode }) {
   return (
-    <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-violet-400">
+    <div className="mb-2 flex items-center gap-2 text-xs font-medium text-slate-500">
       <span className="h-1.5 w-1.5 rounded-full bg-violet-400" /> {children}
     </div>
   )
@@ -342,8 +342,8 @@ function KV({ items }: { items: [string, ReactNode][] }) {
     <dl className="grid grid-cols-2 gap-x-6 gap-y-5">
       {items.map(([k, v]) => (
         <div key={k} className="min-w-0">
-          <dt className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">{k}</dt>
-          <dd className="mt-1.5 truncate font-semibold text-white">{v}</dd>
+          <dt className="text-[11px] font-medium text-slate-500">{k}</dt>
+          <dd className="mt-1.5 truncate font-medium text-white">{v}</dd>
         </div>
       ))}
     </dl>
@@ -357,7 +357,7 @@ function Note({ children }: { children: ReactNode }) {
 function MiniStat({ value, label }: { value: string; label: string }) {
   return (
     <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">
-      <div className="text-lg font-semibold tabular-nums text-white">{value}</div>
+      <div className="text-lg font-medium tabular-nums text-white">{value}</div>
       <div className="mt-1 text-xs text-slate-500">{label}</div>
     </div>
   )
@@ -368,16 +368,16 @@ function FieldTable({ rows, tone }: { rows: Field[]; tone: 'blue' | 'green' }) {
     <div className="overflow-x-auto rounded-xl border border-white/[0.06]">
       <table className="w-full text-left text-sm">
         <thead>
-          <tr className="bg-white/[0.02] text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-            <th className="w-[35%] px-4 py-2.5 font-semibold">Имя</th>
-            <th className="w-[20%] px-4 py-2.5 font-semibold">Тип</th>
-            <th className="px-4 py-2.5 font-semibold">Описание</th>
+          <tr className="bg-white/[0.02] text-[11px] font-medium text-slate-500">
+            <th className="w-[35%] px-4 py-2.5 font-medium">Имя</th>
+            <th className="w-[20%] px-4 py-2.5 font-medium">Тип</th>
+            <th className="px-4 py-2.5 font-medium">Описание</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((f) => (
             <tr key={f.name} className="border-t border-white/[0.04]">
-              <td className="px-4 py-3 font-mono font-semibold text-white">{f.name}</td>
+              <td className="px-4 py-3 font-mono font-medium text-white">{f.name}</td>
               <td className="px-4 py-3"><Pill tone={tone}>{f.type}</Pill></td>
               <td className="px-4 py-3 text-slate-400">{f.desc}</td>
             </tr>
@@ -417,7 +417,7 @@ function ServiceView({ s, onBack, onRedeploy, onClone }: { s: Service; onBack: (
             <ArrowLeft className="h-3.5 w-3.5" /> К списку сервисов
           </button>
           <Eyebrow>Service details / ML Platform</Eyebrow>
-          <h1 className="truncate text-2xl font-semibold tracking-tight text-white sm:text-3xl">{s.name}</h1>
+          <h1 className="truncate text-2xl font-medium tracking-tight text-white sm:text-3xl">{s.name}</h1>
           <p className="mt-2 text-sm text-slate-400">{d.mode} · {s.backend} · v{s.rev} · {envShort(s.env)}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -447,11 +447,11 @@ function ServiceView({ s, onBack, onRedeploy, onClone }: { s: Service; onBack: (
               <div className="space-y-4">
                 <Card>
                   <div className="mb-4 flex items-center justify-between gap-2">
-                    <h3 className="text-sm font-semibold text-white">Публичный endpoint</h3>
+                    <h3 className="text-sm font-medium text-white">Публичный endpoint</h3>
                     <Pill tone="green">Stable URL</Pill>
                   </div>
                   <div className="theme-fixed rounded-xl bg-[#14111f] p-4 text-slate-300">
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Production / development API</div>
+                    <div className="text-[11px] font-medium text-slate-500">Production / development API</div>
                     <div className="mt-2 break-all font-mono text-sm text-white">{url}</div>
                     <div className="mt-3 border-t border-white/10 pt-3 text-xs text-slate-400">Нативный маршрут {s.backend}</div>
                   </div>
@@ -470,7 +470,7 @@ function ServiceView({ s, onBack, onRedeploy, onClone }: { s: Service; onBack: (
                   </div>
                 </Card>
                 <Card>
-                  <h3 className="text-sm font-semibold text-white">Описание</h3>
+                  <h3 className="text-sm font-medium text-white">Описание</h3>
                   <p className="mt-3 text-sm text-slate-400">{d.desc}</p>
                   <div className="my-5 h-px bg-white/[0.06]" />
                   <KV items={[['Тип', d.mode], ['Задача', d.task], ['Backend', s.backend], ['Артефакт', s.file], ['Окружение', s.env], ['Реплики', d.replicas]]} />
@@ -478,13 +478,13 @@ function ServiceView({ s, onBack, onRedeploy, onClone }: { s: Service; onBack: (
               </div>
               <div className="space-y-4">
                 <Card>
-                  <h3 className="text-sm font-semibold text-white">Статус</h3>
+                  <h3 className="text-sm font-medium text-white">Статус</h3>
                   <div className="mt-3"><HealthDot s={s.status} /></div>
                   <div className="my-5 h-px bg-white/[0.06]" />
                   <KV items={[['RPS', fmtN(s.rps)], ['P99 latency', `${s.p99} ms`], ['CPU / GPU', d.cpu], ['RAM', d.ram]]} />
                 </Card>
                 <Card>
-                  <h3 className="text-sm font-semibold text-white">Последнее обновление</h3>
+                  <h3 className="text-sm font-medium text-white">Последнее обновление</h3>
                   <p className="mt-3 text-sm text-slate-500">{fmtDate(history[0].at)} · v{s.rev}</p>
                   <div className="mt-4"><Pill tone={d.correctness === 'VERIFIED' ? 'green' : 'amber'}>Correctness: {d.correctness}</Pill></div>
                   <button onClick={() => setTab('tests')} className="btn-ghost mt-4">Все проверки <ArrowRight className="h-4 w-4" /></button>
@@ -496,15 +496,15 @@ function ServiceView({ s, onBack, onRedeploy, onClone }: { s: Service; onBack: (
           {tab === 'model' && (
             <div className="grid gap-4 lg:grid-cols-[1.6fr_1fr]">
               <Card>
-                <h3 className="text-sm font-semibold text-white">Контракт модели и признаки</h3>
+                <h3 className="text-sm font-medium text-white">Контракт модели и признаки</h3>
                 <p className="mt-1 text-sm text-slate-500">Данные о модели и технический контракт входов и выходов.</p>
-                <h4 className="mb-3 mt-5 text-sm font-semibold text-white">Входы / фичи</h4>
+                <h4 className="mb-3 mt-5 text-sm font-medium text-white">Входы / фичи</h4>
                 <FieldTable rows={d.inputs} tone="blue" />
-                <h4 className="mb-3 mt-6 text-sm font-semibold text-white">Выходы</h4>
+                <h4 className="mb-3 mt-6 text-sm font-medium text-white">Выходы</h4>
                 <FieldTable rows={d.outputs} tone="green" />
               </Card>
               <Card className="self-start">
-                <h3 className="mb-5 text-sm font-semibold text-white">Model metadata</h3>
+                <h3 className="mb-5 text-sm font-medium text-white">Model metadata</h3>
                 <KV items={[['Название', s.name], ['Файл', s.file], ['Формат', ext(s.file)], ['Version', `v${s.rev}`], ['Команда', s.team], ['Режим', d.mode]]} />
                 <div className="my-5 h-px bg-white/[0.06]" />
                 <button onClick={() => setModal(true)} className="btn-primary"><RefreshCw className="h-4 w-4" /> Заменить модель и создать revision</button>
@@ -518,23 +518,23 @@ function ServiceView({ s, onBack, onRedeploy, onClone }: { s: Service; onBack: (
               <div className="grid gap-4 md:grid-cols-3">
                 <div className="card p-5">
                   <div className="text-xs font-medium text-slate-400">Smoke test</div>
-                  <div className={cx('mt-3 text-2xl font-semibold', d.smoke === 'PASSED' ? 'text-white' : 'text-rose-400')}>{d.smoke}</div>
+                  <div className={cx('mt-3 text-2xl font-medium', d.smoke === 'PASSED' ? 'text-white' : 'text-rose-400')}>{d.smoke}</div>
                   <div className="mt-2 text-xs text-slate-500">Контракт API и готовность</div>
                 </div>
                 <div className="card p-5">
                   <div className="text-xs font-medium text-slate-400">Correctness</div>
-                  <div className={cx('mt-3 text-2xl font-semibold', d.correctness === 'VERIFIED' ? 'text-emerald-400' : 'text-amber-400')}>{d.correctness}</div>
+                  <div className={cx('mt-3 text-2xl font-medium', d.correctness === 'VERIFIED' ? 'text-emerald-400' : 'text-amber-400')}>{d.correctness}</div>
                   <div className="mt-2 text-xs text-slate-500">{d.correctness === 'VERIFIED' ? 'Golden samples совпадают' : 'Golden samples отсутствуют'}</div>
                 </div>
                 <div className="card p-5">
                   <div className="text-xs font-medium text-slate-400">Benchmark</div>
-                  <div className="mt-3 text-2xl font-semibold text-white">BASELINE</div>
+                  <div className="mt-3 text-2xl font-medium text-white">BASELINE</div>
                   <div className="mt-2 text-xs text-slate-500">Иллюстративный результат</div>
                 </div>
               </div>
               <Card>
                 <div className="mb-4 flex items-center justify-between gap-2">
-                  <h3 className="text-sm font-semibold text-white">Последний отчёт нагрузочного тестирования</h3>
+                  <h3 className="text-sm font-medium text-white">Последний отчёт нагрузочного тестирования</h3>
                   <Pill tone="slate">Демо-данные</Pill>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-3">
@@ -551,7 +551,7 @@ function ServiceView({ s, onBack, onRedeploy, onClone }: { s: Service; onBack: (
             <div className="grid gap-4 lg:grid-cols-[1.6fr_1fr]">
               <Card>
                 <div className="mb-4 flex items-center justify-between gap-2">
-                  <h3 className="text-sm font-semibold text-white">Inference requests · RPS</h3>
+                  <h3 className="text-sm font-medium text-white">Inference requests · RPS</h3>
                   <Pill tone="slate">Демо-метрики</Pill>
                 </div>
                 <div className="flex h-24 items-end gap-1.5">
@@ -559,7 +559,7 @@ function ServiceView({ s, onBack, onRedeploy, onClone }: { s: Service; onBack: (
                     <div
                       key={i}
                       title={`${fmtN(Math.round(v))} RPS`}
-                      className="flex-1 rounded-t-md bg-gradient-to-t from-violet-400 to-violet-600 transition hover:opacity-80"
+                      className="flex-1 rounded-t-md bg-violet-500 transition hover:opacity-80"
                       style={{ height: `${Math.max(12, (v / max) * 100)}%` }}
                     />
                   ))}
@@ -573,7 +573,7 @@ function ServiceView({ s, onBack, onRedeploy, onClone }: { s: Service; onBack: (
                 <p className="text-xs text-slate-500">В реальной платформе здесь подключаются Grafana / Prometheus / Thanos и engine-specific метрики; числовые показатели демонстрационные.</p>
               </Card>
               <Card className="self-start">
-                <h3 className="mb-5 text-sm font-semibold text-white">Runtime &amp; resources</h3>
+                <h3 className="mb-5 text-sm font-medium text-white">Runtime &amp; resources</h3>
                 <KV items={[['Backend', s.backend], ['Replicas', d.replicas], ['CPU / GPU', d.cpu], ['Memory', d.ram], ['Окружение', envShort(s.env)], ['Health', s.status.toLowerCase()]]} />
               </Card>
             </div>
@@ -583,7 +583,7 @@ function ServiceView({ s, onBack, onRedeploy, onClone }: { s: Service; onBack: (
             <Card>
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <h3 className="text-sm font-semibold text-white">Ревизии и операции</h3>
+                  <h3 className="text-sm font-medium text-white">Ревизии и операции</h3>
                   <p className="mt-1 text-sm text-slate-500">Новая публикация не меняет публичный URL.</p>
                 </div>
                 <Pill tone="green">Текущая v{s.rev}</Pill>
@@ -595,7 +595,7 @@ function ServiceView({ s, onBack, onRedeploy, onClone }: { s: Service; onBack: (
                       <span className={cx('h-1.5 w-1.5 rounded-full', i === 0 ? 'bg-violet-400' : 'bg-slate-500')} />
                     </span>
                     <div className="min-w-0 flex-1">
-                      <div className="text-sm font-semibold text-white">{i === 0 ? `Текущая версия · v${h.rev}` : `v${h.rev}`}</div>
+                      <div className="text-sm font-medium text-white">{i === 0 ? `Текущая версия · v${h.rev}` : `v${h.rev}`}</div>
                       <div className="truncate text-xs text-slate-500">Артефакт: {h.file} · {fmtDate(h.at)} · {i === 0 ? 'активна' : 'архив'}</div>
                     </div>
                     {i > 0 && <button onClick={() => onRedeploy(h.file)} className="btn-ghost px-3 py-1.5 text-xs">Откатить</button>}
@@ -646,10 +646,10 @@ function CreateService({ onCreate, onCancel }: { onCreate: (s: Service) => void;
   return (
     <>
       <div className="mb-6">
-        <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-violet-400">
+        <div className="mb-2 flex items-center gap-2 text-xs font-medium text-slate-500">
           <span className="h-1.5 w-1.5 rounded-full bg-violet-400" /> Новый сервис
         </div>
-        <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">Создать inference-сервис</h1>
+        <h1 className="text-2xl font-medium tracking-tight text-white sm:text-3xl">Создать inference-сервис</h1>
         <p className="mt-2 text-sm text-slate-400">Загрузите артефакт модели, выберите движок и окружение — сервис поднимется с REST/gRPC эндпоинтом.</p>
       </div>
       <div className="grid gap-4 lg:grid-cols-3">

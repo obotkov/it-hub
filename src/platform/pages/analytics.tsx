@@ -171,7 +171,7 @@ export function Reports() {
               <div key={c} className="flex items-center gap-4 text-sm">
                 <Globe className="h-4 w-4 text-slate-500" />
                 <span className="w-40 text-slate-300">{c}</span>
-                <div className="h-2 flex-1 rounded-full bg-white/5"><div className="h-full rounded-full bg-gradient-to-r from-orange-500 to-rose-500" style={{ width: `${(+v / 38) * 100}%` }} /></div>
+                <div className="h-2 flex-1 rounded-full bg-white/5"><div className="h-full rounded-full bg-violet-500" style={{ width: `${(+v / 38) * 100}%` }} /></div>
                 <span className="w-12 text-right tabular-nums text-slate-400">{v}%</span>
               </div>
             ))}
@@ -294,7 +294,7 @@ export function Funnels() {
                   <div className="flex items-center gap-4">
                     <div className="w-36 shrink-0 text-sm text-slate-300">{i + 1}. {s.name}</div>
                     <div className="relative h-10 flex-1 overflow-hidden rounded-lg bg-white/[0.03]">
-                      <div className="h-full rounded-lg bg-gradient-to-r from-orange-500 to-rose-500 transition-all" style={{ width: `${pct}%`, opacity: 1 - i * 0.1 }} />
+                      <div className="h-full rounded-lg bg-violet-500 transition-colors" style={{ width: `${pct}%`, opacity: 1 - i * 0.1 }} />
                       <span className="absolute inset-y-0 left-3 flex items-center text-sm font-medium text-white">{s.v.toLocaleString('ru-RU')}</span>
                     </div>
                     <div className="w-14 text-right text-sm tabular-nums text-slate-400">{pct.toFixed(1)}%</div>

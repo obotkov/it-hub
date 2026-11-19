@@ -42,7 +42,7 @@ export function DataCatalog() {
               <div key={k} className="flex justify-between"><span className="text-slate-500">{k}</span><span className="text-slate-200">{v}</span></div>
             ))}
           </div>
-          <div className="mt-5 text-xs uppercase tracking-wide text-slate-500">Lineage</div>
+          <div className="mt-5 text-xs text-slate-500">Lineage</div>
           <div className="mt-3 flex flex-col items-stretch gap-2">
             {['raw.wm_events', 'stg.events_clean', sel.name, 'BI: Продажи'].map((n, i, a) => (
               <div key={n + i}>

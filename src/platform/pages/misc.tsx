@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { ArrowRight, Building2, CreditCard, FileText, Hammer, Plus, Receipt, User, Wallet, Activity, Server, Sparkles, Gauge } from 'lucide-react'
+import { ArrowRight, Building2, CreditCard, FileText, Hammer, Plus, Receipt, User, Wallet, Activity, Server, Gauge, MessageSquare } from 'lucide-react'
 import { sections, findItem } from '../../nav'
 import { useAccount } from '../../account'
 import { Badge, Card, PageHeader, Stat, Table, cx } from '../../components/ui'
@@ -8,19 +8,20 @@ import { BarChart, Donut, LineChart, days, series } from '../../components/chart
 import CabinetModal from '../CabinetModal'
 
 export function Overview() {
-  const { user, current } = useAccount()
+  const { current } = useAccount()
+  const month = new Date().toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' }).replace(' г.', '')
   return (
     <>
-      <div className="relative mb-8 overflow-hidden rounded-3xl border border-white/[0.06] bg-gradient-to-br from-violet-600/20 via-ink-900 to-cyan-500/10 p-6 sm:p-8">
-        <div className="grid-bg pointer-events-none absolute inset-0 opacity-40" />
-        <div className="relative">
-          <div className="text-sm text-slate-400">Добро пожаловать,</div>
-          <h1 className="mt-1 text-3xl font-semibold capitalize tracking-tight text-white">{user?.name}</h1>
+      <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h1 className="text-[28px] font-medium leading-tight text-white">Обзор · {month}</h1>
           <p className="mt-2 text-sm text-slate-400">
-            Кабинет: <span className="text-slate-200">{current.name}</span> · {current.type === 'legal' ? 'юридическое лицо' : 'физическое лицо'}
+            {current.name} · {current.type === 'legal' ? 'юридическое лицо' : 'физическое лицо'} · баланс <span className="meter text-slate-200">{current.balance.toLocaleString('ru-RU')} ₽</span>
           </p>
-          <div className="mt-6 flex flex-wrap gap-2">
-            <Link to="/app/ai/chat" className="btn-primary"><Sparkles className="h-4 w-4" /> Новый чат</Link>
+        </div>
+        <div>
+          <div className="flex flex-wrap gap-2">
+            <Link to="/app/ai/chat" className="btn-primary"><MessageSquare className="h-4 w-4" /> Новый чат</Link>
             <Link to="/app/gpu/deploy" className="btn-ghost"><Server className="h-4 w-4" /> Запустить GPU-под</Link>
             <Link to="/app/analytics/counters" className="btn-ghost"><Gauge className="h-4 w-4" /> Создать счётчик</Link>
           </div>
@@ -28,35 +29,33 @@ export function Overview() {
       </div>
 
       <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Stat label="Расходы за месяц" value="8 420 ₽" delta="+6%" icon={Wallet} />
-        <Stat label="Токенов LLM" value="2.4M" delta="+18%" icon={Sparkles} />
-        <Stat label="GPU-часов" value="37.5" delta="-4%" icon={Server} />
-        <Stat label="Событий аналитики" value="1.2M" delta="+12%" icon={Activity} />
+        <Stat label="Расходы за месяц" value="8 420 ₽" delta="+6% к прошлому месяцу" />
+        <Stat label="Токенов LLM" value="2,4 млн" delta="+18% к прошлому месяцу" />
+        <Stat label="GPU-часов" value="37,5" delta="−4% к прошлому месяцу" />
+        <Stat label="Событий аналитики" value="1,2 млн" delta="+12% к прошлому месяцу" />
       </div>
 
       <div className="mb-6 grid gap-4 lg:grid-cols-3">
         <Card title="Расходы по дням" className="lg:col-span-2">
-          <LineChart labels={days(30)} series={[{ name: 'Расходы, ₽', data: series(30, 180, 160, 7), color: '#a78bfa' }]} />
+          <LineChart labels={days(30)} series={[{ name: 'Расходы, ₽', data: series(30, 180, 160, 7), color: '#8b5cf6' }]} />
         </Card>
         <Card title="Структура расходов">
           <Donut
             data={[
-              { label: 'GPU', value: 42, color: '#34d399' },
-              { label: 'AI Platform', value: 28, color: '#a78bfa' },
-              { label: 'Облако', value: 18, color: '#818cf8' },
-              { label: 'Аналитика', value: 12, color: '#fb923c' },
+              { label: 'GPU', value: 42, color: '#8b5cf6' },
+              { label: 'AI Platform', value: 28, color: '#8e8e93' },
+              { label: 'Облако', value: 18, color: '#5c5c61' },
+              { label: 'Аналитика', value: 12, color: '#3a3a3e' },
             ]}
           />
         </Card>
       </div>
 
-      <h2 className="mb-4 text-lg font-semibold text-white">Платформы</h2>
+      <h2 className="mb-4 text-lg font-medium text-white">Платформы</h2>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {sections.filter((s) => !s.soon).map((s) => (
-          <Link key={s.id} to={`/app/${s.items[0].path}`} className="card group p-5 transition hover:border-white/15">
-            <div className={`on-accent mb-4 grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br ${s.gradient}`}>
-              <s.icon className="h-5 w-5 text-white" />
-            </div>
+          <Link key={s.id} to={`/app/${s.items[0].path}`} className="card group p-5 transition-colors hover:border-white/15">
+            <s.icon className="mb-4 h-[18px] w-[18px] text-slate-400" strokeWidth={1.5} />
             <div className="font-medium text-white">{s.title}</div>
             <p className="mt-1 text-sm text-slate-400">{s.tagline}</p>
             <div className="mt-4 flex items-center gap-1 text-xs text-slate-500 group-hover:text-slate-300">
@@ -75,15 +74,12 @@ export function Soon() {
   const Icon = f?.item.icon ?? Hammer
   return (
     <div className="flex min-h-[70vh] flex-col items-center justify-center text-center">
-      <div className="relative">
-        <div className="absolute inset-0 rounded-full bg-violet-500/20 blur-3xl" />
-        <div className="relative grid h-20 w-20 place-items-center rounded-3xl border border-white/10 bg-ink-850">
-          <Icon className="h-9 w-9 text-violet-300" />
-        </div>
+      <div className="mb-6 grid h-16 w-16 place-items-center rounded-2xl border border-white/[0.08] bg-ink-850">
+        <Icon className="h-6 w-6 text-slate-400" strokeWidth={1.5} />
       </div>
       <Badge tone="amber">В разработке</Badge>
-      <h1 className="mt-3 text-3xl font-semibold text-white">{f?.item.title ?? 'Скоро'}</h1>
-      <p className="mt-2 max-w-md text-slate-400">{f?.item.desc}. Мы уже работаем над этим блоком — оставьте заявку, и мы сообщим о запуске.</p>
+      <h1 className="mt-3 text-3xl font-medium text-white">{f?.item.title ?? 'Скоро'}</h1>
+      <p className="mt-2 max-w-md text-slate-400">{f?.item.desc}. Мы уже работаем над этим блоком — оставьте заявку, и мы сообщим о запуске</p>
       <button className="btn-primary mt-6">Хочу ранний доступ</button>
     </div>
   )

@@ -10,51 +10,80 @@ body,
 
 body {
   @apply bg-ink-950 font-sans text-slate-200 antialiased;
+  font-feature-settings: 'cv11', 'ss01';
 }
 
 ::selection {
-  background: rgba(139, 92, 246, 0.35);
+  background: rgb(var(--c-violet-500) / 0.3);
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #2a3045 transparent;
+  scrollbar-color: rgb(var(--c-ink-600)) transparent;
+}
+
+:focus-visible {
+  outline: 2px solid rgb(var(--c-violet-500) / 0.7);
+  outline-offset: 2px;
 }
 
 @layer components {
+  /* Surfaces: one step above the page, hairline border, no blur, no glow */
   .card {
-    @apply rounded-2xl border border-white/[0.06] bg-ink-900/80 backdrop-blur;
+    @apply rounded-2xl border border-white/[0.07] bg-ink-900;
   }
+
+  /* Buttons: 36px tall (py-2 + 20px line), 8px radius, colour + press feedback only */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition active:scale-[.98] disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-[color,background-color,border-color,transform] active:scale-[.98] disabled:pointer-events-none disabled:opacity-50;
   }
   .btn-primary {
     --c-white: 255 255 255;
-    @apply btn bg-gradient-to-r from-violet-600 to-indigo-500 text-white shadow-lg shadow-violet-900/30 hover:from-violet-500 hover:to-indigo-400;
+    @apply btn bg-violet-600 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.14)] hover:bg-violet-700;
   }
   .btn-ghost {
-    @apply btn border border-white/10 bg-white/[0.03] text-slate-200 hover:bg-white/[0.07];
+    @apply btn border border-white/[0.08] bg-ink-800 text-slate-100 hover:bg-ink-700;
   }
+  .btn-lg {
+    @apply px-5 py-3 text-[15px];
+  }
+
   .input {
-    @apply w-full rounded-xl border border-white/10 bg-ink-850 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 outline-none transition focus:border-violet-500/60 focus:ring-2 focus:ring-violet-500/20;
+    @apply w-full rounded-lg border border-white/[0.08] bg-ink-850 px-3 py-2 text-sm text-slate-100 outline-none transition-[border-color,box-shadow] placeholder:text-slate-500 focus:border-violet-500/60 focus:ring-2 focus:ring-violet-500/20;
   }
   .label {
-    @apply mb-1.5 block text-xs font-medium uppercase tracking-wide text-slate-400;
+    @apply mb-1.5 block text-[13px] text-slate-400;
   }
+
+  /* Keycap for shortcuts */
+  .kbd {
+    @apply inline-flex h-5 min-w-5 items-center justify-center rounded border border-white/[0.1] bg-ink-800 px-1 font-mono text-[11px] text-slate-500;
+  }
+
+  /* Signature: money and metered resources in mono, tabular */
+  .meter {
+    @apply font-mono tabular-nums tracking-normal;
+  }
+
+  /* Kept for compatibility, now plain text */
   .text-gradient {
-    @apply bg-gradient-to-r from-violet-400 via-fuchsia-300 to-cyan-300 bg-clip-text text-transparent;
-  }
-  .grid-bg {
-    background-image: linear-gradient(rgb(var(--c-white) / 0.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgb(var(--c-white) / 0.035) 1px, transparent 1px);
-    background-size: 48px 48px;
+    @apply text-white;
   }
   .dot-bg {
-    background-image: radial-gradient(rgb(var(--c-white) / 0.08) 1px, transparent 1px);
+    background-image: radial-gradient(rgb(var(--c-white) / 0.07) 1px, transparent 1px);
     background-size: 20px 20px;
   }
 }
 
 :root[data-theme='light'] .card {
-  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 4px 16px rgb(15 23 42 / 0.04);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+}
+:root[data-theme='light'] .btn-ghost {
+  @apply bg-ink-900 hover:bg-ink-850;
+}
+.preview-window {
+  box-shadow: 0 24px 64px rgb(0 0 0 / 0.35);
+}
+:root[data-theme='light'] .preview-window {
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.06);
 }

@@ -72,7 +72,7 @@ export function BarChart({ data, color = '#8b5cf6', height = 200 }: { data: { la
         <div key={d.label} className="group flex flex-1 flex-col items-center gap-2">
           <div className="relative flex w-full flex-1 items-end">
             <div
-              className="w-full rounded-t-md transition-all group-hover:opacity-80"
+              className="w-full rounded-t-md transition-colors group-hover:opacity-80"
               style={{ height: `${(d.value / max) * 100}%`, background: `linear-gradient(180deg, ${color}, ${color}55)` }}
             />
             <span className="pointer-events-none absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] text-slate-300 opacity-0 transition group-hover:opacity-100">

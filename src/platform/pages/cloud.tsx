@@ -82,7 +82,7 @@ export function Vms() {
             </div>
           )}
           <div className="flex items-center justify-between">
-            <span className="text-lg font-semibold text-white">{(p === -1 ? custom : presets[p].price).toLocaleString('ru-RU')} ₽/мес</span>
+            <span className="text-lg font-medium text-white">{(p === -1 ? custom : presets[p].price).toLocaleString('ru-RU')} ₽/мес</span>
             <button
               onClick={() => {
                 const c = p === -1 ? { cpu, ram, disk, price: custom } : presets[p]
@@ -125,7 +125,7 @@ export function Databases() {
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-8">
         {engines.map((e) => (
           <button key={e.n} onClick={() => setSel(e.n)} className="card group p-4 text-left transition hover:border-white/15">
-            <div className={`on-accent grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br ${e.c}`}><Database className="h-4 w-4 text-white" /></div>
+            <div className={`grid h-9 w-9 place-items-center rounded-xl border border-white/[0.08] bg-ink-800`}><Database className="h-4 w-4 text-white" /></div>
             <div className="mt-3 text-sm font-medium text-white">{e.n}</div>
             <div className="text-xs text-slate-500">v{e.v}</div>
           </button>
