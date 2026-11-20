@@ -1,6 +1,6 @@
 # IT Hub
 
-Хаб IT-сервисов: лендинг + платформа (AI Platform, ML Platform, GPU-инференс, продуктовая аналитика Wildmetrics, BI, облако, платформа данных) с кабинетами для физ- и юрлиц.
+Хаб IT-сервисов: лендинг + платформа (AI Platform, ML Platform, GPU Workload, продуктовая аналитика Wildmetrics, BI, облако, платформа данных) с кабинетами для физ- и юрлиц.
 
 Стек: React 18 + TypeScript + Vite + Tailwind CSS. Раздаётся Caddy (авто-HTTPS) из Docker-образа.
 

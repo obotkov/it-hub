@@ -53,13 +53,13 @@ export const sections: Section[] = [
   },
   {
     id: 'gpu',
-    title: 'GPU Инференс',
+    title: 'GPU Workload',
     short: 'GPU',
     icon: Server,
     tagline: 'Поды с видеокартами за минуту: ComfyUI, vLLM, PyTorch',
     items: [
-      { path: 'gpu/deploy', title: 'Новый под', icon: Rocket, desc: 'Шаблон + конфигурация вычислений' },
       { path: 'gpu/pods', title: 'Мои поды', icon: Server, desc: 'Запущенные поды и их состояние' },
+      { path: 'gpu/deploy', title: 'Новый под', icon: Rocket, desc: 'Шаблон + конфигурация вычислений' },
     ],
   },
   {
