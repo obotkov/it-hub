@@ -55,10 +55,15 @@ export default function Landing() {
         <div className={wrap}>
           <div className="grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-12">
             <div className="lg:col-span-7">
-              <h1 className="text-[48px] font-medium leading-[0.98] tracking-[-0.035em] text-white sm:text-[72px] lg:text-[88px]">
-                <span className="block">Весь IT‑стек.</span>
-                <span className="block text-slate-500">
-                  Один хаб<span aria-hidden className="ml-[0.06em] inline-block h-[0.17em] w-[0.17em] rounded-[0.03em] bg-violet-500 align-baseline" />
+              <h1 className="inline-flex flex-col text-[48px] font-medium leading-[0.98] tracking-[-0.035em] text-white sm:text-[72px] lg:text-[88px]">
+                <span className="relative z-10">Весь IT‑стек.</span>
+                <span className="self-end text-slate-500">
+                  Один{' '}
+                  <span className="relative isolate inline-block">
+                    <span aria-hidden className="absolute -bottom-[0.2em] -left-[0.04em] -right-[0.02em] -top-[0.14em] -z-10 bg-violet-500/25" />
+                    хаб
+                  </span>
+                  <span aria-hidden className="ml-[0.06em] inline-block h-[0.17em] w-[0.17em] rounded-[0.03em] bg-violet-500 align-baseline" />
                   <span className="sr-only">.</span>
                 </span>
               </h1>
