@@ -60,12 +60,12 @@ export default function Landing() {
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>
               <h1 className="text-[40px] font-medium leading-[1.04] tracking-[-0.02em] text-white sm:text-[56px] sm:tracking-[-0.03em] lg:text-[64px]">
-                LLM, GPU, аналитика и облако на одном балансе
+                Весь IT‑стек.<br />Один хаб.
               </h1>
             </div>
             <div className="lg:col-span-5 lg:pb-2">
               <p className="max-w-[36rem] text-lg leading-7 text-slate-400">
-                Чат с моделями и агенты, обучение и GPU Workload, продуктовая аналитика, BI, облако и платформа данных. Один аккаунт, поминутная тарификация, кабинеты для физлиц и компаний
+                <span className="text-white">LLM, GPU, аналитика и облако на одном балансе.</span> Чат с моделями и агенты, обучение и GPU Workload, продуктовая аналитика, BI, облако и платформа данных. Один аккаунт, поминутная тарификация, кабинеты для физлиц и компаний
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link to="/login" className="btn-primary btn-lg">
