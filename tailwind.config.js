@@ -73,7 +73,7 @@ export default {
         fadeup: { '0%': { opacity: 0, transform: 'translateY(8px)' }, '100%': { opacity: 1, transform: 'none' } },
       },
       animation: {
-        fadeup: 'fadeup .36s cubic-bezier(0.22, 1, 0.36, 1) both',
+        fadeup: 'fadeup .36s cubic-bezier(0.22, 1, 0.36, 1) backwards',
       },
     },
   },
