@@ -53,7 +53,7 @@ export default function Landing() {
       {/* hero */}
       <section className="pt-28 sm:pt-40">
         <div className={wrap}>
-          <div className="grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-12">
+          <div className="grid gap-8 lg:grid-cols-12 lg:items-center lg:gap-12">
             <div className="lg:col-span-7">
               <h1 className="inline-flex flex-col text-[48px] font-medium leading-[0.98] tracking-[-0.035em] text-white sm:text-[72px] lg:text-[88px]">
                 <span className="relative z-10">Весь IT‑стек.</span>
@@ -68,7 +68,7 @@ export default function Landing() {
                 </span>
               </h1>
             </div>
-            <div className="lg:col-span-5 lg:pb-3">
+            <div className="lg:col-span-5">
               <Link to="/login" className="group mb-6 inline-flex items-center gap-2 rounded-full border border-white/[0.12] py-1 pl-1 pr-3 text-sm text-slate-300 transition-colors hover:border-white/25 hover:text-white">
                 <span className="rounded-full bg-violet-500/15 px-2 py-0.5 text-xs text-violet-300">Новое</span>
                 <span className="whitespace-nowrap">Agent World<span className="hidden sm:inline"> — workflow из AI-агентов</span></span>
