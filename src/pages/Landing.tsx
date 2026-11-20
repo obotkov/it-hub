@@ -55,15 +55,20 @@ export default function Landing() {
         <div className={wrap}>
           <div className="grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-12">
             <div className="lg:col-span-7">
-              <Link to="/login" className="mb-6 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white">
-                <span className="text-violet-400">Новое</span> Agent World — workflow из AI-агентов
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-              <h1 className="text-[40px] font-medium leading-[1.04] tracking-[-0.02em] text-white sm:text-[56px] sm:tracking-[-0.03em] lg:text-[64px]">
-                Весь IT‑стек.<br />Один хаб.
+              <h1 className="text-[48px] font-medium leading-[0.98] tracking-[-0.035em] text-white sm:text-[72px] lg:text-[88px]">
+                <span className="block">Весь IT‑стек.</span>
+                <span className="block text-slate-500">
+                  Один хаб<span aria-hidden className="ml-[0.06em] inline-block h-[0.17em] w-[0.17em] rounded-[0.03em] bg-violet-500 align-baseline" />
+                  <span className="sr-only">.</span>
+                </span>
               </h1>
             </div>
-            <div className="lg:col-span-5 lg:pb-2">
+            <div className="lg:col-span-5 lg:pb-3">
+              <Link to="/login" className="group mb-6 inline-flex items-center gap-2 rounded-full border border-white/[0.12] py-1 pl-1 pr-3 text-sm text-slate-300 transition-colors hover:border-white/25 hover:text-white">
+                <span className="rounded-full bg-violet-500/15 px-2 py-0.5 text-xs text-violet-300">Новое</span>
+                <span className="whitespace-nowrap">Agent World<span className="hidden sm:inline"> — workflow из AI-агентов</span></span>
+                <ArrowRight className="h-3.5 w-3.5 text-slate-500 transition-transform group-hover:translate-x-0.5 group-hover:text-white" />
+              </Link>
               <p className="max-w-[36rem] text-lg leading-7 text-slate-400">
                 <span className="text-white">LLM, GPU, аналитика и облако на одном балансе.</span> Чат с моделями и агенты, обучение и GPU Workload, продуктовая аналитика, BI, облако и платформа данных. Один аккаунт, поминутная тарификация, кабинеты для физлиц и компаний
               </p>
