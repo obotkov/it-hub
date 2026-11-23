@@ -1,5 +1,5 @@
 import {
-  MessagesSquare, MessageSquare, Wrench, KeyRound, Plug, Puzzle, Library, Workflow, Clapperboard, Laptop,
+  MessagesSquare, MessageSquare, Wrench, KeyRound, Plug, Puzzle, Library, Workflow, Clapperboard, Laptop, ScanText,
   BrainCircuit, FlaskConical, Cpu, Server, Rocket,
   BarChart3, Gauge, FileBarChart, MousePointerClick, Filter, Split, FileJson, Smartphone,
   LayoutDashboard, DatabaseZap, Code2, BellRing,
@@ -36,6 +36,7 @@ export const sections: Section[] = [
       { path: 'ai/rag', title: 'RAG Hub', icon: Library, desc: 'Базы знаний из ваших документов' },
       { path: 'ai/agents', title: 'Agent World', icon: Workflow, desc: 'Визуальный конструктор workflow из агентов' },
       { path: 'ai/media', title: 'Audio / Video агенты', icon: Clapperboard, desc: 'Транскрибация, озвучка, генерация видео' },
+      { path: 'ai/ocr', title: 'Распознавание документов (OCR)', icon: ScanText, desc: 'Сканы и фото в текст и поля: счета, договоры, паспорта' },
       { path: 'ai/code-agent', title: 'Code-агент для ПК', icon: Laptop, desc: 'Десктоп-приложение для macOS и Windows' },
     ],
   },

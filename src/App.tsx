@@ -6,6 +6,7 @@ import { useAccount } from './account'
 import { Overview, Soon, Cabinets, Billing } from './platform/pages/misc'
 import { Chat, McpHub, SkillHub, RagHub, AgentWorld, MediaAgents, CodeAgent } from './platform/pages/ai'
 import { ProChat } from './platform/pages/prochat'
+import { Ocr } from './platform/pages/ocr'
 import { LlmApi } from './platform/pages/llmapi'
 import { MlProjects, MlTraining } from './platform/pages/ml'
 import { GpuDeploy, GpuPods } from './platform/pages/gpu'
@@ -49,6 +50,7 @@ export default function App() {
         <Route path="ai/rag" element={<RagHub />} />
         <Route path="ai/agents" element={<AgentWorld />} />
         <Route path="ai/media" element={<MediaAgents />} />
+        <Route path="ai/ocr" element={<Ocr />} />
         <Route path="ai/code-agent" element={<CodeAgent />} />
 
         <Route path="ml/overview" element={<MlProjects />} />
