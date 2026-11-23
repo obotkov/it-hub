@@ -49,7 +49,8 @@
   .g2 { grid-template-columns: 1fr 1fr; } .g3 { grid-template-columns: repeat(3, 1fr); } .g4 { grid-template-columns: repeat(4, 1fr); }
   .label { font-size: 13px; color: var(--faint); }
   .big { font-size: 30px; font-weight: 500; letter-spacing: -0.02em; margin-top: 8px; white-space: nowrap; }
-  #assumpKpis .big { font-size: 24px; }
+  #assumpKpis .big { font-size: 22px; margin-top: 6px; }
+  #assumpKpis .card { padding: 14px 18px; }
   .sub { font-size: 13px; color: var(--faint); margin-top: 6px; }
   .pos { color: var(--green); } .neg { color: var(--rose); }
 
@@ -78,8 +79,8 @@
   .seg { display: inline-flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
   .seg button { font: inherit; font-size: 13px; color: var(--muted); background: none; border: 0; border-radius: 8px; padding: 6px 12px; cursor: pointer; transition: background .15s var(--ease), color .15s var(--ease); }
   .seg button.on { background: var(--surface-3); color: var(--text); box-shadow: inset 0 1px 0 rgba(255,255,255,.06); }
-  .slider { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
-  .slider:last-child { border-bottom: 0; }
+  .slider { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line); }
+  #resetRow .slider { border-bottom: 0; border-top: 1px solid var(--line); }
   .slider label { font-size: 14px; color: var(--muted); }
   .slider output { font-family: var(--mono); font-size: 14px; color: var(--text); }
   input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: var(--violet-500); height: 18px; }
@@ -141,9 +142,23 @@
     </div>
   </section>
 
-  <!-- 3 monetization -->
+  <!-- 3 assumptions (interactive) -->
   <section class="slide">
-    <div class="kicker"><b>02</b> Монетизация</div>
+    <div class="kicker"><b>02</b> Допущения</div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:24px">
+      <h2>Двигайте допущения — модель пересчитается</h2>
+      <div class="seg" id="scenarioSeg"></div>
+    </div>
+    <div class="body grid" style="grid-template-columns:1.5fr 1fr;gap:24px">
+      <div class="card" style="padding:8px 22px"><div style="display:grid;grid-template-columns:1fr 1fr;column-gap:28px;align-items:start"><div id="sliders"></div><div id="sliders2"></div></div><div id="resetRow"></div></div>
+      <div class="grid g2" style="align-content:start" id="assumpKpis"></div>
+    </div>
+    <p class="note" style="margin-top:12px" id="assumpNote"></p>
+  </section>
+
+  <!-- 4 monetization -->
+  <section class="slide">
+    <div class="kicker"><b>03</b> Монетизация</div>
     <h2>Подписка открывает доступ, использование даёт объём</h2>
     <div class="body grid g2">
       <div class="card">
@@ -168,50 +183,29 @@
     <p class="note" style="margin-top:14px">Выручка от использования на клиента растёт на <span data-f="usageG"></span> в год: клиенты переносят в хаб больше нагрузки. Бесплатный тариф «Старт» в модели выручки не учитывается.</p>
   </section>
 
-  <!-- 4 assumptions (interactive) -->
-  <section class="slide">
-    <div class="kicker"><b>03</b> Допущения</div>
-    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:24px">
-      <h2>Двигайте допущения — модель пересчитается</h2>
-      <div class="seg" id="scenarioSeg"></div>
-    </div>
-    <div class="body grid" style="grid-template-columns:1.15fr 1fr;gap:24px">
-      <div class="card" style="padding:6px 22px" id="sliders"></div>
-      <div class="grid g2" style="align-content:start" id="assumpKpis"></div>
-    </div>
-    <p class="note" style="margin-top:12px">Сценарий поверх ползунков: пессимистичный — CAC +30%, отток +25%, использование −20%; оптимистичный — CAC −20%, отток −20%, использование +20%.</p>
-  </section>
-
   <!-- 5 revenue -->
   <section class="slide">
     <div class="kicker"><b>04</b> Выручка</div>
     <h2 id="revTitle"></h2>
-    <div class="body grid" style="grid-template-columns:1.6fr 1fr;gap:24px">
+    <div class="body grid" style="grid-template-columns:1fr 1.25fr;gap:20px">
       <div class="card" style="display:flex;flex-direction:column">
         <div class="legend"><span><i style="background:var(--violet-500)"></i>Подписки</span><span><i style="background:var(--violet-soft);outline:1px solid var(--violet-500)"></i>Использование</span><span style="margin-left:auto;color:var(--faint)">млн ₽</span></div>
         <div id="revChart" style="flex:1;min-height:0;margin-top:10px"></div>
       </div>
-      <div class="card" style="padding:8px 22px"><table id="custTable"></table></div>
+      <div class="card" style="padding:8px 18px"><table id="custTable" style="font-size:13px"></table></div>
     </div>
   </section>
 
   <!-- 6 unit economics -->
   <section class="slide">
     <div class="kicker"><b>05</b> Юнит-экономика</div>
-    <h2>Клиент окупает привлечение за несколько месяцев</h2>
+    <h2 id="unitTitle"></h2>
     <div class="body grid g2" id="unitCards"></div>
-  </section>
-
-  <!-- 7 P&L -->
-  <section class="slide">
-    <div class="kicker"><b>06</b> P&amp;L</div>
-    <h2 id="plTitle"></h2>
-    <div class="body card" style="padding:6px 22px"><table id="plTable"></table></div>
   </section>
 
   <!-- 8 cash -->
   <section class="slide">
-    <div class="kicker"><b>07</b> Денежный поток</div>
+    <div class="kicker"><b>06</b> Денежный поток</div>
     <h2 id="cashTitle"></h2>
     <div class="body grid" style="grid-template-columns:1.6fr 1fr;gap:24px">
       <div class="card" style="display:flex;flex-direction:column">
@@ -224,7 +218,7 @@
 
   <!-- 9 scenarios -->
   <section class="slide">
-    <div class="kicker"><b>08</b> Сценарии</div>
+    <div class="kicker"><b>07</b> Сценарии</div>
     <h2>Даже в пессимистичном сценарии бизнес выходит в плюс</h2>
     <div class="body card" style="padding:6px 22px"><table id="scenTable"></table></div>
     <p class="note" style="margin-top:12px" id="scenNote"></p>
@@ -232,11 +226,12 @@
 
   <!-- 10 ask -->
   <section class="slide">
-    <div class="kicker"><b>09</b> Инвестиции</div>
+    <div class="kicker"><b>08</b> Инвестиции</div>
     <h2 id="askTitle"></h2>
-    <div class="body grid" style="grid-template-columns:1fr 1.3fr;gap:24px">
-      <div class="card" id="useFunds"></div>
-      <div class="card" id="milestones"></div>
+    <div class="body grid" style="grid-template-columns:1fr 1.3fr;grid-template-rows:auto auto;gap:14px 24px;align-content:start">
+      <div class="card" id="useFunds" style="padding:16px 22px"></div>
+      <div class="card" id="milestones" style="padding:16px 22px"></div>
+      <div class="card" id="hardware" style="grid-column:1 / -1;padding:14px 22px"></div>
     </div>
   </section>
 
@@ -253,35 +248,36 @@
 /* ---------------- model ---------------- */
 const BASE = {
   pro0: 300, biz0: 4,
-  proPrice: 1990, bizPrice: 85000, proUsage: 1500, bizUsage: 240000, usageG: 0.15,
-  cacPro: 12000, cacBiz: 900000, churnPro: 0.05, churnBiz: 0.02, split: 0.55,
-  mkt: [4, 7, 10, 13, 16], mktMul: 1,
+  visitors: 33, visG: 0.15, banner: 0.1, tried: 0.01, paid: 0.2, bizShare: 0.15, brand: 1.5,
+  proPrice: 1990, bizPrice: 50000, proUsage: 1500, bizUsage: 60000, usageG: 0.15,
+  cacPro: 1000, cacBiz: 15000, churnPro: 0.05, churnBiz: 0.02,
   mSubs: 0.85, mUsage: 0.35,
+  gpuPrice: 300, gpuUtil: 0.65,
   team: [25, 40, 58, 75, 90], salary: 350000, wage: 0.08, gaPct: 0.2, fixed: 1.5e6,
 }
+// scenarios are full presets: picking one moves the sliders
 const SCEN = {
-  pess: { label: 'Пессимистичный', cac: 1.3, churn: 1.25, usage: 0.8 },
-  base: { label: 'Базовый', cac: 1, churn: 1, usage: 1 },
-  opt:  { label: 'Оптимистичный', cac: 0.8, churn: 0.8, usage: 1.2 },
+  pess: { label: 'Пессимистичный', v: { visitors: 22, banner: 0.08, tried: 0.008, paid: 0.15, bizShare: 0.12, cacBiz: 20000, proPrice: 1990, bizPrice: 40000, cacPro: 1300, churnPro: 0.065, bizUsage: 45000, mUsage: 0.3, proUsage: 1200, churnBiz: 0.025 } },
+  base: { label: 'Базовый', v: { visitors: 33, banner: 0.1, tried: 0.01, paid: 0.2, bizShare: 0.15, cacBiz: 15000, proPrice: 1990, bizPrice: 50000, cacPro: 1000, churnPro: 0.05, bizUsage: 60000, mUsage: 0.35, proUsage: 1500, churnBiz: 0.02 } },
+  opt:  { label: 'Оптимистичный', v: { visitors: 45, banner: 0.12, tried: 0.012, paid: 0.25, bizShare: 0.18, cacBiz: 12000, proPrice: 1990, bizPrice: 70000, cacPro: 800, churnPro: 0.04, bizUsage: 80000, mUsage: 0.4, proUsage: 1800, churnBiz: 0.016 } },
 }
+const preset = (k) => ({ ...BASE, ...SCEN[k].v })
 const YEARS = [2027, 2028, 2029, 2030, 2031]
 const MONTHS = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек']
-
-function applyScen(a, s) {
-  const k = SCEN[s]
-  return { ...a, cacPro: a.cacPro * k.cac, cacBiz: a.cacBiz * k.cac, churnPro: a.churnPro * k.churn, churnBiz: a.churnBiz * k.churn,
-    proUsage: a.proUsage * k.usage, bizUsage: a.bizUsage * k.usage }
-}
 
 function run(a) {
   const out = []
   let pro = a.pro0, biz = a.biz0, cash = 0, minCash = 0, minM = 0, be = null
   for (let m = 0; m < 60; m++) {
     const y = Math.floor(m / 12)
-    const mkt = a.mkt[y] * 1e6 * a.mktMul
-    pro = pro * (1 - a.churnPro) + mkt * a.split / a.cacPro
-    biz = biz * (1 - a.churnBiz) + mkt * (1 - a.split) / a.cacBiz
+    const visitors = a.visitors * 1e6 * Math.pow(1 + a.visG, y)
+    const newPaid = visitors * a.banner * a.tried * a.paid
+    const newPro = newPaid * (1 - a.bizShare), newBiz = newPaid * a.bizShare
+    pro = pro * (1 - a.churnPro) + newPro
+    biz = biz * (1 - a.churnBiz) + newBiz
+    const mkt = newPro * a.cacPro + newBiz * a.cacBiz + a.brand * 1e6
     const ug = Math.pow(1 + a.usageG, y)
+    const proRev = pro * (a.proPrice + a.proUsage * ug), bizRev = biz * (a.bizPrice + a.bizUsage * ug)
     const subs = pro * a.proPrice + biz * a.bizPrice
     const usage = (pro * a.proUsage + biz * a.bizUsage) * ug
     const rev = subs + usage
@@ -292,12 +288,12 @@ function run(a) {
     cash += ebitda
     if (cash < minCash) { minCash = cash; minM = m }
     if (be === null && ebitda > 0) be = m
-    out.push({ m, y, pro, biz, subs, usage, rev, gp, cogs: rev - gp, mkt, payroll, ga, ebitda, cash })
+    out.push({ m, y, pro, biz, proRev, bizRev, subs, usage, rev, gp, cogs: rev - gp, mkt, payroll, ga, ebitda, cash })
   }
   const years = YEARS.map((yr, y) => {
     const s = out.filter((o) => o.y === y)
     const sum = (k) => s.reduce((t, o) => t + o[k], 0)
-    return { yr, subs: sum('subs'), usage: sum('usage'), rev: sum('rev'), cogs: sum('cogs'), gp: sum('gp'), mkt: sum('mkt'),
+    return { yr, gpus: s[11].usage / (a.gpuPrice * 720 * a.gpuUtil), proRev: sum('proRev'), bizRev: sum('bizRev'), subs: sum('subs'), usage: sum('usage'), rev: sum('rev'), cogs: sum('cogs'), gp: sum('gp'), mkt: sum('mkt'),
       payroll: sum('payroll'), ga: sum('ga'), ebitda: sum('ebitda'), pro: s[11].pro, biz: s[11].biz, cash: s[11].cash }
   })
   const need = -minCash
@@ -325,14 +321,20 @@ const monthName = (m) => (m === null ? 'за горизонтом' : `${MONTHS[m
 const sign = (v) => (v < 0 ? 'neg' : 'pos')
 
 /* ---------------- state ---------------- */
-let A = { ...BASE }
 let scen = 'base'
+let A = preset(scen)
 const SLIDERS = [
-  { k: 'cacPro', label: 'Стоимость привлечения Pro', min: 6000, max: 24000, step: 500, fmt: rub },
+  { k: 'visitors', label: 'Посетителей в месяц', min: 10, max: 50, step: 1, fmt: (v) => nf(v) + ' млн' },
+  { k: 'banner', label: 'Увидели баннер', min: 0, max: 1, step: 0.01, fmt: (v) => pct(v) },
+  { k: 'tried', label: 'Попробовали', min: 0, max: 0.1, step: 0.001, fmt: (v) => pct(v, 1) },
+  { k: 'paid', label: 'Оплатили', min: 0, max: 1, step: 0.01, fmt: (v) => pct(v) },
+  { k: 'bizShare', label: 'Доля Business среди платящих', min: 0, max: 1, step: 0.01, fmt: (v) => pct(v) },
+  { k: 'proPrice', label: 'Подписка Pro, ₽/мес', min: 0, max: 5000, step: 10, fmt: rub },
+  { k: 'bizPrice', label: 'Подписка Business, ₽/мес', min: 0, max: 300000, step: 5000, fmt: rub },
+  { k: 'cacPro', label: 'Привлечение Pro', min: 200, max: 5000, step: 50, fmt: rub },
   { k: 'churnPro', label: 'Отток Pro в месяц', min: 0.02, max: 0.1, step: 0.005, fmt: (v) => pct(v, 1) },
-  { k: 'bizUsage', label: 'Использование Business, ₽ в месяц', min: 80000, max: 450000, step: 10000, fmt: rub },
+  { k: 'bizUsage', label: 'Использование Business', min: 0, max: 300000, step: 5000, fmt: rub },
   { k: 'mUsage', label: 'Маржа на использовании', min: 0.2, max: 0.5, step: 0.01, fmt: (v) => pct(v) },
-  { k: 'mktMul', label: 'Маркетинговый бюджет, × к плану', min: 0.5, max: 1.8, step: 0.05, fmt: (v) => '× ' + nf(v, 2) },
 ]
 
 /* ---------------- charts ---------------- */
@@ -397,7 +399,7 @@ const $ = (id) => document.getElementById(id)
 const kpi = (label, value, sub = '', cls = '') => `<div class="card"><div class="label">${label}</div><div class="big meter ${cls}">${value}</div>${sub ? `<div class="sub">${sub}</div>` : ''}</div>`
 
 function render() {
-  const a = applyScen(A, scen)
+  const a = A
   const r = run(a)
   const u = units(a)
   const last = r.years[4]
@@ -407,7 +409,8 @@ function render() {
     kpi('Выручка 2031', money(last.rev)) +
     kpi('EBITDA 2031', money(last.ebitda), pct(last.ebitda / last.rev) + ' от выручки', sign(last.ebitda)) +
     kpi('Выход в плюс по EBITDA', monthName(r.be)) +
-    kpi('Потребность в инвестициях', mlnR(r.need))
+    kpi('Потребность в инвестициях', money(r.years[0].cogs + r.need),
+      r.need < 1e6 ? 'на первый год железа' : `железо первого года ${money(r.years[0].cogs)} + покрытие минуса ${money(r.need)}`)
 
   // monetization fields
   const F = { proPrice: rub(a.proPrice), bizPrice: rub(a.bizPrice), proUsage: rub(a.proUsage), bizUsage: rub(a.bizUsage),
@@ -416,21 +419,35 @@ function render() {
   document.querySelectorAll('[data-f]').forEach((el) => { el.textContent = F[el.dataset.f] })
 
   // assumptions
-  $('scenarioSeg').innerHTML = Object.entries(SCEN).map(([k, v]) => `<button data-s="${k}" class="${k === scen ? 'on' : ''}">${v.label}</button>`).join('')
+  $('scenarioSeg').innerHTML = Object.entries(SCEN).map(([k, v]) => `<button data-s="${k}" class="${k === scen ? 'on' : ''}">${v.label}</button>`).join('') +
+    (scen === 'custom' ? `<button class="on" disabled style="cursor:default">Свой</button>` : '')
+  const v0 = a.visitors * 1e6, paid0 = v0 * a.banner * a.tried * a.paid
+  $('assumpNote').textContent = `Воронка в месяц: посетители → увидели баннер → попробовали → оплатили. Аудитория растёт на ${pct(a.visG)} в год. Сценарий выставляет ползунки; если двигать их вручную, получается свой вариант.`
   SLIDERS.forEach((s) => { const o = document.querySelector(`output[for=s_${s.k}]`); if (o) o.textContent = s.fmt(A[s.k]) })
+  const seg = (name, mo, yr) => `<div class="card"><div class="label">Выручка ${name}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
+        <div><div class="note">в месяц</div><div class="meter" style="font-size:17px;white-space:nowrap;margin-top:2px">${money(mo)}</div></div>
+        <div><div class="note">за год</div><div class="meter" style="font-size:17px;white-space:nowrap;margin-top:2px">${money(yr)}</div></div>
+      </div></div>`
   $('assumpKpis').innerHTML =
+    `<div class="card" style="grid-column:1 / -1"><div class="label">Новых платящих клиентов в месяц · выручка ниже за дек 2027 и за 2027 год</div>
+      <div class="big meter" style="color:var(--violet-300);font-size:30px">${nf(paid0)}</div>
+      <div class="sub">Pro <span class="meter" style="color:var(--text)">${nf(paid0 * (1 - a.bizShare))}</span> · Business <span class="meter" style="color:var(--text)">${nf(paid0 * a.bizShare)}</span></div>
+      <div class="meter" style="margin-top:10px;border-top:1px solid var(--line);padding-top:8px;font-size:12px;color:var(--faint)">${[v0, v0 * a.banner, v0 * a.banner * a.tried, paid0].map((x) => nf(x)).join(' → ')}</div></div>` +
+    seg('Pro', r.out[11].proRev, r.years[0].proRev) +
+    seg('Business', r.out[11].bizRev, r.years[0].bizRev) +
     kpi('Выручка 2031', money(last.rev)) +
-    kpi('EBITDA 2031', money(last.ebitda), '', sign(last.ebitda)) +
-    kpi('EBITDA &gt; 0 с', monthName(r.be)) +
-    kpi('Нужно инвестиций', mlnR(r.need)) +
-    kpi('LTV / CAC Pro', nf(u.pro.ratio, 1) + '×', '', u.pro.ratio >= 3 ? 'pos' : 'neg') +
-    kpi('LTV / CAC Business', nf(u.biz.ratio, 1) + '×', '', u.biz.ratio >= 3 ? 'pos' : 'neg')
+    kpi('EBITDA 2031', money(last.ebitda), '', sign(last.ebitda))
 
   // revenue
-  $('revTitle').textContent = `Выручка растёт с ${mlnR(r.years[0].rev)} до ${money(last.rev)} за пять лет`
+  $('revTitle').textContent = `Выручка растёт с ${money(r.years[0].rev)} до ${money(last.rev)} за пять лет`
   $('revChart').innerHTML = revChart(r.years)
-  $('custTable').innerHTML = `<tr><th>На конец года</th><th>Pro</th><th>Business</th><th>Доля использования</th></tr>` +
-    r.years.map((y) => `<tr><td>${y.yr}</td><td class="meter">${nf(y.pro)}</td><td class="meter">${nf(y.biz)}</td><td class="meter">${pct(y.usage / y.rev)}</td></tr>`).join('')
+  const grp = 'style="text-align:center;border-bottom:0;padding-bottom:0;color:var(--dim)"'
+  $('custTable').innerHTML =
+    `<tr><th></th><th colspan="2" ${grp}>Клиентов на конец года</th><th colspan="3" ${grp}>Выручка за год, млн ₽</th></tr>` +
+    `<tr><th>Год</th><th>Pro</th><th>Business</th><th>Pro</th><th>Business</th><th>Итого</th></tr>` +
+    r.years.map((y) => `<tr><td>${y.yr}</td><td class="meter">${nf(y.pro)}</td><td class="meter">${nf(y.biz)}</td><td class="meter">${mln(y.proRev)}</td><td class="meter">${mln(y.bizRev)}</td><td class="meter" style="font-weight:500">${mln(y.rev)}</td></tr>`).join('') +
+    `<tr class="total"><td>Всего</td><td></td><td></td><td class="meter">${mln(r.years.reduce((t, y) => t + y.proRev, 0))}</td><td class="meter">${mln(r.years.reduce((t, y) => t + y.bizRev, 0))}</td><td class="meter">${mln(r.years.reduce((t, y) => t + y.rev, 0))}</td></tr>`
 
   // units
   const uc = (name, x, note) => `<div class="card">
@@ -446,75 +463,72 @@ function render() {
         <tr><td>LTV по валовой прибыли</td><td class="meter">${rub(x.ltv)}</td></tr>
         <tr class="total"><td>Стоимость привлечения</td><td class="meter">${rub(x.cac)}</td></tr>
       </table></div>`
+  $('unitTitle').textContent = `Привлечение окупается: Pro за ${nf(u.pro.payback, 1)} мес, Business за ${nf(u.biz.payback, 1)} мес`
   $('unitCards').innerHTML = uc('Pro', u.pro, 'первый год, без роста использования') + uc('Business', u.biz, 'первый год, без роста использования')
 
-  // P&L
-  $('plTitle').textContent = `P&L: EBITDA ${last.ebitda >= 0 ? 'положительная' : 'отрицательная'} в ${last.yr}, маржа ${pct(last.ebitda / last.rev)}`
-  const row = (label, k, cls = '', f = (v) => mln(v)) => `<tr class="${cls}"><td>${label}</td>${r.years.map((y) => `<td class="meter ${k === 'ebitda' ? sign(y[k]) : ''}">${f(y[k], y)}</td>`).join('')}</tr>`
-  $('plTable').innerHTML = `<tr><th>млн ₽</th>${YEARS.map((y) => `<th class="meter">${y}</th>`).join('')}</tr>` +
-    row('Выручка', 'rev', 'total') +
-    row('подписки', 'subs', 'minor') +
-    row('использование', 'usage', 'minor') +
-    row('Себестоимость', 'cogs', '', (v) => mln(-v)) +
-    row('Валовая прибыль', 'gp', 'total') +
-    `<tr class="minor"><td>валовая маржа</td>${r.years.map((y) => `<td class="meter">${pct(y.gp / y.rev)}</td>`).join('')}</tr>` +
-    row('Маркетинг и продажи', 'mkt', '', (v) => mln(-v)) +
-    row('Команда (ФОТ)', 'payroll', '', (v) => mln(-v)) +
-    row('Офис, сервисы и прочее', 'ga', '', (v) => mln(-v)) +
-    row('EBITDA', 'ebitda', 'total') +
-    `<tr class="minor"><td>маржа EBITDA</td>${r.years.map((y) => `<td class="meter">${pct(y.ebitda / y.rev)}</td>`).join('')}</tr>`
-
   // cash
-  $('cashTitle').textContent = `Минимум денежного потока ${mlnR(-r.need)} в ${monthName(r.minM)}`
+  $('cashTitle').textContent = `Минимум денежного потока ${mlnR(-r.need)} (${monthName(r.minM)})`
   $('cashChart').innerHTML = cashChart(r.out, r.minM, r.be)
   $('cashKpis').innerHTML =
-    kpi('Потребность в финансировании', mlnR(r.need), 'максимальный накопленный минус') +
+    kpi('Потребность в финансировании', money(r.need), 'максимальный накопленный минус') +
     kpi('Выход в плюс по EBITDA', monthName(r.be), r.be === null ? '' : `${r.be + 1}-й месяц модели`) +
     kpi('Накопленный поток на конец 2031', mlnR(last.cash), last.cash < 0 ? `минус сокращается с ${monthName(r.minM)}` : 'вложения окупились', sign(last.cash))
 
   // scenarios
-  const sr = Object.keys(SCEN).map((k) => ({ k, r: run(applyScen(A, k)) }))
+  const sr = Object.keys(SCEN).map((k) => ({ k, label: SCEN[k].label, r: run(preset(k)) }))
+  if (scen === 'custom') sr.push({ k: 'custom', label: 'Свой', r })
   const srow = (label, f) => `<tr><td>${label}</td>${sr.map((x) => `<td class="meter">${f(x.r)}</td>`).join('')}</tr>`
-  $('scenTable').innerHTML = `<tr><th></th>${sr.map((x) => `<th style="${x.k === scen ? 'color:var(--violet-300)' : ''}">${SCEN[x.k].label}</th>`).join('')}</tr>` +
+  $('scenTable').innerHTML = `<tr><th></th>${sr.map((x) => `<th style="${x.k === scen ? 'color:var(--violet-300)' : ''}">${x.label}</th>`).join('')}</tr>` +
     srow('Выручка 2029', (r) => money(r.years[2].rev)) +
     srow('Выручка 2031', (r) => money(r.years[4].rev)) +
     srow('EBITDA 2031', (r) => `<span class="${sign(r.years[4].ebitda)}">${money(r.years[4].ebitda)}</span>`) +
     srow('Маржа EBITDA 2031', (r) => pct(r.years[4].ebitda / r.years[4].rev)) +
     srow('Выход в плюс по EBITDA', (r) => monthName(r.be)) +
-    srow('Потребность в инвестициях', (r) => mlnR(r.need)) +
+    srow('Потребность в инвестициях', (r) => money(r.need)) +
     srow('Клиентов Pro / Business, 2031', (r) => `${nf(r.years[4].pro)} / ${nf(r.years[4].biz)}`)
   const pessOk = sr[0].r.be !== null
   document.querySelector('#scenTable').closest('.slide').querySelector('h2').textContent = pessOk
     ? 'Даже в пессимистичном сценарии бизнес выходит в плюс'
     : 'В пессимистичном сценарии выход в плюс уходит за горизонт модели'
-  $('scenNote').textContent = 'Сценарии считаются от текущих значений ползунков на слайде «Допущения».'
+  $('scenNote').textContent = 'Каждый сценарий — свой набор допущений на слайде «Допущения»: посетители, цены, отток, стоимость привлечения, траты на использование и маржа.'
 
   // ask
-  $('askTitle').textContent = `Привлекаем ${mlnR(r.ask)} до выхода в плюс`
-  const until = r.out.filter((o) => o.m <= (r.be ?? 59))
+  const selfFunded = r.need < 1e6
+  $('askTitle').textContent = selfFunded ? 'Внешнее финансирование модели не нужно: бизнес в плюсе с первых месяцев' : `Привлекаем ${money(r.ask)} до выхода в плюс`
+  const until = r.out.filter((o) => o.m <= (selfFunded ? 11 : r.be ?? 59))
   const sum = (k) => until.reduce((t, o) => t + o[k], 0)
-  const parts = [['Маркетинг и продажи', sum('mkt')], ['Команда', sum('payroll')], ['Офис, сервисы и прочее', sum('ga')]]
+  const parts = [['Железо (GPU, облако)', sum('cogs')], ['Маркетинг и продажи', sum('mkt')], ['Команда', sum('payroll')], ['Офис, сервисы и прочее', sum('ga')]]
   const tot = parts.reduce((t, p) => t + p[1], 0)
-  $('useFunds').innerHTML = `<div class="label">На что пойдут деньги</div>` +
-    `<div style="display:flex;height:10px;border-radius:5px;overflow:hidden;margin:18px 0 8px;gap:2px">${parts.map((p, i) => `<div style="flex:${p[1]};background:${['var(--violet-500)', 'var(--violet-300)', 'var(--dim)'][i]}"></div>`).join('')}</div>` +
-    `<table>${parts.map((p, i) => `<tr><td><i style="display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px;background:${['var(--violet-500)', 'var(--violet-300)', 'var(--dim)'][i]}"></i>${p[0]}</td><td class="meter">${pct(p[1] / tot)}</td></tr>`).join('')}` +
-    `<tr class="total"><td>Запас к потребности</td><td class="meter">+${pct(r.ask / r.need - 1)}</td></tr></table>` +
-    `<p class="note" style="margin-top:14px">Доли — по расходам до выхода в плюс; валовая прибыль покрывает часть из них.</p>`
+  $('useFunds').innerHTML = `<div class="label">${selfFunded ? 'Структура расходов' : 'На что пойдут деньги'}</div>` +
+    `<div style="display:flex;height:10px;border-radius:5px;overflow:hidden;margin:12px 0 4px;gap:2px">${parts.map((p, i) => `<div style="flex:${p[1]};background:${['var(--violet-500)', 'var(--violet-300)', 'var(--faint)', 'var(--dim)'][i]}"></div>`).join('')}</div>` +
+    `<table>${parts.map((p, i) => `<tr><td><i style="display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px;background:${['var(--violet-500)', 'var(--violet-300)', 'var(--faint)', 'var(--dim)'][i]}"></i>${p[0]}</td><td class="meter">${pct(p[1] / tot)}</td></tr>`).join('')}` +
+    (selfFunded ? '</table>' : `<tr class="total"><td>Запас к потребности</td><td class="meter">+${pct(r.ask / r.need - 1)}</td></tr></table>`) +
+    `<p class="note" style="margin-top:8px">${selfFunded ? 'Доли — по расходам первого года' : 'Доли — по расходам до выхода в плюс'}.</p>`
   const ms = [
-    [r.years[0].yr, `${nf(r.years[0].pro)} клиентов Pro и ${nf(r.years[0].biz)} Business`, `выручка ${mlnR(r.years[0].rev)}`],
-    [r.years[1].yr, `${nf(r.years[1].biz)} компаний на Business`, `выручка ${mlnR(r.years[1].rev)}`],
+    [r.years[0].yr, `${nf(r.years[0].pro)} клиентов Pro и ${nf(r.years[0].biz)} Business`, `выручка ${money(r.years[0].rev)}`],
+    [r.years[1].yr, `${nf(r.years[1].biz)} компаний на Business`, `выручка ${money(r.years[1].rev)}`],
     [r.be === null ? '—' : YEARS[0] + Math.floor(r.be / 12), 'Положительная EBITDA', monthName(r.be)],
     [last.yr, `Выручка ${money(last.rev)}`, `EBITDA ${money(last.ebitda)}`],
   ]
-  $('milestones').innerHTML = `<div class="label">Вехи</div>` + ms.map((m) => `<div style="display:grid;grid-template-columns:72px 1fr auto;gap:16px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--line)"><span class="meter" style="color:var(--violet-300)">${m[0]}</span><span>${m[1]}</span><span class="label">${m[2]}</span></div>`).join('')
+  $('milestones').innerHTML = `<div class="label">Вехи</div>` + ms.map((m) => `<div style="display:grid;grid-template-columns:72px 1fr auto;gap:16px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line)"><span class="meter" style="color:var(--violet-300)">${m[0]}</span><span>${m[1]}</span><span class="label">${m[2]}</span></div>`).join('')
+  $('hardware').innerHTML = `<div style="display:flex;justify-content:space-between;align-items:baseline"><div class="label">Железо под нагрузку пользователей</div><div class="note">GPU-час ≈ ${rub(a.gpuPrice)} для клиента · загрузка ${pct(a.gpuUtil)} · подписки — ${pct(1 - a.mSubs)} на инфраструктуру</div></div>
+    <table style="margin-top:4px;font-size:13px"><tr><th></th>${YEARS.map((y) => `<th class="meter">${y}</th>`).join('')}</tr>
+    <tr><td>Расход на железо, млн ₽</td>${r.years.map((y) => `<td class="meter">${mln(y.cogs)}</td>`).join('')}</tr>
+    <tr><td>Доля выручки</td>${r.years.map((y) => `<td class="meter">${pct(y.cogs / y.rev)}</td>`).join('')}</tr>
+    <tr class="total"><td>GPU в работе на конец года</td>${r.years.map((y) => `<td class="meter">${nf(y.gpus)}</td>`).join('')}</tr></table>`
 }
 
 /* sliders */
-$('sliders').innerHTML = SLIDERS.map((s) => `<div class="slider"><label for="s_${s.k}">${s.label}</label><output for="s_${s.k}"></output><input id="s_${s.k}" type="range" min="${s.min}" max="${s.max}" step="${s.step}" value="${A[s.k]}"></div>`).join('') +
-  `<div class="slider" style="grid-template-columns:1fr auto"><span class="note">Значения по умолчанию — базовая модель</span><button id="reset" style="font:inherit;font-size:13px;color:var(--muted);background:var(--surface-3);border:1px solid var(--line);border-radius:8px;padding:5px 10px;cursor:pointer">Сбросить</button></div>`
-SLIDERS.forEach((s) => $('s_' + s.k).addEventListener('input', (e) => { A[s.k] = +e.target.value; render() }))
-$('reset').addEventListener('click', () => { A = { ...BASE }; SLIDERS.forEach((s) => ($('s_' + s.k).value = A[s.k])); render() })
-$('scenarioSeg').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) { scen = b.dataset.s; render() } })
+const sliderHtml = (s) => `<div class="slider"><label for="s_${s.k}">${s.label}</label><output for="s_${s.k}"></output><input id="s_${s.k}" type="range" min="${s.min}" max="${s.max}" step="${s.step}" value="${A[s.k]}"></div>`
+const COL1 = ['visitors', 'banner', 'tried', 'paid', 'bizShare']
+$('sliders').innerHTML = SLIDERS.filter((s) => COL1.includes(s.k)).map(sliderHtml).join('')
+$('sliders2').innerHTML = SLIDERS.filter((s) => !COL1.includes(s.k)).map(sliderHtml).join('')
+$('resetRow').innerHTML = `<div class="slider" style="grid-template-columns:1fr auto"><span class="note">Сбросить к базовому сценарию</span><button id="reset" style="font:inherit;font-size:13px;color:var(--muted);background:var(--surface-3);border:1px solid var(--line);border-radius:8px;padding:5px 10px;cursor:pointer">Сбросить</button></div>`
+const syncSliders = () => SLIDERS.forEach((s) => ($('s_' + s.k).value = A[s.k]))
+const pick = (k) => { scen = k; A = preset(k); syncSliders(); render() }
+SLIDERS.forEach((s) => $('s_' + s.k).addEventListener('input', (e) => { A[s.k] = +e.target.value; scen = 'custom'; render() }))
+$('reset').addEventListener('click', () => pick('base'))
+$('scenarioSeg').addEventListener('click', (e) => { const b = e.target.closest('button[data-s]'); if (b) pick(b.dataset.s) })
 
 /* ---------------- deck nav ---------------- */
 const slides = [...document.querySelectorAll('.slide')]
