@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>IT Hub — финансовая модель</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #141415; --surface: #19191b; --surface-2: #1e1e20; --surface-3: #232325;
+    --line: rgba(255,255,255,.07); --line-2: rgba(255,255,255,.12);
+    --text: #ededed; --muted: #a1a1a6; --faint: #86868b; --dim: #5c5c61;
+    --violet: #7c3aed; --violet-500: #8b5cf6; --violet-300: #c4b5fd; --violet-soft: rgba(139,92,246,.25);
+    --green: #6ee7b7; --rose: #fda4af; --amber: #fcd34d;
+    --sans: 'Geist', ui-sans-serif, system-ui, sans-serif; --mono: 'Geist Mono', ui-monospace, monospace;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  :root[data-theme='light'] {
+    --bg: #fafafa; --surface: #ffffff; --surface-2: #f4f4f5; --surface-3: #ededee;
+    --line: rgba(0,0,0,.08); --line-2: rgba(0,0,0,.14);
+    --text: #171717; --muted: #525252; --faint: #737373; --dim: #a3a3a3;
+    --violet-300: #7c3aed; --violet-soft: rgba(139,92,246,.22);
+    --green: #047857; --rose: #be123c; --amber: #b45309;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  body { overflow: hidden; }
+  .meter { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+  /* stage: 1280x720 slides scaled to fit */
+  .stage { position: fixed; inset: 0; display: grid; place-items: center; }
+  .deck { position: relative; width: 1280px; height: 720px; transform-origin: center; }
+  .slide { position: absolute; inset: 0; padding: 64px 72px 72px; display: flex; flex-direction: column; background: var(--bg);
+    opacity: 0; visibility: hidden; transition: opacity .35s var(--ease), transform .35s var(--ease); transform: translateY(8px); }
+  .slide.on { opacity: 1; visibility: visible; transform: none; }
+  .kicker { font-size: 14px; color: var(--faint); display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .kicker b { font-family: var(--mono); font-weight: 400; color: var(--violet-300); }
+  h2 { font-size: 40px; font-weight: 500; letter-spacing: -0.025em; line-height: 1.08; max-width: 900px; }
+  .lead { margin-top: 14px; font-size: 18px; line-height: 1.5; color: var(--muted); max-width: 760px; }
+  .body { flex: 1; min-height: 0; margin-top: 36px; }
+  .foot { position: absolute; left: 72px; right: 72px; bottom: 28px; display: flex; justify-content: space-between; font-size: 12px; color: var(--dim); }
+  .logo { display: inline-flex; align-items: center; gap: 10px; font-weight: 500; font-size: 15px; color: var(--text); }
+  .logo i { width: 26px; height: 26px; border-radius: 7px; background: var(--violet); color: #fff; display: grid; place-items: center; font-style: normal; font-size: 14px; font-weight: 600; box-shadow: inset 0 1px 0 rgba(255,255,255,.18); }
+
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px; }
+  .grid { display: grid; gap: 14px; }
+  .g2 { grid-template-columns: 1fr 1fr; } .g3 { grid-template-columns: repeat(3, 1fr); } .g4 { grid-template-columns: repeat(4, 1fr); }
+  .label { font-size: 13px; color: var(--faint); }
+  .big { font-size: 30px; font-weight: 500; letter-spacing: -0.02em; margin-top: 8px; white-space: nowrap; }
+  #assumpKpis .big { font-size: 24px; }
+  .sub { font-size: 13px; color: var(--faint); margin-top: 6px; }
+  .pos { color: var(--green); } .neg { color: var(--rose); }
+
+  /* cover */
+  .cover { justify-content: space-between; }
+  .slogan { display: inline-flex; flex-direction: column; font-size: 104px; font-weight: 500; line-height: .98; letter-spacing: -0.04em; }
+  .slogan .l1 { position: relative; z-index: 1; }
+  .slogan .l2 { align-self: flex-end; color: var(--faint); }
+  .hl { position: relative; isolation: isolate; display: inline-block; }
+  .hl::before { content: ''; position: absolute; inset: -0.14em -0.02em -0.2em -0.04em; background: var(--violet-soft); z-index: -1; }
+  .dot { display: inline-block; width: .17em; height: .17em; border-radius: .03em; background: var(--violet-500); margin-left: .06em; }
+  .pill { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line-2); border-radius: 999px; padding: 4px 14px 4px 4px; font-size: 14px; color: var(--muted); }
+  .pill span { background: rgba(139,92,246,.15); color: var(--violet-300); border-radius: 999px; padding: 2px 9px; font-size: 12px; }
+
+  /* tables */
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { white-space: nowrap; text-align: right; font-weight: 400; color: var(--faint); font-size: 13px; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+  td { white-space: nowrap; text-align: right; padding: 9px 12px; border-bottom: 1px solid var(--line); color: var(--text); }
+  th:first-child, td:first-child { text-align: left; color: var(--muted); }
+  tr.total td { font-weight: 500; color: var(--text); border-bottom: 0; }
+  tr.total td:first-child { color: var(--text); }
+  tr.minor td { color: var(--faint); font-size: 13px; }
+  td.meter, th.meter { font-family: var(--mono); }
+
+  /* controls */
+  .seg { display: inline-flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+  .seg button { font: inherit; font-size: 13px; color: var(--muted); background: none; border: 0; border-radius: 8px; padding: 6px 12px; cursor: pointer; transition: background .15s var(--ease), color .15s var(--ease); }
+  .seg button.on { background: var(--surface-3); color: var(--text); box-shadow: inset 0 1px 0 rgba(255,255,255,.06); }
+  .slider { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .slider:last-child { border-bottom: 0; }
+  .slider label { font-size: 14px; color: var(--muted); }
+  .slider output { font-family: var(--mono); font-size: 14px; color: var(--text); }
+  input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: var(--violet-500); height: 18px; }
+  .note { font-size: 12px; color: var(--dim); }
+
+  .legend { display: flex; gap: 18px; font-size: 13px; color: var(--muted); }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 7px; vertical-align: -1px; }
+  svg text { font-family: var(--mono); font-size: 12px; fill: var(--faint); }
+
+  /* nav */
+  .nav { position: fixed; right: 20px; bottom: 16px; display: flex; align-items: center; gap: 6px; z-index: 5; }
+  .nav button { font: inherit; width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); cursor: pointer; }
+  .nav button:hover { color: var(--text); background: var(--surface-3); }
+  .nav .count { font-family: var(--mono); font-size: 12px; color: var(--faint); padding: 0 8px; min-width: 56px; text-align: center; }
+  .progress { position: fixed; left: 0; top: 0; height: 2px; background: var(--violet-500); transition: width .35s var(--ease); z-index: 5; }
+  :focus-visible { outline: 2px solid var(--violet-500); outline-offset: 2px; }
+
+  @media print {
+    @page { size: 1280px 720px; margin: 0; }
+    body { overflow: visible; }
+    .stage { position: static; display: block; }
+    .deck { transform: none !important; width: 1280px; height: auto; }
+    .slide { position: relative; opacity: 1; visibility: visible; transform: none; height: 720px; page-break-after: always; }
+    .nav, .progress { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="stage"><div class="deck" id="deck">
+
+  <!-- 1 cover -->
+  <section class="slide cover">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span class="logo"><i>H</i>IT Hub</span>
+      <span class="pill"><span>Инвесторам</span>Финансовая модель 2027–2031</span>
+    </div>
+    <div>
+      <h1 class="slogan"><span class="l1">Весь IT‑стек.</span><span class="l2">Один <span class="hl">хаб</span><span class="dot"></span></span></h1>
+      <p class="lead" style="margin-top:36px">LLM, GPU, аналитика, BI, облако и платформа данных на одном балансе. Модель выручки, юнит-экономики и потребности в инвестициях.</p>
+    </div>
+    <div class="grid g4" id="coverKpis"></div>
+  </section>
+
+  <!-- 2 product -->
+  <section class="slide">
+    <div class="kicker"><b>01</b> Продукт</div>
+    <h2>Семь платформ, один аккаунт и один баланс</h2>
+    <p class="lead">Компании собирают IT-стек из десятка подрядчиков с отдельными договорами и счетами. IT Hub закрывает его целиком — от чата с LLM до кластера Kubernetes.</p>
+    <div class="body grid g4" style="align-content:start">
+      <div class="card"><div class="label">01</div><div style="margin-top:10px;font-weight:500">AI Platform</div><div class="sub">Чаты, агенты, MCP, RAG, OCR</div></div>
+      <div class="card"><div class="label">02</div><div style="margin-top:10px;font-weight:500">ML Platform</div><div class="sub">Обучение и вывод моделей в прод</div></div>
+      <div class="card"><div class="label">03</div><div style="margin-top:10px;font-weight:500">GPU Workload</div><div class="sub">Поды A100 / H100 поминутно</div></div>
+      <div class="card"><div class="label">04</div><div style="margin-top:10px;font-weight:500">Продуктовая аналитика</div><div class="sub">Счётчики, воронки, A/B-тесты</div></div>
+      <div class="card"><div class="label">05</div><div style="margin-top:10px;font-weight:500">BI платформа</div><div class="sub">Источники, SQL, дашборды, алерты</div></div>
+      <div class="card"><div class="label">06</div><div style="margin-top:10px;font-weight:500">Облако</div><div class="sub">VM, managed БД, Kubernetes</div></div>
+      <div class="card"><div class="label">07</div><div style="margin-top:10px;font-weight:500">Платформа данных</div><div class="sub">Каталог, пайплайны, качество</div></div>
+      <div class="card" style="background:var(--surface-2)"><div class="label">Для клиента</div><div style="margin-top:10px;font-weight:500">Один договор</div><div class="sub">Данные в РФ · 152-ФЗ · ЭДО</div></div>
+    </div>
+  </section>
+
+  <!-- 3 monetization -->
+  <section class="slide">
+    <div class="kicker"><b>02</b> Монетизация</div>
+    <h2>Подписка открывает доступ, использование даёт объём</h2>
+    <div class="body grid g2">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:baseline"><div style="font-size:20px;font-weight:500">Pro</div><div class="meter" style="font-size:20px">1 990 ₽<span class="label"> / мес</span></div></div>
+        <div class="sub">Физлица, фрилансеры, небольшие команды</div>
+        <table style="margin-top:18px">
+          <tr><td>Подписка</td><td class="meter" data-f="proPrice"></td><td class="meter">маржа <span data-f="mSubs"></span></td></tr>
+          <tr><td>Использование (LLM, GPU)</td><td class="meter" data-f="proUsage"></td><td class="meter">маржа <span data-f="mUsage"></span></td></tr>
+          <tr><td>Отток в месяц</td><td class="meter" data-f="churnPro"></td><td></td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:baseline"><div style="font-size:20px;font-weight:500">Business</div><div class="meter" style="font-size:20px">от 49 000 ₽<span class="label"> / мес</span></div></div>
+        <div class="sub">Компании: кабинеты команд, SSO, выделенные GPU и VPC</div>
+        <table style="margin-top:18px">
+          <tr><td>Подписка, в среднем</td><td class="meter">~<span data-f="bizPrice"></span></td><td class="meter">маржа ~<span data-f="mSubs"></span></td></tr>
+          <tr><td>Использование (GPU, облако)</td><td class="meter">~<span data-f="bizUsage"></span></td><td class="meter">маржа ~<span data-f="mUsage"></span></td></tr>
+          <tr><td>Отток в месяц</td><td class="meter">~<span data-f="churnBiz"></span></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+    <p class="note" style="margin-top:14px">Выручка от использования на клиента растёт на <span data-f="usageG"></span> в год: клиенты переносят в хаб больше нагрузки. Бесплатный тариф «Старт» в модели выручки не учитывается.</p>
+  </section>
+
+  <!-- 4 assumptions (interactive) -->
+  <section class="slide">
+    <div class="kicker"><b>03</b> Допущения</div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:24px">
+      <h2>Двигайте допущения — модель пересчитается</h2>
+      <div class="seg" id="scenarioSeg"></div>
+    </div>
+    <div class="body grid" style="grid-template-columns:1.15fr 1fr;gap:24px">
+      <div class="card" style="padding:6px 22px" id="sliders"></div>
+      <div class="grid g2" style="align-content:start" id="assumpKpis"></div>
+    </div>
+    <p class="note" style="margin-top:12px">Сценарий поверх ползунков: пессимистичный — CAC +30%, отток +25%, использование −20%; оптимистичный — CAC −20%, отток −20%, использование +20%.</p>
+  </section>
+
+  <!-- 5 revenue -->
+  <section class="slide">
+    <div class="kicker"><b>04</b> Выручка</div>
+    <h2 id="revTitle"></h2>
+    <div class="body grid" style="grid-template-columns:1.6fr 1fr;gap:24px">
+      <div class="card" style="display:flex;flex-direction:column">
+        <div class="legend"><span><i style="background:var(--violet-500)"></i>Подписки</span><span><i style="background:var(--violet-soft);outline:1px solid var(--violet-500)"></i>Использование</span><span style="margin-left:auto;color:var(--faint)">млн ₽</span></div>
+        <div id="revChart" style="flex:1;min-height:0;margin-top:10px"></div>
+      </div>
+      <div class="card" style="padding:8px 22px"><table id="custTable"></table></div>
+    </div>
+  </section>
+
+  <!-- 6 unit economics -->
+  <section class="slide">
+    <div class="kicker"><b>05</b> Юнит-экономика</div>
+    <h2>Клиент окупает привлечение за несколько месяцев</h2>
+    <div class="body grid g2" id="unitCards"></div>
+  </section>
+
+  <!-- 7 P&L -->
+  <section class="slide">
+    <div class="kicker"><b>06</b> P&amp;L</div>
+    <h2 id="plTitle"></h2>
+    <div class="body card" style="padding:6px 22px"><table id="plTable"></table></div>
+  </section>
+
+  <!-- 8 cash -->
+  <section class="slide">
+    <div class="kicker"><b>07</b> Денежный поток</div>
+    <h2 id="cashTitle"></h2>
+    <div class="body grid" style="grid-template-columns:1.6fr 1fr;gap:24px">
+      <div class="card" style="display:flex;flex-direction:column">
+        <div class="legend"><span><i style="background:var(--violet-500)"></i>Накопленный денежный поток</span><span><i style="background:var(--faint)"></i>EBITDA в месяц</span><span style="margin-left:auto;color:var(--faint)">млн ₽</span></div>
+        <div id="cashChart" style="flex:1;min-height:0;margin-top:10px"></div>
+      </div>
+      <div class="grid" style="align-content:start" id="cashKpis"></div>
+    </div>
+  </section>
+
+  <!-- 9 scenarios -->
+  <section class="slide">
+    <div class="kicker"><b>08</b> Сценарии</div>
+    <h2>Даже в пессимистичном сценарии бизнес выходит в плюс</h2>
+    <div class="body card" style="padding:6px 22px"><table id="scenTable"></table></div>
+    <p class="note" style="margin-top:12px" id="scenNote"></p>
+  </section>
+
+  <!-- 10 ask -->
+  <section class="slide">
+    <div class="kicker"><b>09</b> Инвестиции</div>
+    <h2 id="askTitle"></h2>
+    <div class="body grid" style="grid-template-columns:1fr 1.3fr;gap:24px">
+      <div class="card" id="useFunds"></div>
+      <div class="card" id="milestones"></div>
+    </div>
+  </section>
+
+</div></div>
+
+<div class="nav">
+  <button id="theme" title="Тема (T)" aria-label="Сменить тему">◐</button>
+  <button id="prev" aria-label="Назад">←</button>
+  <span class="count" id="count"></span>
+  <button id="next" aria-label="Вперёд">→</button>
+</div>
+
+<script>
+/* ---------------- model ---------------- */
+const BASE = {
+  pro0: 300, biz0: 4,
+  proPrice: 1990, bizPrice: 85000, proUsage: 1500, bizUsage: 240000, usageG: 0.15,
+  cacPro: 12000, cacBiz: 900000, churnPro: 0.05, churnBiz: 0.02, split: 0.55,
+  mkt: [4, 7, 10, 13, 16], mktMul: 1,
+  mSubs: 0.85, mUsage: 0.35,
+  team: [25, 40, 58, 75, 90], salary: 350000, wage: 0.08, gaPct: 0.2, fixed: 1.5e6,
+}
+const SCEN = {
+  pess: { label: 'Пессимистичный', cac: 1.3, churn: 1.25, usage: 0.8 },
+  base: { label: 'Базовый', cac: 1, churn: 1, usage: 1 },
+  opt:  { label: 'Оптимистичный', cac: 0.8, churn: 0.8, usage: 1.2 },
+}
+const YEARS = [2027, 2028, 2029, 2030, 2031]
+const MONTHS = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек']
+
+function applyScen(a, s) {
+  const k = SCEN[s]
+  return { ...a, cacPro: a.cacPro * k.cac, cacBiz: a.cacBiz * k.cac, churnPro: a.churnPro * k.churn, churnBiz: a.churnBiz * k.churn,
+    proUsage: a.proUsage * k.usage, bizUsage: a.bizUsage * k.usage }
+}
+
+function run(a) {
+  const out = []
+  let pro = a.pro0, biz = a.biz0, cash = 0, minCash = 0, minM = 0, be = null
+  for (let m = 0; m < 60; m++) {
+    const y = Math.floor(m / 12)
+    const mkt = a.mkt[y] * 1e6 * a.mktMul
+    pro = pro * (1 - a.churnPro) + mkt * a.split / a.cacPro
+    biz = biz * (1 - a.churnBiz) + mkt * (1 - a.split) / a.cacBiz
+    const ug = Math.pow(1 + a.usageG, y)
+    const subs = pro * a.proPrice + biz * a.bizPrice
+    const usage = (pro * a.proUsage + biz * a.bizUsage) * ug
+    const rev = subs + usage
+    const gp = subs * a.mSubs + usage * a.mUsage
+    const payroll = a.team[y] * a.salary * Math.pow(1 + a.wage, y)
+    const ga = payroll * a.gaPct + a.fixed
+    const ebitda = gp - mkt - payroll - ga
+    cash += ebitda
+    if (cash < minCash) { minCash = cash; minM = m }
+    if (be === null && ebitda > 0) be = m
+    out.push({ m, y, pro, biz, subs, usage, rev, gp, cogs: rev - gp, mkt, payroll, ga, ebitda, cash })
+  }
+  const years = YEARS.map((yr, y) => {
+    const s = out.filter((o) => o.y === y)
+    const sum = (k) => s.reduce((t, o) => t + o[k], 0)
+    return { yr, subs: sum('subs'), usage: sum('usage'), rev: sum('rev'), cogs: sum('cogs'), gp: sum('gp'), mkt: sum('mkt'),
+      payroll: sum('payroll'), ga: sum('ga'), ebitda: sum('ebitda'), pro: s[11].pro, biz: s[11].biz, cash: s[11].cash }
+  })
+  const need = -minCash
+  const ask = Math.ceil(need * 1.2 / 50e6) * 50e6
+  return { out, years, need, minM, be, ask }
+}
+
+/* units at steady state (year 1 usage) */
+function units(a) {
+  const pro = { arpu: a.proPrice + a.proUsage, gm: a.proPrice * a.mSubs + a.proUsage * a.mUsage, churn: a.churnPro, cac: a.cacPro }
+  const biz = { arpu: a.bizPrice + a.bizUsage, gm: a.bizPrice * a.mSubs + a.bizUsage * a.mUsage, churn: a.churnBiz, cac: a.cacBiz }
+  for (const u of [pro, biz]) { u.ltv = u.gm / u.churn; u.ratio = u.ltv / u.cac; u.payback = u.cac / u.gm; u.life = 1 / u.churn }
+  return { pro, biz }
+}
+
+/* ---------------- formatting ---------------- */
+const nf = (v, d = 0) => v.toLocaleString('ru-RU', { minimumFractionDigits: d, maximumFractionDigits: d }).replace(/ /g, ' ')
+const rub = (v) => nf(Math.round(v)) + ' ₽'
+const mln = (v, d = 0) => (v < 0 ? '−' : '') + nf(Math.abs(v) / 1e6, d)
+const mlnR = (v, d = 0) => mln(v, d) + ' млн ₽'
+const bln = (v) => (v < 0 ? '−' : '') + nf(Math.abs(v) / 1e9, 2) + ' млрд ₽'
+const money = (v) => (Math.abs(v) >= 1e9 ? bln(v) : mlnR(v))
+const pct = (v, d = 0) => (v < 0 ? '−' : '') + nf(Math.abs(v) * 100, d) + '%'
+const monthName = (m) => (m === null ? 'за горизонтом' : `${MONTHS[m % 12]} ${YEARS[0] + Math.floor(m / 12)}`)
+const sign = (v) => (v < 0 ? 'neg' : 'pos')
+
+/* ---------------- state ---------------- */
+let A = { ...BASE }
+let scen = 'base'
+const SLIDERS = [
+  { k: 'cacPro', label: 'Стоимость привлечения Pro', min: 6000, max: 24000, step: 500, fmt: rub },
+  { k: 'churnPro', label: 'Отток Pro в месяц', min: 0.02, max: 0.1, step: 0.005, fmt: (v) => pct(v, 1) },
+  { k: 'bizUsage', label: 'Использование Business, ₽ в месяц', min: 80000, max: 450000, step: 10000, fmt: rub },
+  { k: 'mUsage', label: 'Маржа на использовании', min: 0.2, max: 0.5, step: 0.01, fmt: (v) => pct(v) },
+  { k: 'mktMul', label: 'Маркетинговый бюджет, × к плану', min: 0.5, max: 1.8, step: 0.05, fmt: (v) => '× ' + nf(v, 2) },
+]
+
+/* ---------------- charts ---------------- */
+function revChart(years) {
+  const W = 680, H = 330, L = 56, B = 28, T = 10
+  const top = Math.max(...years.map((y) => y.rev)) * 1.12
+  const st = niceStep(top / 4)
+  const ticks = Math.ceil(top / st), max = ticks * st
+  const bw = 72, gap = (W - L - bw * years.length) / years.length
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">`
+  for (let i = 0; i <= ticks; i++) {
+    const v = st * i, yy = H - B - (v / max) * (H - B - T)
+    s += `<line x1="${L}" x2="${W}" y1="${yy}" y2="${yy}" stroke="var(--line)"/><text x="${L - 10}" y="${yy + 4}" text-anchor="end">${mln(v)}</text>`
+  }
+  years.forEach((y, i) => {
+    const x = L + gap / 2 + i * (bw + gap)
+    const hs = (y.subs / max) * (H - B - T), hu = (y.usage / max) * (H - B - T)
+    const y0 = H - B
+    s += `<rect x="${x}" y="${y0 - hs}" width="${bw}" height="${hs}" rx="3" fill="var(--violet-500)"/>`
+    s += `<rect x="${x}" y="${y0 - hs - hu}" width="${bw}" height="${hu}" rx="3" fill="var(--violet-soft)" stroke="var(--violet-500)" stroke-width="1"/>`
+    s += `<text x="${x + bw / 2}" y="${y0 - hs - hu - 8}" text-anchor="middle" style="fill:var(--text)">${mln(y.rev)}</text>`
+    s += `<text x="${x + bw / 2}" y="${H - 8}" text-anchor="middle">${y.yr}</text>`
+  })
+  return s + `</svg>`
+}
+
+function niceStep(raw) {
+  const p = Math.pow(10, Math.floor(Math.log10(raw)))
+  return [1, 2, 2.5, 5, 10].map((k) => k * p).find((k) => k >= raw)
+}
+
+function cashChart(out, minM, be) {
+  const W = 680, H = 330, L = 56, B = 28, T = 14
+  const vals = out.map((o) => o.cash).concat(out.map((o) => o.ebitda))
+  const lo = Math.min(0, ...vals) * 1.1, hi = Math.max(0, ...vals) * 1.15 || 1
+  const yv = (v) => T + (1 - (v - lo) / (hi - lo)) * (H - B - T)
+  const xv = (m) => L + (m / 59) * (W - L - 8)
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">`
+  const st = niceStep((hi - lo) / 5)
+  for (let v = Math.ceil(lo / st) * st; v <= hi; v += st) {
+    s += `<line x1="${L}" x2="${W}" y1="${yv(v)}" y2="${yv(v)}" stroke="var(--line)"/><text x="${L - 10}" y="${yv(v) + 4}" text-anchor="end">${mln(v)}</text>`
+  }
+  s += `<line x1="${L}" x2="${W}" y1="${yv(0)}" y2="${yv(0)}" stroke="var(--line-2)"/>`
+  YEARS.forEach((yr, i) => { s += `<text x="${xv(i * 12 + 6)}" y="${H - 8}" text-anchor="middle">${yr}</text>` })
+  out.forEach((o) => {
+    const x = xv(o.m) - 3, y0 = yv(0), y1 = yv(o.ebitda)
+    s += `<rect x="${x}" y="${Math.min(y0, y1)}" width="6" height="${Math.max(1, Math.abs(y1 - y0))}" rx="1" fill="${o.ebitda < 0 ? 'var(--dim)' : 'var(--faint)'}" opacity=".7"/>`
+  })
+  const pts = out.map((o) => `${xv(o.m).toFixed(1)},${yv(o.cash).toFixed(1)}`).join(' ')
+  s += `<polyline points="${pts}" fill="none" stroke="var(--violet-500)" stroke-width="2.25" stroke-linejoin="round"/>`
+  const mx = xv(minM), my = yv(out[minM].cash)
+  s += `<circle cx="${mx}" cy="${my}" r="4.5" fill="var(--violet-500)"/><text x="${mx}" y="${my + 20}" text-anchor="middle" style="fill:var(--text)">${mln(out[minM].cash)}</text>`
+  if (be !== null) {
+    const bx = xv(be)
+    s += `<line x1="${bx}" x2="${bx}" y1="${T}" y2="${H - B}" stroke="var(--violet-500)" stroke-dasharray="3 4" opacity=".6"/><text x="${bx + 6}" y="${H - B - 8}" style="fill:var(--violet-300)">EBITDA &gt; 0</text>`
+  }
+  return s + `</svg>`
+}
+
+/* ---------------- render ---------------- */
+const $ = (id) => document.getElementById(id)
+const kpi = (label, value, sub = '', cls = '') => `<div class="card"><div class="label">${label}</div><div class="big meter ${cls}">${value}</div>${sub ? `<div class="sub">${sub}</div>` : ''}</div>`
+
+function render() {
+  const a = applyScen(A, scen)
+  const r = run(a)
+  const u = units(a)
+  const last = r.years[4]
+
+  // cover
+  $('coverKpis').innerHTML =
+    kpi('Выручка 2031', money(last.rev)) +
+    kpi('EBITDA 2031', money(last.ebitda), pct(last.ebitda / last.rev) + ' от выручки', sign(last.ebitda)) +
+    kpi('Выход в плюс по EBITDA', monthName(r.be)) +
+    kpi('Потребность в инвестициях', mlnR(r.need))
+
+  // monetization fields
+  const F = { proPrice: rub(a.proPrice), bizPrice: rub(a.bizPrice), proUsage: rub(a.proUsage), bizUsage: rub(a.bizUsage),
+    mSubs: pct(a.mSubs), mUsage: pct(a.mUsage), churnPro: pct(a.churnPro, 1), churnBiz: pct(a.churnBiz, 1),
+    cacPro: rub(a.cacPro), cacBiz: rub(a.cacBiz), usageG: pct(a.usageG) }
+  document.querySelectorAll('[data-f]').forEach((el) => { el.textContent = F[el.dataset.f] })
+
+  // assumptions
+  $('scenarioSeg').innerHTML = Object.entries(SCEN).map(([k, v]) => `<button data-s="${k}" class="${k === scen ? 'on' : ''}">${v.label}</button>`).join('')
+  SLIDERS.forEach((s) => { const o = document.querySelector(`output[for=s_${s.k}]`); if (o) o.textContent = s.fmt(A[s.k]) })
+  $('assumpKpis').innerHTML =
+    kpi('Выручка 2031', money(last.rev)) +
+    kpi('EBITDA 2031', money(last.ebitda), '', sign(last.ebitda)) +
+    kpi('EBITDA &gt; 0 с', monthName(r.be)) +
+    kpi('Нужно инвестиций', mlnR(r.need)) +
+    kpi('LTV / CAC Pro', nf(u.pro.ratio, 1) + '×', '', u.pro.ratio >= 3 ? 'pos' : 'neg') +
+    kpi('LTV / CAC Business', nf(u.biz.ratio, 1) + '×', '', u.biz.ratio >= 3 ? 'pos' : 'neg')
+
+  // revenue
+  $('revTitle').textContent = `Выручка растёт с ${mlnR(r.years[0].rev)} до ${money(last.rev)} за пять лет`
+  $('revChart').innerHTML = revChart(r.years)
+  $('custTable').innerHTML = `<tr><th>На конец года</th><th>Pro</th><th>Business</th><th>Доля использования</th></tr>` +
+    r.years.map((y) => `<tr><td>${y.yr}</td><td class="meter">${nf(y.pro)}</td><td class="meter">${nf(y.biz)}</td><td class="meter">${pct(y.usage / y.rev)}</td></tr>`).join('')
+
+  // units
+  const uc = (name, x, note) => `<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><div style="font-size:20px;font-weight:500">${name}</div><div class="label">${note}</div></div>
+      <div class="grid g3" style="margin-top:18px">
+        <div><div class="label">LTV / CAC</div><div class="big meter ${x.ratio >= 3 ? 'pos' : 'neg'}">${nf(x.ratio, 1)}×</div></div>
+        <div><div class="label">Окупаемость CAC</div><div class="big meter">${nf(x.payback, 1)} мес</div></div>
+        <div><div class="label">Жизнь клиента</div><div class="big meter">${nf(x.life)} мес</div></div>
+      </div>
+      <table style="margin-top:18px">
+        <tr><td>Выручка с клиента в месяц</td><td class="meter">${rub(x.arpu)}</td></tr>
+        <tr><td>Валовая прибыль с клиента в месяц</td><td class="meter">${rub(x.gm)}</td></tr>
+        <tr><td>LTV по валовой прибыли</td><td class="meter">${rub(x.ltv)}</td></tr>
+        <tr class="total"><td>Стоимость привлечения</td><td class="meter">${rub(x.cac)}</td></tr>
+      </table></div>`
+  $('unitCards').innerHTML = uc('Pro', u.pro, 'первый год, без роста использования') + uc('Business', u.biz, 'первый год, без роста использования')
+
+  // P&L
+  $('plTitle').textContent = `P&L: EBITDA ${last.ebitda >= 0 ? 'положительная' : 'отрицательная'} в ${last.yr}, маржа ${pct(last.ebitda / last.rev)}`
+  const row = (label, k, cls = '', f = (v) => mln(v)) => `<tr class="${cls}"><td>${label}</td>${r.years.map((y) => `<td class="meter ${k === 'ebitda' ? sign(y[k]) : ''}">${f(y[k], y)}</td>`).join('')}</tr>`
+  $('plTable').innerHTML = `<tr><th>млн ₽</th>${YEARS.map((y) => `<th class="meter">${y}</th>`).join('')}</tr>` +
+    row('Выручка', 'rev', 'total') +
+    row('подписки', 'subs', 'minor') +
+    row('использование', 'usage', 'minor') +
+    row('Себестоимость', 'cogs', '', (v) => mln(-v)) +
+    row('Валовая прибыль', 'gp', 'total') +
+    `<tr class="minor"><td>валовая маржа</td>${r.years.map((y) => `<td class="meter">${pct(y.gp / y.rev)}</td>`).join('')}</tr>` +
+    row('Маркетинг и продажи', 'mkt', '', (v) => mln(-v)) +
+    row('Команда (ФОТ)', 'payroll', '', (v) => mln(-v)) +
+    row('Офис, сервисы и прочее', 'ga', '', (v) => mln(-v)) +
+    row('EBITDA', 'ebitda', 'total') +
+    `<tr class="minor"><td>маржа EBITDA</td>${r.years.map((y) => `<td class="meter">${pct(y.ebitda / y.rev)}</td>`).join('')}</tr>`
+
+  // cash
+  $('cashTitle').textContent = `Минимум денежного потока ${mlnR(-r.need)} в ${monthName(r.minM)}`
+  $('cashChart').innerHTML = cashChart(r.out, r.minM, r.be)
+  $('cashKpis').innerHTML =
+    kpi('Потребность в финансировании', mlnR(r.need), 'максимальный накопленный минус') +
+    kpi('Выход в плюс по EBITDA', monthName(r.be), r.be === null ? '' : `${r.be + 1}-й месяц модели`) +
+    kpi('Накопленный поток на конец 2031', mlnR(last.cash), last.cash < 0 ? `минус сокращается с ${monthName(r.minM)}` : 'вложения окупились', sign(last.cash))
+
+  // scenarios
+  const sr = Object.keys(SCEN).map((k) => ({ k, r: run(applyScen(A, k)) }))
+  const srow = (label, f) => `<tr><td>${label}</td>${sr.map((x) => `<td class="meter">${f(x.r)}</td>`).join('')}</tr>`
+  $('scenTable').innerHTML = `<tr><th></th>${sr.map((x) => `<th style="${x.k === scen ? 'color:var(--violet-300)' : ''}">${SCEN[x.k].label}</th>`).join('')}</tr>` +
+    srow('Выручка 2029', (r) => money(r.years[2].rev)) +
+    srow('Выручка 2031', (r) => money(r.years[4].rev)) +
+    srow('EBITDA 2031', (r) => `<span class="${sign(r.years[4].ebitda)}">${money(r.years[4].ebitda)}</span>`) +
+    srow('Маржа EBITDA 2031', (r) => pct(r.years[4].ebitda / r.years[4].rev)) +
+    srow('Выход в плюс по EBITDA', (r) => monthName(r.be)) +
+    srow('Потребность в инвестициях', (r) => mlnR(r.need)) +
+    srow('Клиентов Pro / Business, 2031', (r) => `${nf(r.years[4].pro)} / ${nf(r.years[4].biz)}`)
+  const pessOk = sr[0].r.be !== null
+  document.querySelector('#scenTable').closest('.slide').querySelector('h2').textContent = pessOk
+    ? 'Даже в пессимистичном сценарии бизнес выходит в плюс'
+    : 'В пессимистичном сценарии выход в плюс уходит за горизонт модели'
+  $('scenNote').textContent = 'Сценарии считаются от текущих значений ползунков на слайде «Допущения».'
+
+  // ask
+  $('askTitle').textContent = `Привлекаем ${mlnR(r.ask)} до выхода в плюс`
+  const until = r.out.filter((o) => o.m <= (r.be ?? 59))
+  const sum = (k) => until.reduce((t, o) => t + o[k], 0)
+  const parts = [['Маркетинг и продажи', sum('mkt')], ['Команда', sum('payroll')], ['Офис, сервисы и прочее', sum('ga')]]
+  const tot = parts.reduce((t, p) => t + p[1], 0)
+  $('useFunds').innerHTML = `<div class="label">На что пойдут деньги</div>` +
+    `<div style="display:flex;height:10px;border-radius:5px;overflow:hidden;margin:18px 0 8px;gap:2px">${parts.map((p, i) => `<div style="flex:${p[1]};background:${['var(--violet-500)', 'var(--violet-300)', 'var(--dim)'][i]}"></div>`).join('')}</div>` +
+    `<table>${parts.map((p, i) => `<tr><td><i style="display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px;background:${['var(--violet-500)', 'var(--violet-300)', 'var(--dim)'][i]}"></i>${p[0]}</td><td class="meter">${pct(p[1] / tot)}</td></tr>`).join('')}` +
+    `<tr class="total"><td>Запас к потребности</td><td class="meter">+${pct(r.ask / r.need - 1)}</td></tr></table>` +
+    `<p class="note" style="margin-top:14px">Доли — по расходам до выхода в плюс; валовая прибыль покрывает часть из них.</p>`
+  const ms = [
+    [r.years[0].yr, `${nf(r.years[0].pro)} клиентов Pro и ${nf(r.years[0].biz)} Business`, `выручка ${mlnR(r.years[0].rev)}`],
+    [r.years[1].yr, `${nf(r.years[1].biz)} компаний на Business`, `выручка ${mlnR(r.years[1].rev)}`],
+    [r.be === null ? '—' : YEARS[0] + Math.floor(r.be / 12), 'Положительная EBITDA', monthName(r.be)],
+    [last.yr, `Выручка ${money(last.rev)}`, `EBITDA ${money(last.ebitda)}`],
+  ]
+  $('milestones').innerHTML = `<div class="label">Вехи</div>` + ms.map((m) => `<div style="display:grid;grid-template-columns:72px 1fr auto;gap:16px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--line)"><span class="meter" style="color:var(--violet-300)">${m[0]}</span><span>${m[1]}</span><span class="label">${m[2]}</span></div>`).join('')
+}
+
+/* sliders */
+$('sliders').innerHTML = SLIDERS.map((s) => `<div class="slider"><label for="s_${s.k}">${s.label}</label><output for="s_${s.k}"></output><input id="s_${s.k}" type="range" min="${s.min}" max="${s.max}" step="${s.step}" value="${A[s.k]}"></div>`).join('') +
+  `<div class="slider" style="grid-template-columns:1fr auto"><span class="note">Значения по умолчанию — базовая модель</span><button id="reset" style="font:inherit;font-size:13px;color:var(--muted);background:var(--surface-3);border:1px solid var(--line);border-radius:8px;padding:5px 10px;cursor:pointer">Сбросить</button></div>`
+SLIDERS.forEach((s) => $('s_' + s.k).addEventListener('input', (e) => { A[s.k] = +e.target.value; render() }))
+$('reset').addEventListener('click', () => { A = { ...BASE }; SLIDERS.forEach((s) => ($('s_' + s.k).value = A[s.k])); render() })
+$('scenarioSeg').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) { scen = b.dataset.s; render() } })
+
+/* ---------------- deck nav ---------------- */
+const slides = [...document.querySelectorAll('.slide')]
+let cur = 0
+try { cur = Math.min(slides.length - 1, Math.max(0, parseInt(location.hash.slice(1), 10) - 1 || 0)) } catch {}
+slides.forEach((s, i) => {
+  if (i > 0) s.insertAdjacentHTML('beforeend', `<div class="foot"><span class="logo" style="font-size:12px;color:var(--dim)"><i style="width:18px;height:18px;border-radius:5px;font-size:10px">H</i>IT Hub · финансовая модель</span></div>`)
+})
+function go(i) {
+  cur = Math.max(0, Math.min(slides.length - 1, i))
+  slides.forEach((s, j) => s.classList.toggle('on', j === cur))
+  $('count').textContent = `${cur + 1} / ${slides.length}`
+  $('progress').style.width = ((cur + 1) / slides.length) * 100 + '%'
+  history.replaceState(null, '', '#' + (cur + 1))
+}
+function fit() {
+  const s = Math.min(innerWidth / 1280, innerHeight / 720)
+  $('deck').style.transform = `scale(${s})`
+}
+addEventListener('resize', fit)
+addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT') return
+  if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); go(cur + 1) }
+  if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); go(cur - 1) }
+  if (e.key === 'Home') go(0)
+  if (e.key === 'End') go(slides.length - 1)
+  if (e.key.toLowerCase() === 't' || e.key === 'е') toggleTheme()
+})
+$('prev').onclick = () => go(cur - 1)
+$('next').onclick = () => go(cur + 1)
+function toggleTheme() {
+  const r = document.documentElement
+  r.dataset.theme = r.dataset.theme === 'light' ? 'dark' : 'light'
+  try { localStorage.setItem('finmodel.theme', r.dataset.theme) } catch {}
+}
+$('theme').onclick = toggleTheme
+try { const t = localStorage.getItem('finmodel.theme'); if (t) document.documentElement.dataset.theme = t } catch {}
+
+render(); fit(); go(cur)
+</script>
+</body>
+</html>
