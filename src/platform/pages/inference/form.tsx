@@ -1,4 +1,4 @@
-import { ReactNode, useRef } from 'react'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 import { ArrowRight, Check, ChevronDown, Diamond, Download, FileBox, Grid3x3, Layers, Lock, Play, Plus, RefreshCw, Save, Shapes, Target, Upload, Wand, X } from 'lucide-react'
 import { cx } from '../../../components/ui'
 import {
@@ -25,7 +25,7 @@ const SECTIONS: [SectionId, string][] = [['model', 'Модель'], ['contract',
 
 function Section({ id, index, title, sub, open, onToggle, children }: { id: SectionId; index: string; title: string; sub: string; open: boolean; onToggle: () => void; children: ReactNode }) {
   return (
-    <section id={`s-${id}`} className="card scroll-mt-4 overflow-hidden">
+    <section id={`s-${id}`} className="card scroll-mt-20 overflow-hidden">
       <div className="flex items-start gap-4 p-5">
         <div className="meter grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-white/[0.08] bg-ink-800 text-[13px] text-violet-300">{index}</div>
         <div className="min-w-0 flex-1">
@@ -73,6 +73,47 @@ function FieldTable({ rows, dtypes, onChange, onDelete, empty, descPh }: { rows:
 
 export function ServiceForm({ S, set, edit, acc, onRequest, toast, onDeploy, onSaveDraft, onExport, onCancelRedeploy }: Props) {
   const fileRef = useRef<HTMLInputElement>(null)
+  const navRef = useRef<HTMLElement>(null)
+  const [active, setActive] = useState<SectionId>('model')
+  const [stuck, setStuck] = useState(false)
+  const lockUntil = useRef(0)
+  // follow the section under the sticky step bar while the page scrolls
+  useEffect(() => {
+    const nav = navRef.current
+    let scroller: HTMLElement | null = nav?.parentElement ?? null
+    while (scroller && !/(auto|scroll)/.test(getComputedStyle(scroller).overflowY)) scroller = scroller.parentElement
+    const target: HTMLElement | Window = scroller ?? window
+    let raf = 0
+    const update = () => {
+      raf = 0
+      if (!nav) return
+      const line = nav.getBoundingClientRect().bottom + 24
+      let cur: SectionId = 'model'
+      for (const [id] of SECTIONS) {
+        const el = document.getElementById(`s-${id}`)
+        if (el && el.getBoundingClientRect().top <= line) cur = id
+      }
+      const atEnd = scroller ? scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 4 : window.innerHeight + window.scrollY >= document.body.scrollHeight - 4
+      if (atEnd) cur = 'launch'
+      if (Date.now() > lockUntil.current) setActive(cur)
+      const top = scroller ? scroller.getBoundingClientRect().top : 0
+      setStuck(nav.getBoundingClientRect().top <= top + 1)
+    }
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update) }
+    update()
+    target.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => { target.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); cancelAnimationFrame(raf) }
+  }, [])
+  useEffect(() => {
+    // keep the active step visible inside the horizontally scrolling bar (mobile) without moving the page
+    const nav = navRef.current
+    const el = nav?.querySelector<HTMLElement>(`[data-step="${active}"]`)
+    if (!nav || !el) return
+    const l = el.offsetLeft - 16, r = el.offsetLeft + el.offsetWidth + 16
+    if (l < nav.scrollLeft) nav.scrollTo({ left: l, behavior: 'smooth' })
+    else if (r > nav.scrollLeft + nav.clientWidth) nav.scrollTo({ left: r - nav.clientWidth, behavior: 'smooth' })
+  }, [active])
   const dataRef = useRef<HTMLInputElement>(null)
   const up = (patch: Partial<Draft>) => set((s) => ({ ...s, ...patch }))
   const toggle = (id: SectionId) => set((s) => ({ ...s, open: { ...s.open, [id]: !s.open[id] } }))
@@ -370,11 +411,12 @@ export function ServiceForm({ S, set, edit, acc, onRequest, toast, onDeploy, onS
         <div className="flex flex-wrap items-center gap-2"><Chip>UX-прототип · без backend</Chip><button type="button" className="btn-ghost" onClick={onSaveDraft}><Save className="h-4 w-4" /> Сохранить черновик</button></div>
       </div>
 
-      <nav className="mb-4 flex gap-1.5 overflow-x-auto pb-1">
+      <nav ref={navRef} aria-label="Шаги формы" className={cx('sticky top-0 z-20 -mx-4 mb-4 flex gap-1.5 overflow-x-auto px-4 py-3 transition-[background-color,border-color] sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8', stuck ? 'border-b border-white/[0.06] bg-ink-950/90 backdrop-blur' : 'border-b border-transparent')}>
         {SECTIONS.map(([id, label], i) => (
-          <a key={id} href={`#s-${id}`} onClick={(e) => { e.preventDefault(); if (!S.open[id]) toggle(id); document.getElementById(`s-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }}
-            className="shrink-0 rounded-lg border border-white/[0.07] bg-ink-900 px-3 py-1.5 text-[13px] text-slate-400 transition-colors hover:border-white/15 hover:text-white">
-            <span className="meter text-violet-300">0{i + 1}</span> · {label}
+          <a key={id} data-step={id} href={`#s-${id}`} aria-current={active === id ? 'step' : undefined}
+            onClick={(e) => { e.preventDefault(); if (!S.open[id]) toggle(id); lockUntil.current = Date.now() + 900; setActive(id); document.getElementById(`s-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }}
+            className={cx('shrink-0 rounded-lg border px-3 py-1.5 text-[13px] transition-colors', active === id ? 'border-violet-500/50 bg-violet-500/10 text-white' : 'border-white/[0.07] bg-ink-900 text-slate-400 hover:border-white/15 hover:text-white')}>
+            <span className={cx('meter', active === id ? 'text-violet-300' : 'text-slate-500')}>0{i + 1}</span> · {label}
           </a>
         ))}
       </nav>
@@ -410,7 +452,7 @@ export function ServiceForm({ S, set, edit, acc, onRequest, toast, onDeploy, onS
           <Section id="launch" index="06" title="Проверка и публикация" sub="Всё собрано на одной странице; новая конфигурация создаёт revision" open={S.open.launch} onToggle={() => toggle('launch')}>{launch}</Section>
         </div>
 
-        <aside className="space-y-4 xl:sticky xl:top-4 xl:self-start">
+        <aside className="space-y-4 xl:sticky xl:top-20 xl:self-start">
           <div className="card p-5">
             <div className="flex items-center justify-between gap-2"><span className="text-sm font-medium text-white">{edit ? 'Предпросмотр новой revision' : 'Предпросмотр сервиса'}</span><Chip tone={edit ? 'violet' : 'green'}>{edit ? 'Draft' : 'Live preview'}</Chip></div>
             <div className="mt-4 rounded-xl border border-white/[0.07] bg-ink-950 p-3.5">

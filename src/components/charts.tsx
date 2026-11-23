@@ -1,21 +1,32 @@
-import { useId } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 
 type Series = { name: string; data: number[]; color: string }
 
 export function LineChart({ series, labels, height = 220 }: { series: Series[]; labels?: string[]; height?: number }) {
   const id = useId()
-  const w = 600
+  // draw at the real pixel width so text and strokes are never stretched
+  const box = useRef<HTMLDivElement>(null)
+  const [w, setW] = useState(600)
+  useEffect(() => {
+    const el = box.current
+    if (!el) return
+    const ro = new ResizeObserver(([e]) => setW(Math.max(200, Math.round(e.contentRect.width))))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
   const h = height
-  const pad = { l: 36, r: 8, t: 10, b: 22 }
+  const pad = { l: 40, r: 8, t: 10, b: 22 }
   const all = series.flatMap((s) => s.data)
-  const max = Math.max(...all) * 1.1 || 1
+  const top = Math.max(...all) * 1.08 || 1
+  const step = niceStep(top / 4)
+  const max = Math.ceil(top / step) * step
   const n = series[0]?.data.length ?? 0
   const x = (i: number) => pad.l + (i * (w - pad.l - pad.r)) / Math.max(n - 1, 1)
   const y = (v: number) => pad.t + (h - pad.t - pad.b) * (1 - v / max)
-  const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => max * t)
+  const ticks = Array.from({ length: Math.round(max / step) + 1 }, (_, i) => i * step)
   return (
-    <div>
-      <svg viewBox={`0 0 ${w} ${h}`} className="w-full" preserveAspectRatio="none" style={{ height }}>
+    <div ref={box}>
+      <svg viewBox={`0 0 ${w} ${h}`} width="100%" height={h} className="block">
         <defs>
           {series.map((s, i) => (
             <linearGradient key={i} id={`${id}-${i}`} x1="0" y1="0" x2="0" y2="1">
@@ -27,7 +38,7 @@ export function LineChart({ series, labels, height = 220 }: { series: Series[]; 
         {ticks.map((t, i) => (
           <g key={i}>
             <line x1={pad.l} x2={w - pad.r} y1={y(t)} y2={y(t)} stroke="currentColor" className="text-white/5" />
-            <text x={pad.l - 6} y={y(t) + 3} textAnchor="end" fontSize="10" fill="#64748b">
+            <text x={pad.l - 8} y={y(t) + 3.5} textAnchor="end" fontSize="11" className="fill-slate-500 font-mono">
               {fmt(t)}
             </text>
           </g>
@@ -37,14 +48,14 @@ export function LineChart({ series, labels, height = 220 }: { series: Series[]; 
           return (
             <g key={si}>
               {si === 0 && <path d={`${d} L${x(n - 1)},${y(0)} L${x(0)},${y(0)} Z`} fill={`url(#${id}-${si})`} />}
-              <path d={d} fill="none" stroke={s.color} strokeWidth="2" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+              <path d={d} fill="none" stroke={s.color} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
             </g>
           )
         })}
         {labels &&
           labels.map((l, i) =>
-            i % Math.ceil(labels.length / 8) === 0 ? (
-              <text key={i} x={x(i)} y={h - 6} textAnchor="middle" fontSize="10" fill="#64748b">
+            i % Math.ceil(labels.length / Math.max(2, Math.floor(w / 90))) === 0 ? (
+              <text key={i} x={x(i)} y={h - 6} textAnchor={i === 0 ? 'start' : 'middle'} fontSize="11" className="fill-slate-500 font-mono">
                 {l}
               </text>
             ) : null,
@@ -124,6 +135,11 @@ export function Sparkline({ data, color = '#a78bfa' }: { data: number[]; color?:
       <path d={d} fill="none" stroke={color} strokeWidth="2" vectorEffect="non-scaling-stroke" />
     </svg>
   )
+}
+
+function niceStep(raw: number) {
+  const p = Math.pow(10, Math.floor(Math.log10(raw || 1)))
+  return [1, 2, 2.5, 5, 10].map((k) => k * p).find((k) => k >= raw) ?? 10 * p
 }
 
 export function fmt(n: number) {
