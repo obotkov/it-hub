@@ -165,7 +165,7 @@ export function K8s() {
             <div><div className="text-xs text-slate-500">Версия</div><div className="text-white">v1.32</div></div>
             <div><div className="text-xs text-slate-500">Ноды</div><div className="text-white">6 / 12</div></div>
             <div><div className="text-xs text-slate-500">Поды</div><div className="text-white">148</div></div>
-            <div><div className="text-xs text-slate-500">GPU-ноды</div><div className="text-white">2× A100</div></div>
+            <div><div className="text-xs text-slate-500">GPU-ноды</div><div className="text-white">2× H200</div></div>
           </div>
           <div className="grid grid-cols-6 gap-2 sm:grid-cols-12">
             {Array.from({ length: 12 }, (_, i) => (
@@ -176,7 +176,7 @@ export function K8s() {
         </Card>
         <Card title="Группы нод">
           <div className="space-y-3 text-sm">
-            {[['general', '4× 8 vCPU / 32 GB', '2–8'], ['gpu-a100', '2× A100 80GB', '0–4']].map(([n, c, a]) => (
+            {[['general', '4× 8 vCPU / 32 GB', '2–8'], ['gpu-h200', '2× H200 141GB', '0–4']].map(([n, c, a]) => (
               <div key={n} className="rounded-xl border border-white/5 bg-ink-850 p-3">
                 <div className="font-mono text-white">{n}</div>
                 <div className="text-xs text-slate-500">{c} · автоскейл {a}</div>

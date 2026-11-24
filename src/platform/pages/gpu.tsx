@@ -18,11 +18,9 @@ const templates = [
 
 const gpus = [
   { id: 'none', name: 'Без GPU', vram: 0, price: 0, avail: 'много' },
-  { id: '4090', name: 'RTX 4090', vram: 24, price: 59, avail: 'много' },
-  { id: 'l40s', name: 'L40S', vram: 48, price: 109, avail: 'есть' },
-  { id: 'a100', name: 'A100 80GB', vram: 80, price: 189, avail: 'есть' },
-  { id: 'h100', name: 'H100 80GB', vram: 80, price: 329, avail: 'мало' },
-  { id: 'h200', name: 'H200 141GB', vram: 141, price: 449, avail: 'мало' },
+  { id: 'rtx6000', name: 'RTX 6000 96GB', vram: 96, price: 129, avail: 'много' },
+  { id: 'h200', name: 'H200 141GB', vram: 141, price: 449, avail: 'есть' },
+  { id: 'b300', name: 'B300 288GB', vram: 288, price: 799, avail: 'мало' },
 ]
 
 const oses = ['Ubuntu 24.04', 'Ubuntu 22.04', 'Debian 12', 'Rocky Linux 9', 'Windows Server 2022']
@@ -30,21 +28,21 @@ const oses = ['Ubuntu 24.04', 'Ubuntu 22.04', 'Debian 12', 'Rocky Linux 9', 'Win
 export type Pod = { id: string; name: string; tpl: string; gpu: string; count: number; cpu: number; ram: number; disk: number; status: 'running' | 'stopped' | 'pending'; price: number; uptime: string }
 
 const initialPods: Pod[] = [
-  { id: 'p1', name: 'vllm-qwen-72b', tpl: 'vLLM', gpu: 'H100 80GB', count: 2, cpu: 32, ram: 256, disk: 500, status: 'running', price: 742, uptime: '3 ч 12 мин' },
-  { id: 'p2', name: 'comfy-flux', tpl: 'ComfyUI', gpu: 'RTX 4090', count: 1, cpu: 8, ram: 48, disk: 120, status: 'running', price: 77, uptime: '47 мин' },
-  { id: 'p3', name: 'jupyter-exp', tpl: 'PyTorch 2.6', gpu: 'A100 80GB', count: 1, cpu: 16, ram: 128, disk: 200, status: 'stopped', price: 0, uptime: '—' },
+  { id: 'p1', name: 'vllm-qwen-72b', tpl: 'vLLM', gpu: 'H200 141GB', count: 2, cpu: 32, ram: 256, disk: 500, status: 'running', price: 982, uptime: '3 ч 12 мин' },
+  { id: 'p2', name: 'comfy-flux', tpl: 'ComfyUI', gpu: 'RTX 6000 96GB', count: 1, cpu: 8, ram: 48, disk: 120, status: 'running', price: 147, uptime: '47 мин' },
+  { id: 'p3', name: 'jupyter-exp', tpl: 'PyTorch 2.6', gpu: 'B300 288GB', count: 1, cpu: 16, ram: 128, disk: 200, status: 'stopped', price: 0, uptime: '—' },
 ]
 
 const loadPods = (): Pod[] => {
   try {
-    return JSON.parse(localStorage.getItem('hub.pods') || 'null') ?? initialPods
+    return JSON.parse(localStorage.getItem('hub.pods.v2') || 'null') ?? initialPods
   } catch {
     return initialPods
   }
 }
 const savePods = (p: Pod[]) => {
   try {
-    localStorage.setItem('hub.pods', JSON.stringify(p))
+    localStorage.setItem('hub.pods.v2', JSON.stringify(p))
   } catch {
     /* ignore */
   }
@@ -54,7 +52,7 @@ export function GpuDeploy() {
   const nav = useNavigate()
   const [tpl, setTpl] = useState('vllm')
   const [q, setQ] = useState('')
-  const [gpu, setGpu] = useState('a100')
+  const [gpu, setGpu] = useState('h200')
   const [count, setCount] = useState(1)
   const [cpu, setCpu] = useState(16)
   const [ram, setRam] = useState(64)
@@ -211,8 +209,8 @@ export function GpuPods() {
       ) : (
         <div className="space-y-3">
           {pods.map((p) => (
-            <div key={p.id} className="card flex flex-col gap-4 p-5 lg:flex-row lg:items-center">
-              <div className="flex min-w-0 flex-1 items-center gap-4">
+            <div key={p.id} className="card flex flex-col gap-4 p-5 xl:flex-row xl:items-center">
+              <div className="flex min-w-0 flex-1 items-center gap-4 xl:min-w-[18rem]">
                 <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-emerald-500/10"><Server className="h-5 w-5 text-emerald-300" /></div>
                 <div className="min-w-0">
                   <div className="truncate font-mono text-sm font-medium text-white">{p.name}</div>

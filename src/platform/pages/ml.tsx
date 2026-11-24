@@ -77,7 +77,7 @@ export function MlTraining() {
             {[
               ['Базовая модель', 'qwen3.5-7b'],
               ['Метод', 'LoRA r=16'],
-              ['GPU', '1× A100 80GB'],
+              ['GPU', '1× H200 141GB'],
               ['Batch size', '32'],
               ['Learning rate', '2e-4'],
               ['Датасет', 'tickets.jsonl · 48K'],
@@ -96,7 +96,7 @@ export function MlTraining() {
           <div><label className="label">Проект</label><select className="input"><option>support-intent</option><option>churn-prediction</option></select></div>
           <div className="grid grid-cols-2 gap-3">
             <div><label className="label">Тип</label><select className="input"><option>Fine-tune LLM (LoRA)</option><option>AutoML (табличные)</option><option>Свой скрипт (PyTorch)</option></select></div>
-            <div><label className="label">GPU</label><select className="input"><option>1× A100 80GB</option><option>2× H100</option><option>1× RTX 4090</option></select></div>
+            <div><label className="label">GPU</label><select className="input"><option>1× H200 141GB</option><option>2× B300</option><option>1× RTX 6000</option></select></div>
           </div>
           <div className="flex justify-end gap-2"><button onClick={() => setModal(false)} className="btn-ghost">Отмена</button><button onClick={() => { setEpoch(1); setRunning(true); setModal(false) }} className="btn-primary">Запустить</button></div>
         </div>

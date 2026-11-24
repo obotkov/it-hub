@@ -7,7 +7,7 @@ import { sections } from '../nav'
 
 const facts = [
   ['40+', 'сервисов в одном аккаунте'],
-  ['A100 · H100 · RTX 4090', 'GPU для инференса и обучения'],
+  ['B300 · H200 · RTX 6000', 'GPU для инференса и обучения'],
   ['99,95%', 'SLA облачной инфраструктуры'],
   ['152-ФЗ', 'данные хранятся в РФ'],
 ]
@@ -261,7 +261,7 @@ function SectionHead({ label, title, children }: { label: string; title: string;
 /* Hero product view: the one rich moment on the page                  */
 /* ------------------------------------------------------------------ */
 
-// GPU utilisation of a 2× H100 vLLM pod over the last 24 hours, % (plausible daily curve)
+// GPU utilisation of a 2× B300 vLLM pod over the last 24 hours, % (plausible daily curve)
 const util = [38, 34, 31, 29, 28, 30, 36, 47, 58, 66, 71, 74, 76, 73, 75, 79, 82, 80, 77, 73, 70, 67, 65, 64]
 // requests per second, scaled to the same 0–100 axis for the comparison line
 const rps = [22, 19, 17, 15, 15, 17, 22, 31, 40, 47, 52, 55, 57, 54, 56, 60, 63, 61, 58, 54, 51, 48, 46, 45]
@@ -325,7 +325,7 @@ function ProductPreview() {
               <div className="mt-1 text-xl font-medium text-white">llama-70b-prod</div>
             </div>
             <div className="flex items-center gap-2 text-[13px] text-slate-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Работает · 2× H100 80GB · vLLM
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Работает · 2× B300 288GB · vLLM
             </div>
           </div>
 
