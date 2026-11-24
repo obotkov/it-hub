@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { MouseEvent, ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Check, ShieldCheck, Building2, User, Globe2, Layers } from 'lucide-react'
 import Logo from '../components/Logo'
@@ -26,6 +26,14 @@ const pricing = [
 
 const wrap = 'mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8'
 
+// In-page anchors scroll without touching the URL hash, so they also work under the offline HashRouter build
+const toSection = (e: MouseEvent<HTMLAnchorElement>) => {
+  const el = document.getElementById(e.currentTarget.hash.slice(1))
+  if (!el) return
+  e.preventDefault()
+  el.scrollIntoView({ behavior: 'smooth' })
+}
+
 export default function Landing() {
   const live = sections.filter((s) => !s.soon)
   return (
@@ -34,10 +42,10 @@ export default function Landing() {
         <div className={`${wrap} flex h-16 items-center justify-between gap-4`}>
           <Logo />
           <nav className="hidden items-center gap-8 text-sm text-slate-400 md:flex">
-            <a href="#products" className="transition-colors hover:text-white">Продукты</a>
-            <a href="#how" className="transition-colors hover:text-white">Как это работает</a>
-            <a href="#business" className="transition-colors hover:text-white">Для бизнеса</a>
-            <a href="#pricing" className="transition-colors hover:text-white">Тарифы</a>
+            <a href="#products" onClick={toSection} className="transition-colors hover:text-white">Продукты</a>
+            <a href="#how" onClick={toSection} className="transition-colors hover:text-white">Как это работает</a>
+            <a href="#business" onClick={toSection} className="transition-colors hover:text-white">Для бизнеса</a>
+            <a href="#pricing" onClick={toSection} className="transition-colors hover:text-white">Тарифы</a>
           </nav>
           <div className="flex items-center gap-1 sm:gap-2">
             <ThemeToggle />
@@ -81,7 +89,7 @@ export default function Landing() {
                 <Link to="/login" className="btn-primary btn-lg">
                   Начать бесплатно <ArrowRight className="h-4 w-4" />
                 </Link>
-                <a href="#products" className="btn-ghost btn-lg">Смотреть продукты</a>
+                <a href="#products" onClick={toSection} className="btn-ghost btn-lg">Смотреть продукты</a>
               </div>
             </div>
           </div>

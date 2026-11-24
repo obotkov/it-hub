@@ -1,7 +1,10 @@
-import { useMemo, useState } from 'react'
-import { Gauge, Plus, Copy, Check, FileBarChart, Users, Clock, MousePointerClick, Filter, FileJson, Smartphone, Download, Play, TrendingUp, Monitor, Globe, Apple } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Gauge, Plus, Copy, Check, FileBarChart, Users, Clock, MousePointerClick, Filter, FileJson, Smartphone, Download, Play, TrendingUp, Monitor, Globe, Apple, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Badge, Card, Code, Modal, PageHeader, Stat, Table, Tabs, cx } from '../../components/ui'
 import { BarChart, Donut, LineChart, days, fmt, series } from '../../components/charts'
+import heatOrders from '../../assets/heatmap/orders.webp'
+import heatCompare from '../../assets/heatmap/compare.webp'
+import heatFinance from '../../assets/heatmap/finance.webp'
 
 /* ---------------- Counters ---------------- */
 
@@ -184,17 +187,35 @@ export function Reports() {
 
 /* ---------------- Heatmap ---------------- */
 
+const SCREENS = [
+  {
+    id: 'orders', title: 'Заказы · Новые', url: 'seller.wildberries.ru/orders', img: heatOrders, max: 233438,
+    top: [['Меню: Товары и цены', 233438], ['Вкладка «Новые»', 41870], ['Карточка товара', 32114], ['Отзывы и вопросы', 28402], ['Витрина (DBS)', 19655]],
+  },
+  {
+    id: 'compare', title: 'Сравнение карточек', url: 'seller.wildberries.ru/analytics/compare', img: heatCompare, max: 336,
+    top: [['Логотип WB Partners', 336], ['Анализ ниши', 214], ['Портрет покупателя', 97], ['Сравнение карточек', 61], ['Подробнее о Джем', 18]],
+  },
+  {
+    id: 'finance', title: 'Финансы', url: 'seller.wildberries.ru/finance', img: heatFinance, max: 529,
+    top: [['Продукты и сервисы', 529], ['Логотип WB Partners', 402], ['Открыть счёт', 133], ['Финансы', 88], ['Мои финансы', 41]],
+  },
+] as const
+
 export function Heatmap() {
-  const [page, setPage] = useState('/')
+  const [idx, setIdx] = useState(0)
   const [mode, setMode] = useState<'clicks' | 'scroll'>('clicks')
-  const spots = useMemo(() => {
-    let s = page.length * 17 + 3
-    const r = () => ((s = (s * 9301 + 49297) % 233280) / 233280)
-    const base = [
-      [78, 7, 1], [50, 33, 1], [42, 46, 0.8], [58, 46, 0.6], [20, 72, 0.5], [50, 72, 0.7], [80, 72, 0.4], [50, 92, 0.3], [12, 7, 0.5],
-    ]
-    return [...base.map(([x, y, w]) => ({ x, y, w })), ...Array.from({ length: 30 }, () => ({ x: r() * 100, y: r() * 100, w: r() * 0.3 }))]
-  }, [page])
+  const scr = SCREENS[idx]
+  const go = (d: number) => setIdx((i) => (i + d + SCREENS.length) % SCREENS.length)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.target as HTMLElement)?.closest('input, select, textarea')) return
+      if (e.key === 'ArrowLeft') go(-1)
+      if (e.key === 'ArrowRight') go(1)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
   return (
     <>
       <PageHeader
@@ -203,8 +224,8 @@ export function Heatmap() {
         icon={MousePointerClick}
         actions={
           <>
-            <select className="input w-auto" value={page} onChange={(e) => setPage(e.target.value)}>
-              {['/', '/catalog', '/product/42', '/cart', '/checkout'].map((p) => <option key={p}>{p}</option>)}
+            <select className="input w-auto" value={scr.id} onChange={(e) => setIdx(SCREENS.findIndex((x) => x.id === e.target.value))}>
+              {SCREENS.map((x) => <option key={x.id} value={x.id}>{x.title}</option>)}
             </select>
             <Tabs value={mode} onChange={setMode} tabs={[{ id: 'clicks', label: 'Клики' }, { id: 'scroll', label: 'Скроллинг' }]} />
           </>
@@ -212,34 +233,18 @@ export function Heatmap() {
       />
       <div className="grid gap-4 xl:grid-cols-[1fr_280px]">
         <div className="card overflow-hidden p-3">
-          <div className="theme-fixed relative mx-auto aspect-[4/5] max-w-3xl overflow-hidden rounded-xl bg-slate-100 sm:aspect-[16/12]">
-            {/* fake page */}
-            <div className="absolute inset-0 p-[4%] text-slate-400">
-              <div className="flex items-center justify-between"><div className="h-4 w-24 rounded bg-slate-300" /><div className="flex gap-3"><div className="h-3 w-12 rounded bg-slate-300" /><div className="h-3 w-12 rounded bg-slate-300" /><div className="h-6 w-20 rounded-md bg-slate-400" /></div></div>
-              <div className="mx-auto mt-[8%] h-6 w-2/3 rounded bg-slate-300" />
-              <div className="mx-auto mt-3 h-3 w-1/2 rounded bg-slate-200" />
-              <div className="mx-auto mt-[4%] flex w-fit gap-3"><div className="h-8 w-28 rounded-lg bg-slate-500" /><div className="h-8 w-28 rounded-lg bg-slate-300" /></div>
-              <div className="mt-[10%] grid grid-cols-3 gap-[3%]">{[0, 1, 2].map((i) => <div key={i} className="aspect-[4/3] rounded-lg bg-slate-200" />)}</div>
-              <div className="mx-auto mt-[6%] h-10 w-1/3 rounded-lg bg-slate-300" />
+          <div className="mb-3 flex items-center gap-3 px-1">
+            <Globe className="h-4 w-4 shrink-0 text-slate-500" />
+            <span className="min-w-0 flex-1 truncate font-mono text-xs text-slate-400">{scr.url}</span>
+            <span className="text-xs tabular-nums text-slate-500">{idx + 1} / {SCREENS.length}</span>
+            <div className="flex gap-1">
+              <button onClick={() => go(-1)} className="btn-ghost px-2 py-1.5" aria-label="Предыдущая страница"><ChevronLeft className="h-4 w-4" /></button>
+              <button onClick={() => go(1)} className="btn-ghost px-2 py-1.5" aria-label="Следующая страница"><ChevronRight className="h-4 w-4" /></button>
             </div>
-            {mode === 'clicks' ? (
-              <div className="absolute inset-0 mix-blend-multiply">
-                {spots.map((p, i) => (
-                  <div
-                    key={i}
-                    className="absolute rounded-full"
-                    style={{
-                      left: `${p.x}%`,
-                      top: `${p.y}%`,
-                      width: `${6 + p.w * 14}%`,
-                      aspectRatio: '1',
-                      transform: 'translate(-50%,-50%)',
-                      background: `radial-gradient(circle, rgba(239,68,68,${0.35 + p.w * 0.6}) 0%, rgba(250,204,21,${0.25 + p.w * 0.3}) 35%, rgba(59,130,246,0.15) 60%, transparent 72%)`,
-                    }}
-                  />
-                ))}
-              </div>
-            ) : (
+          </div>
+          <div className="theme-fixed relative overflow-hidden rounded-xl bg-slate-100" style={{ aspectRatio: '1852 / 1140' }}>
+            <img src={scr.img} alt={`Карта кликов: ${scr.title}`} className="absolute inset-0 h-full w-full object-cover" />
+            {mode === 'scroll' && (
               <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(239,68,68,.45) 0%, rgba(250,204,21,.4) 35%, rgba(34,197,94,.3) 60%, rgba(59,130,246,.3) 80%, rgba(30,41,59,.5) 100%)' }}>
                 {[25, 50, 75].map((p) => (
                   <div key={p} className="absolute inset-x-0 border-t border-dashed border-slate-900/40" style={{ top: `${p}%` }}>
@@ -249,12 +254,30 @@ export function Heatmap() {
               </div>
             )}
           </div>
+          <div className="mt-3 grid grid-cols-3 gap-2">
+            {SCREENS.map((x, i) => (
+              <button
+                key={x.id}
+                onClick={() => setIdx(i)}
+                className={cx('group overflow-hidden rounded-lg border text-left transition-colors', i === idx ? 'border-violet-500' : 'border-white/10 hover:border-white/25')}
+              >
+                <img src={x.img} alt="" className="aspect-[1852/1140] w-full object-cover opacity-90 group-hover:opacity-100" />
+                <div className={cx('truncate px-2 py-1.5 text-xs', i === idx ? 'text-white' : 'text-slate-400')}>{x.title}</div>
+              </button>
+            ))}
+          </div>
         </div>
         <div className="space-y-4">
+          <Card title="Шкала карты">
+            <div className="text-2xl font-semibold tabular-nums text-white">{scr.max.toLocaleString('ru-RU')}</div>
+            <div className="mt-1 text-xs text-slate-500">кликов на самом популярном элементе · 23.11.2026</div>
+            <div className="mt-4 h-2 rounded-full" style={{ background: 'linear-gradient(90deg, #3b82f6, #22c55e, #facc15, #ef4444)' }} />
+            <div className="mt-1.5 flex justify-between text-[11px] text-slate-500"><span>от 1 клика</span><span>до {scr.max.toLocaleString('ru-RU')}</span></div>
+          </Card>
           <Card title="Топ элементов">
             <div className="space-y-2.5 text-sm">
-              {[['Кнопка «Купить»', 2841], ['Меню: Каталог', 1932], ['Баннер акции', 1204], ['Поиск', 988], ['Карточка товара #1', 760]].map(([k, v]) => (
-                <div key={k} className="flex justify-between"><span className="text-slate-300">{k}</span><span className="tabular-nums text-slate-500">{v}</span></div>
+              {scr.top.map(([k, v]) => (
+                <div key={k} className="flex justify-between gap-3"><span className="truncate text-slate-300">{k}</span><span className="tabular-nums text-slate-500">{v.toLocaleString('ru-RU')}</span></div>
               ))}
             </div>
           </Card>
