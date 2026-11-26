@@ -12,7 +12,7 @@ cd "$(dirname "$0")/.."
 
 $SSH "$HOST" "mkdir -p $DIR"
 rsync -az --delete -e "$SSH" \
-  --exclude node_modules --exclude dist --exclude .git --exclude .env \
+  --exclude node_modules --exclude dist --exclude .git --exclude .env --exclude docs \
   ./ "$HOST:$DIR/"
 
 $SSH "$HOST" "cd $DIR && test -f .env || { echo '.env missing in $DIR (see .env.example)'; exit 1; }; \
